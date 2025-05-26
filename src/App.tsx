@@ -3,8 +3,10 @@ import { Toaster } from 'sonner'
 import { AuthProvider, ThemeProvider } from './context'
 import configureFakeBackend from './common/api/fake-backend'
 
+
 // default light mode
 import '@/assets/scss/app.scss'
+import '@toast-ui/chart/dist/toastui-chart.min.css';
 
 // default dark mode (uncomment below file, and comment the rest to use dark theme mode)
 // import '@/assets/scss/app-dark.scss'

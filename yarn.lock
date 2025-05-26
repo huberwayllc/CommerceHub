@@ -220,6 +220,105 @@
     "@babel/helper-validator-identifier" "^7.22.20"
     to-fast-properties "^2.0.0"
 
+"@cropper/element-canvas@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@cropper/element-canvas/-/element-canvas-2.0.0.tgz"
+  integrity sha512-GPtGJgSm92crJhhhwUsaMw3rz2KfJWWSz7kRAlufFEV/EHTP5+6r6/Z1BCGRna830i+Avqbm435XLOtA7PVJwA==
+  dependencies:
+    "@cropper/element" "^2.0.0"
+    "@cropper/utils" "^2.0.0"
+
+"@cropper/element-crosshair@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@cropper/element-crosshair/-/element-crosshair-2.0.0.tgz"
+  integrity sha512-KfPfyrdeFvUC31Ws7ATtcalWWSaMtrC6bMoCipZhqbUOE7wZoL4ecDSL6BUOZxPa74awZUqfzirCDjHvheBfyw==
+  dependencies:
+    "@cropper/element" "^2.0.0"
+    "@cropper/utils" "^2.0.0"
+
+"@cropper/element-grid@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@cropper/element-grid/-/element-grid-2.0.0.tgz"
+  integrity sha512-i78SQ0IJTLFveKX6P7svkfMYVdgHrQ8ZmmEw8keFy9n1ZVbK+SK0UHK5FNMRNI/gtVhKJOGEnK/zeyjUdj4Iyw==
+  dependencies:
+    "@cropper/element" "^2.0.0"
+    "@cropper/utils" "^2.0.0"
+
+"@cropper/element-handle@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@cropper/element-handle/-/element-handle-2.0.0.tgz"
+  integrity sha512-ZJvW+0MkK9E8xYymGdoruaQn2kwjSHFpNSWinjyq6csuVQiCPxlX5ovAEDldmZ9MWePPtWEi3vLKQOo2Yb0T8g==
+  dependencies:
+    "@cropper/element" "^2.0.0"
+    "@cropper/utils" "^2.0.0"
+
+"@cropper/element-image@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@cropper/element-image/-/element-image-2.0.0.tgz"
+  integrity sha512-9BxiTS/aHRmrjopaFQb9mQQXmx4ruhYHGkDZMVz24AXpMFjUY6OpqrWse/WjzD9tfhMFvEdu17b3VAekcAgpeg==
+  dependencies:
+    "@cropper/element" "^2.0.0"
+    "@cropper/element-canvas" "^2.0.0"
+    "@cropper/utils" "^2.0.0"
+
+"@cropper/element-selection@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@cropper/element-selection/-/element-selection-2.0.0.tgz"
+  integrity sha512-ensNnbIfJsJ8bhbJTH/RXtk2URFvTOO4TvfRk461n2FPEC588D7rwBmUJxQg74IiTi4y1JbCI+6j+4LyzYBLCQ==
+  dependencies:
+    "@cropper/element" "^2.0.0"
+    "@cropper/element-canvas" "^2.0.0"
+    "@cropper/element-image" "^2.0.0"
+    "@cropper/utils" "^2.0.0"
+
+"@cropper/element-shade@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@cropper/element-shade/-/element-shade-2.0.0.tgz"
+  integrity sha512-jv/2bbNZnhU4W+T4G0c8ADocLIZvQFTXgCf2RFDNhI5UVxurzWBnDdb8Mx8LnVplnkTqO+xUmHZYve0CwgWo+Q==
+  dependencies:
+    "@cropper/element" "^2.0.0"
+    "@cropper/element-canvas" "^2.0.0"
+    "@cropper/element-selection" "^2.0.0"
+    "@cropper/utils" "^2.0.0"
+
+"@cropper/element-viewer@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@cropper/element-viewer/-/element-viewer-2.0.0.tgz"
+  integrity sha512-zY+3VRN5TvpM8twlphYtXw0tzJL2VgzeK7ufhL1BixVqOdRxwP13TprYIhqwGt9EW/SyJZUiaIu396T89kRX8A==
+  dependencies:
+    "@cropper/element" "^2.0.0"
+    "@cropper/element-canvas" "^2.0.0"
+    "@cropper/element-image" "^2.0.0"
+    "@cropper/element-selection" "^2.0.0"
+    "@cropper/utils" "^2.0.0"
+
+"@cropper/element@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@cropper/element/-/element-2.0.0.tgz"
+  integrity sha512-lsthn0nQq73GExUE7Mg/ss6Q3RXADGDv055hxoLFwvl/wGHgy6ZkYlfLZ/VmgBHC6jDK5IgPBFnqrPqlXWSGBA==
+  dependencies:
+    "@cropper/utils" "^2.0.0"
+
+"@cropper/elements@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@cropper/elements/-/elements-2.0.0.tgz"
+  integrity sha512-PQkPo1nUjxLFUQuHYu+6atfHxpX9B41Xribao6wpvmvmNIFML6LQdNqqWYb6LyM7ujsu71CZdBiMT5oetjJVoQ==
+  dependencies:
+    "@cropper/element" "^2.0.0"
+    "@cropper/element-canvas" "^2.0.0"
+    "@cropper/element-crosshair" "^2.0.0"
+    "@cropper/element-grid" "^2.0.0"
+    "@cropper/element-handle" "^2.0.0"
+    "@cropper/element-image" "^2.0.0"
+    "@cropper/element-selection" "^2.0.0"
+    "@cropper/element-shade" "^2.0.0"
+    "@cropper/element-viewer" "^2.0.0"
+
+"@cropper/utils@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@cropper/utils/-/utils-2.0.0.tgz"
+  integrity sha512-cprLYr+7kK3faGgoOsTW9gIn5sefDr2KwOmgyjzIXk+8PLpW8FgFKEg5FoWfRD5zMAmkCBuX6rGKDK3VdUEGrg==
+
 "@emotion/babel-plugin@^11.11.0":
   version "11.11.0"
   resolved "https://registry.npmjs.org/@emotion/babel-plugin/-/babel-plugin-11.11.0.tgz"
@@ -1261,9 +1360,17 @@ create-react-class@^15.6.0:
     object-assign "^4.1.1"
 
 cropperjs@^1.5.13:
-  version "1.6.1"
-  resolved "https://registry.npmjs.org/cropperjs/-/cropperjs-1.6.1.tgz"
-  integrity sha512-F4wsi+XkDHCOMrHMYjrTEE4QBOrsHHN5/2VsVAaRq8P7E5z7xQpT75S+f/9WikmBEailas3+yo+6zPIomW+NOA==
+  version "1.6.2"
+  resolved "https://registry.npmjs.org/cropperjs/-/cropperjs-1.6.2.tgz"
+  integrity sha512-nhymn9GdnV3CqiEHJVai54TULFAE3VshJTXSqSJKa8yXAKyBKDWdhHarnlIPrshJ0WMFTGuFvG02YjLXfPiuOA==
+
+cropperjs@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/cropperjs/-/cropperjs-2.0.0.tgz"
+  integrity sha512-TO2j0Qre01kPHbow4FuTrbdEB4jTmGRySxW49jyEIqlJZuEBfrvCTT0vC3eRB2WBXudDfKi1Onako6DKWKxeAQ==
+  dependencies:
+    "@cropper/elements" "^2.0.0"
+    "@cropper/utils" "^2.0.0"
 
 cross-spawn@^7.0.2:
   version "7.0.3"
@@ -1640,7 +1747,7 @@ flat-cache@^3.0.4:
     keyv "^4.5.3"
     rimraf "^3.0.2"
 
-flatpickr@^4.0.6, flatpickr@^4.6.2:
+flatpickr@^4.0.6, flatpickr@^4.6.13, flatpickr@^4.6.2:
   version "4.6.13"
   resolved "https://registry.npmjs.org/flatpickr/-/flatpickr-4.6.13.tgz"
   integrity sha512-97PMG/aywoYpB4IvbvUJi0RQi8vearvU0oov1WW3k0WZPBMrTQVqekSX5CjSG/M4Q3i6A/0FKXC7RyAoAUUSPw==
@@ -1971,10 +2078,10 @@ json5@^2.2.3:
   resolved "https://registry.npmjs.org/json5/-/json5-2.2.3.tgz"
   integrity sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==
 
-jsvectormap@^1.5.3:
-  version "1.5.3"
-  resolved "https://registry.npmjs.org/jsvectormap/-/jsvectormap-1.5.3.tgz"
-  integrity sha512-HStTEhZEVr8t3t6juApO603nr1y54K/wjcdOvgGtvpE1etZ9Isg/sLdqh7OX4+RJ8srdP7WiBoTV/93aMqhLhw==
+jsvectormap@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.npmjs.org/jsvectormap/-/jsvectormap-1.6.0.tgz"
+  integrity sha512-4b/v4GWqiggHGN+CBOJBhIdpSGLY6wVetmMKiOlQ7oVM1PIzsLlSBJDMQd9ycLk6Rmzg4aFua35QDrk5HPb1YQ==
 
 justgage@^1.6.1:
   version "1.6.1"
@@ -2178,6 +2285,11 @@ nouislider@^14.6.3:
   version "14.7.0"
   resolved "https://registry.npmjs.org/nouislider/-/nouislider-14.7.0.tgz"
   integrity sha512-4RtQ1+LHJKesDCNJrXkQcwXAWCrC2aggdLYMstS/G5fEWL+fXZbUA9pwVNHFghMGuFGRATlDLNInRaPeRKzpFQ==
+
+nouislider@^15.8.1:
+  version "15.8.1"
+  resolved "https://registry.npmjs.org/nouislider/-/nouislider-15.8.1.tgz"
+  integrity sha512-93TweAi8kqntHJSPiSWQ1o/uZ29VWOmal9YKb6KKGGlCkugaNfAupT7o1qTHqdJvNQ7S0su5rO6qRFCjP8fxtw==
 
 object-assign@^4.1.0, object-assign@^4.1.1:
   version "4.1.1"
@@ -2726,7 +2838,7 @@ redux@^4.2.1:
   dependencies:
     "@babel/runtime" "^7.9.2"
 
-regenerator-runtime@^0.14.0:
+regenerator-runtime@^0.14.0, regenerator-runtime@^0.14.1:
   version "0.14.1"
   resolved "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.14.1.tgz"
   integrity sha512-dYnhHh0nJoMfnkZs6GmmhFknAGRrLznOu5nc9ML+EJxGvrx6H7teuevqVqCuPcPK//3eDrrjQhehXVx9cnkGdw==
