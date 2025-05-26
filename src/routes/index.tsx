@@ -14,6 +14,7 @@ const HospitalDashboard = lazy(() => import('@/pages/dashboards/Hospital'))
 //apps
 const CustomerApp = lazy(() => import('@/pages/apps/analytics/Customers'))
 const ReportApp = lazy(() => import('@/pages/apps/analytics/Reports'))
+const Products1 = lazy(() => import('@/pages/apps/products'))
 
 const CryptoExchange = lazy(() => import('@/pages/apps/crypto/Exchange'))
 const CryptoWallet = lazy(() => import('@/pages/apps/crypto/Wallet'))
@@ -288,6 +289,11 @@ const appsRoutes: RoutesProps[] = [
 		path: '/apps/analytics/customers',
 		name: 'Customers',
 		element: <CustomerApp />,
+	},
+	{
+		path: '/apps/products',
+		name: 'Products',
+		element: <Products1 />,
 	},
 	{
 		path: '/apps/analytics/reports',

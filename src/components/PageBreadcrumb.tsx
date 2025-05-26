@@ -23,7 +23,7 @@ const PageBreadcrumb = ({ title, subName }: PageTitleProps) => {
 								<li className="breadcrumb-item active">{title}</li>
 							</ol>
 						</div>
-						<h4 className="page-title">{title}</h4>
+						<h4 style={{fontWeight: "bold"}} className="page-title">{title}</h4>
 					</div>
 				</Col>
 			</Row>
