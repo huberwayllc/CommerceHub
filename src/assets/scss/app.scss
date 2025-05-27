@@ -78,3 +78,93 @@ File: App Css
 @import "./pages/account-pages";
 
 @import "nouislider/dist/nouislider.css";
+
+:root {
+  --primary-color: #171f2c;
+  --border-table-color: #6f7a8b;
+}
+
+//input filter page Products
+.floating-label {
+	position: absolute;
+	top: 50%;
+	left: 30px;
+	transform: translateY(-50%);
+	transition: all 0.2s ease;
+	pointer-events: none;
+	color: #6c757d;
+	font-size: 0.85rem;
+}
+
+.floating-input {
+	height: 45px;
+	background-color: #f9f9fa;
+	border-color: var(--primary-color);
+	padding-left: 30px;
+	padding-top: 14px;
+	padding-bottom: 0;
+	display: flex;
+	align-items: center;
+        font-weight: 500;
+}
+
+.floating-input:focus + .floating-label,
+.floating-input:not(:placeholder-shown) + .floating-label {
+	top: 11px;
+	font-size: 0.65rem; 
+    font-weight: 600;
+}
+
+
+
+//tabella prodotti
+.custom-table {
+  border-collapse: separate;
+  border-spacing: 0; 
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+/* Tra le righe: un singolo bordo orizzontale di 1px su tutte le righe eccetto l'ultima */
+.custom-table tbody tr:not(:last-child) td {
+  border-bottom: 1px solid var(--border-table-color);
+}
+
+/* Primo blocco: bordo superiore più spesso su tutta la prima riga */
+.custom-table tbody tr:first-child td {
+  border-top: 1px solid var(--border-table-color);
+}
+
+/* Ultimo blocco: bordo inferiore più spesso su tutta l'ultima riga */
+.custom-table tbody tr:last-child td {
+  border-bottom: 1px solid var(--border-table-color);
+}
+
+.custom-table tbody tr td:first-child {
+border-left: 1px solid var(--border-table-color);
+}
+
+.custom-table tbody tr td:last-child {
+border-right: 1px solid var(--border-table-color);
+}
+
+/* (Opzionale) arrotondare gli angoli esterni */
+.custom-table tbody tr:first-child td:first-child {
+  border-top-left-radius: 6px;
+}
+.custom-table tbody tr:first-child td:last-child {
+  border-top-right-radius: 6px;
+}
+.custom-table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 6px;
+}
+.custom-table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 6px;
+}
+
+
+//checkbox grande
+.big-checkbox .form-check-input {
+  transform: scale(1.4);
+  transform-origin: top left;
+  margin: 0.25rem; /* regola il gap intorno all’input */
+}

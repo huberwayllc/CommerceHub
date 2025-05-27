@@ -1,7 +1,10 @@
-import { Button, Card, CardBody, Col, Row, Dropdown } from 'react-bootstrap'
-import { ActivityCard, PageBreadcrumb } from '@/components'
+import { Button, Dropdown } from 'react-bootstrap'
+import {  PageBreadcrumb } from '@/components'
 import { FaPlus } from "react-icons/fa";
 import { FaChevronDown } from 'react-icons/fa';
+import { IoFilter } from "react-icons/io5";
+import { FaSearch } from "react-icons/fa";
+import ProductTable from './components/ProductTable';
 
 const Products = () => {
 	return (
@@ -9,10 +12,8 @@ const Products = () => {
 			<PageBreadcrumb subName="Apps" title="Prodotti" />
 
 			<div className="d-inline-flex align-items-center gap-2 mb-4">
-				<Button style={{ height: '45px' }}><FaPlus /> Nuovo prodotto</Button>
+				<Button style={{ height: '45px' }}><div className='d-flex align-items-center gap-1'><FaPlus /> Nuovo prodotto</div></Button>
 				<Button style={{ height: '45px' }} className='bg-transparent text-black'>Modifica tutto in blocco</Button>
-
-				{/* Dropdown per Importa o Esporta */}
 				<Dropdown>
 					<Dropdown.Toggle style={{ height: '45px' }} className="bg-transparent text-black d-flex align-items-center gap-1">
 					importa o esporta i prodotti <FaChevronDown />
@@ -25,36 +26,42 @@ const Products = () => {
 				</Dropdown>
 			</div>
 
-			<Row>
-				<Col lg={4}>
-					{/* ... */}
-				</Col>
 
-				<Col lg={4}>
-					<Card>
-						<CardBody>
-							<div className="d-flex">
-								<h2 className="m-0 align-self-center">80</h2>
-								<div className="d-block ms-2 align-self-center">
-									<span className="text-warning">Right now</span>
-									<h5 className="my-1">Traffic Sources</h5>
-									<p className="mb-0 text-muted">
-										It is a long established fact that a reader will be of a
-										page when looking at its layout.
-										<a href="#" className="text-primary">
-											Read More <i className="las la-arrow-right" />
-										</a>
-									</p>
-								</div>
-							</div>
-						</CardBody>
-					</Card>
-				</Col>
+			<div className='d-flex align-items-center gap-2 mb-4'>
+				<Button 
+					style={{ height: '45px', maxWidth: '90px' }} 
+					className='bg-transparent text-black flex-shrink-0'
+				>
+					<div className='d-flex align-items-center gap-1'><IoFilter style={{fontSize: "18px"}} /> Filtra</div>
+				</Button>
 
-				<Col lg={4}>
-					<ActivityCard height={400} />
-				</Col>
-			</Row>
+				<div className="position-relative flex-grow-1">
+					<input 
+						type="text" 
+						className="form-control floating-input" 
+						placeholder=" " 
+						id="searchInput"
+					/>
+					<label htmlFor="searchInput" className="floating-label">
+						Nome del prodotto, Cod. Art., codice UPC
+					</label>
+					<FaSearch 
+						style={{ 
+							position: 'absolute', 
+							top: '50%', 
+							left: '10px', 
+							transform: 'translateY(-50%)', 
+							color: '#6c757d' 
+						}} 
+					/>
+				</div>
+			</div>
+
+
+			<ProductTable />
+
+
+
 		</>
 	)
 }
