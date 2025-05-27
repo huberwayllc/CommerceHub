@@ -111,7 +111,7 @@ const ProductTable: React.FC<{ products?: Product[] }> = ({ products = dummyProd
           />
           <FaChevronDown />
         </div>
-        			<Dropdown>
+        		<Dropdown>
 					<Dropdown.Toggle style={{ height: '33px', fontSize: "11px" }} className="fw-semibold text-black bg-transparent text-black d-flex align-items-center gap-1">
 					aggiornamento di massa <FaChevronDown />
 					</Dropdown.Toggle>
@@ -202,7 +202,7 @@ const ProductTable: React.FC<{ products?: Product[] }> = ({ products = dummyProd
       </Table>
 
       <div className="text-end">
-        <small>{products.length} elementi</small>
+        <small className='fw-semibold text-black'>{products.length} elementi</small>
       </div>
     </div>
   );

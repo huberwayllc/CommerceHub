@@ -5,6 +5,7 @@ import { FaChevronDown } from 'react-icons/fa';
 import { IoFilter } from "react-icons/io5";
 import { FaSearch } from "react-icons/fa";
 import ProductTable from './components/ProductTable';
+import FeatureBoxGrid from './components/FeatureBox';
 
 const Products = () => {
 	return (
@@ -59,6 +60,9 @@ const Products = () => {
 
 
 			<ProductTable />
+
+
+			<FeatureBoxGrid />
 
 
 
