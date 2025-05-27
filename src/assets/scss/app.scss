@@ -168,3 +168,33 @@ border-right: 1px solid var(--border-table-color);
   transform-origin: top left;
   margin: 0.25rem; /* regola il gap intorno all’input */
 }
+
+
+//accordian per la scheda prodotto
+.product-tab-bar {
+  border-bottom: 0px solid #ddd;
+}
+
+.product-tab {
+  background: transparent;
+  border: none;
+  font-weight: 500;
+  padding: 8px 12px;
+  font-size: 15px;
+  cursor: pointer;
+  color: #555;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.product-tab:hover {
+  color: #1A2332;
+}
+
+.product-tab.active {
+  color: #1A2332;
+  font-weight: 700;
+  border-bottom: 4px solid #1A2332;
+}
+

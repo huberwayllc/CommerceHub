@@ -291,7 +291,7 @@ const appsRoutes: RoutesProps[] = [
 		element: <CustomerApp />,
 	},
 	{
-		path: '/apps/products',
+		  path: '/apps/products/:mode?/:slug?',
 		name: 'Products',
 		element: <Products1 />,
 	},

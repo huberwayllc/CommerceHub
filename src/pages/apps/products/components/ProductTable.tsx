@@ -21,7 +21,7 @@ interface Product {
 // Dummy data
 const dummyProducts: Product[] = [
   {
-    title: 'Prodotto 1',
+    title: 'Big Maczs',
     slug: 'prodotto-1',
     description: 'Descrizione del prodotto 1',
     price: 19.99,
