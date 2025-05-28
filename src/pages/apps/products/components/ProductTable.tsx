@@ -101,10 +101,11 @@ const ProductTable: React.FC<{ products?: Product[] }> = ({ products = dummyProd
   return (
     <div>
       <div className="mb-4 d-flex align-items-center gap-3">
-        <div style={{border: "1px solid #171f2c"}} className="d-flex align-items-center gap-3 p-1 px-2 rounded-2">
+        <div style={{border: "1px solid #171f2c"}} 
+        className="d-flex align-items-center gap-3 p-1 px-2 rounded-2 bg-white border-0 boxShadow">
           <Form.Check
             type="checkbox"
-            className="big-checkbox m-0"
+            className="big-checkbox m-0 "
             style={{ position: 'relative', bottom: '2px' }}
             checked={selectAll}
             onChange={toggleSelectAll}
@@ -112,7 +113,8 @@ const ProductTable: React.FC<{ products?: Product[] }> = ({ products = dummyProd
           <FaChevronDown />
         </div>
         		<Dropdown>
-					<Dropdown.Toggle style={{ height: '33px', fontSize: "11px" }} className="fw-semibold text-black bg-transparent text-black d-flex align-items-center gap-1">
+					<Dropdown.Toggle style={{ height: '33px', fontSize: "11px" }} 
+          className="fw-semibold text-black bg-white text-black d-flex align-items-center gap-1 border-0 boxShadow">
 					aggiornamento di massa <FaChevronDown />
 					</Dropdown.Toggle>
 

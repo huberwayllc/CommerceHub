@@ -13,18 +13,18 @@ const ProductList = () => {
     <>
     <PageBreadcrumb subName="Apps" title="Prodotti" />
       <div className="d-inline-flex align-items-center gap-2 mb-4">
-        <Button style={{ height: '45px' }} onClick={() => navigate('/apps/products/new')}>
+        <Button className='boxShadow' style={{ height: '45px', background: "#2563EB", border: "0px" }} onClick={() => navigate('/apps/products/new')}>
           <div className='d-flex align-items-center gap-1'>
             <FaPlus /> Nuovo prodotto
           </div>
         </Button>
 
-        <Button style={{ height: '45px' }} className='bg-transparent text-black'>
+        <Button style={{ height: '45px', border: "0px" }} className='bg-white text-black boxShadow'>
           Modifica tutto in blocco
         </Button>
 
         <Dropdown>
-          <Dropdown.Toggle style={{ height: '45px' }} className="bg-transparent text-black d-flex align-items-center gap-1">
+          <Dropdown.Toggle style={{ height: '45px', border: "0px" }} className="bg-white text-black d-flex align-items-center gap-1 boxShadow">
             importa o esporta i prodotti <FaChevronDown />
           </Dropdown.Toggle>
 
@@ -37,16 +37,16 @@ const ProductList = () => {
 
       <div className='d-flex align-items-center gap-2 mb-4'>
         <Button
-          style={{ height: '45px', maxWidth: '90px' }}
-          className='bg-transparent text-black flex-shrink-0'
+          style={{ height: '45px', maxWidth: '90px', border: "0px" }}
+          className='bg-white text-black flex-shrink-0 boxShadow'
         >
           <div className='d-flex align-items-center gap-1'><IoFilter style={{ fontSize: "18px" }} /> Filtra</div>
         </Button>
 
-        <div className="position-relative flex-grow-1">
+        <div className="position-relative flex-grow-1 bg-white border-0 ">
           <input
             type="text"
-            className="form-control floating-input"
+            className="form-control floating-input bg-white border-0 boxShadow"
             placeholder=" "
             id="searchInput"
           />

@@ -30,6 +30,7 @@ const ProductForm = () => {
 
   return (
     <>
+    <div style={{maxWidth: "1350px"}}>
       <div className="mt-3 mb-0">
         <button onClick={handleGoBack} className="btn btn-link text-decoration-none p-0">
           <div className='d-flex align-items-center gap-1'>
@@ -57,6 +58,7 @@ const ProductForm = () => {
       {/* Active tab content */}
       <div className="mt-3">
         {tabs.find(tab => tab.key === activeTab)?.component}
+      </div>
       </div>
     </>
   );
