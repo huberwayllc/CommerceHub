@@ -81,10 +81,10 @@ File: App Css
 
 :root {
   --primary-color: #171f2c;
-  --border-table-color: #6f7a8b;
+  --border-table-color: #7f90aa;
 }
 
-//input filter page Products
+//input filter page Products-------------------------------------
 .floating-label {
 	position: absolute;
 	top: 50%;
@@ -117,11 +117,11 @@ File: App Css
 
 
 
-//tabella prodotti
+//tabella prodotti----------------------------------------
 .custom-table {
   border-collapse: separate;
   border-spacing: 0; 
-  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
 /* Tra le righe: un singolo bordo orizzontale di 1px su tutte le righe eccetto l'ultima */
@@ -170,7 +170,7 @@ border-right: 1px solid var(--border-table-color);
 }
 
 
-//accordian per la scheda prodotto
+//accordian per la scheda prodotto--------------------------
 .product-tab-bar {
   border-bottom: 0px solid #ddd;
 }
@@ -198,3 +198,7 @@ border-right: 1px solid var(--border-table-color);
   border-bottom: 4px solid #1A2332;
 }
 
+.card {
+  border: 1px solid var(--border-table-color);
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}

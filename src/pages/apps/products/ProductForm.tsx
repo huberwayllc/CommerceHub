@@ -42,7 +42,7 @@ const ProductForm = () => {
       <PageBreadcrumb subName="Apps" title={isEditMode ? "Modifica prodotto" : "Nuovo prodotto"} />
 
       {/* Accordion tab bar */}
-      <div className="product-tab-bar mt-4 mb-3 d-flex gap-2">
+      <div className="product-tab-bar mt-1 mb-3 d-flex gap-2">
         {tabs.map(tab => (
           <button
             key={tab.key}
