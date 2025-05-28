@@ -46,10 +46,37 @@ const GeneralTab = () => {
             </div>
         </div>
 
-        <div style={{width: "30%"}}  className="card p-3 h-100">
-            <h6 className="fw-bold">Prezzi</h6>
+
+        <div style={{ width: "30%" }} className="card p-3 h-100">
+          <h4 className="fw-semibold">Prezzi</h4>
+
+          <div className="mt-0" style={{ backgroundColor: "#f0f0f0", height: "55px" }}>
+            <div
+              className="d-flex align-items-center border border-secondary rounded"
+              style={{ overflow: "hidden",  backgroundColor: "#f0f0f0" }}
+            >
+              <input
+                type="number"
+                className="form-control border-0 rounded-0"
+                placeholder="0.00"
+                style={{
+                  boxShadow: "none",
+                  outline: "none",
+                   backgroundColor: "#f0f0f0",
+                   height: "55px",
+                }}
+              />
+              <div
+                className="px-2 border-start border-secondary d-flex align-items-center"
+                style={{  backgroundColor: "#f0f0f0" }}
+              >
+                €
+              </div>
+            </div>
+          </div>
+          <p className="mt-1" style={{fontSize: "11px"}}>Tutti i prezzi includono tasse</p>
+          <p className="mb-0 mt-2 fw-semibold" style={{color: "#2563EB"}}>Gestisci le opzioni del prezzo</p>
         </div>
-    
     </div>
   );
 };
