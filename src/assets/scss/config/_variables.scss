@@ -172,6 +172,7 @@ $grays: (
 // fusv-enable
 
 $blue:    #1e293b;
+$personal: #2563EB;
 $indigo:  #506ee4;
 $purple:  #6d81f5;
 $pink:    #fd3c97;
@@ -201,7 +202,7 @@ $colors: (
 );
 // scss-docs-end colors-map
 
-$primary:       $blue;
+$primary:       $personal;
 $secondary:     $gray-600;
 $success:       $green;
 $info:          $cyan;

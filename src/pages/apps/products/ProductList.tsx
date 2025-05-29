@@ -5,9 +5,13 @@ import ProductTable from './components/ProductTable';
 import FeatureBoxGrid from './components/FeatureBox';
 import { PageBreadcrumb } from '@/components';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import FloatingInput from '@/components/FloatingInput';
 
 const ProductList = () => {
     const navigate = useNavigate();
+
+    const [search, setSearch] = useState('');
 
   return (
     <>
@@ -43,26 +47,12 @@ const ProductList = () => {
           <div className='d-flex align-items-center gap-1'><IoFilter style={{ fontSize: "18px" }} /> Filtra</div>
         </Button>
 
-        <div className="position-relative flex-grow-1 bg-white border-0 ">
-          <input
-            type="text"
-            className="form-control floating-input bg-white border-0 boxShadow"
-            placeholder=" "
-            id="searchInput"
+          <FloatingInput
+            placeholder="Nome del prodotto, Cod. Art., codice UPC"
+            icon={<FaSearch />}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
           />
-          <label htmlFor="searchInput" className="floating-label">
-            Nome del prodotto, Cod. Art., codice UPC
-          </label>
-          <FaSearch
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: '10px',
-              transform: 'translateY(-50%)',
-              color: '#6c757d'
-            }}
-          />
-        </div>
       </div>
 
       <ProductTable />

@@ -81,7 +81,7 @@ File: App Css
 
 //body-------------------------------------
 .page-content-tab {
-  background-color: #F1F5F9;
+  background-color: #ECEEF0;
 }
 
 :root {
@@ -92,6 +92,10 @@ File: App Css
 
 .boxShadow {
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--primary-color);
 }
 
 //input filter page Products-------------------------------------
@@ -157,7 +161,7 @@ File: App Css
   padding: 8px 12px;
   font-size: 15px;
   cursor: pointer;
-  color: black;
+  color: var(--primary-color);
   border-bottom: 2px solid transparent;
   transition: all 0.2s ease;
   font-weight: 600;
@@ -169,7 +173,7 @@ File: App Css
 
 .product-tab.active {
   color: var(--blue-color);
-  font-weight: 800;
+  font-weight: 700;
   border-bottom: 4px solid var(--blue-color);
 }
 
@@ -185,7 +189,7 @@ File: App Css
   height: 40px;
   border: 1px solid var(--border-table-color);
   border-radius: 6px;
-  background-color: #F1F5F9;
+  background-color: #ECEEF0;
   padding-left: 10px;
 }
 
