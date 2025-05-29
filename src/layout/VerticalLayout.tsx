@@ -45,7 +45,7 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
 			</Suspense>
 			<div className="page-wrapper">
 				<div className="page-content-tab">
-					<div className="container-fluid">
+					<div className="container-fluid px-0 px-md-2">
 						<Suspense fallback={<Preloader />}>{children}</Suspense>
 					</div>
 					<Suspense fallback={<div />}>

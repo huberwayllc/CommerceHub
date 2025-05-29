@@ -1,0 +1,154 @@
+
+
+
+//input filter page Products-------------------------------------
+.floating-label {
+	position: absolute;
+	top: 50%;
+	left: 30px;
+	transform: translateY(-50%);
+	transition: all 0.2s ease;
+	pointer-events: none;
+	color: #6c757d;
+	font-size: 0.85rem;
+}
+
+.floating-input {
+	height: 45px;
+	background-color: #f9f9fa;
+	border-color: var(--primary-color);
+	padding-left: 30px;
+	padding-top: 14px;
+	padding-bottom: 0;
+	display: flex;
+	align-items: center;
+        font-weight: 500;
+}
+
+.floating-input:focus + .floating-label,
+.floating-input:not(:placeholder-shown) + .floating-label {
+	top: 11px;
+	font-size: 0.65rem; 
+    font-weight: 600;
+}
+
+
+
+//tabella prodotti----------------------------------------
+.custom-table {
+  border-collapse: separate;
+  background-color: white;
+  border-spacing: 0; 
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+
+
+//checkbox grande
+.big-checkbox .form-check-input {
+  transform: scale(1.4);
+  transform-origin: top left;
+  margin: 0.25rem;
+}
+
+
+//accordian per la scheda prodotto--------------------------
+.product-tab-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0 32px;
+
+   @media (min-width: 768px) {
+    padding: 0;
+  }
+
+  .product-tab-bar {
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    flex: 1;
+
+    &::-webkit-scrollbar { display: none; }
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .product-tab {
+    display: inline-block;
+    font-size: 15px;
+    padding: 8px 12px;
+    /* riduci il font in mobile */
+    @media (max-width: 767px) {
+      font-size: 13px;
+      padding: 6px 8px;
+    }
+  }
+
+  .scroll-btn {
+    position: absolute;
+    background: rgba(255,255,255,0.9);
+    border: none;
+    padding: 4px;
+    z-index: 10;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    // dimensione bottone
+    width: 32px;
+    height: 32px;
+
+    // nascondi su md+
+    @media (min-width: 768px) {
+      display: none;
+    }
+  }
+
+  .scroll-btn-left {
+    left: 0;
+  }
+
+  .scroll-btn-right {
+    right: 0;
+  }
+}
+
+// stili esistenti
+.product-tab {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--primary-color);
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  font-weight: 600;
+
+  &:hover {
+    color: var(--blue-color);
+  }
+
+  &.active {
+    color: var(--blue-color);
+    font-weight: 700;
+    border-bottom: 4px solid var(--blue-color);
+  }
+}
+
+
+//input prodotto----------------------------------------
+.input-product {
+  height: 40px;
+  border: 1px solid var(--border-table-color);
+  border-radius: 6px;
+  background-color: #ECEEF0;
+  padding-left: 10px;
+}
+
+.input-product:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 1px var(--primary-color);
+  background-color: white;
+}

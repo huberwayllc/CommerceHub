@@ -1,33 +1,48 @@
 import { PageBreadcrumb } from '@/components';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { IoArrowBack } from "react-icons/io5";
 import GeneralTab from './components/General';
-import { Form } from 'react-bootstrap';
+import { MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight } from "react-icons/md";
 import AttributeTab from './components/Attribute';
 import DeliveryTab from './components/Delivery';
 import TaxesTab from './components/Taxes';
+import SeoTab from './components/Seo';
+import EmbeddedTab from './components/EmbeddedProduct';
+import RelatedTab from './components/RelatedProducts';
+import FilesTab from './components/Files';
+import PriceTab from './components/Price';
+import OptionsTab from './components/Options';
 
 
 const tabs = [
   { key: 'generale', label: 'Generale', component: <GeneralTab/> },
   { key: 'attributi', label: 'Attributi', component: <AttributeTab/> },
-  { key: 'opzioni', label: 'Opzioni', component: <div>Opzioni</div> },
-  { key: 'files', label: 'Files', component: <div>Files</div> },
+  { key: 'opzioni', label: 'Opzioni', component: <OptionsTab/> },
+  { key: 'files', label: 'Files', component: <FilesTab/> },
   { key: 'spedizione', label: 'Spedizione e ritiro', component: <DeliveryTab/> },
   { key: 'tasse', label: 'Tasse', component: <TaxesTab/> },
-  { key: 'seo', label: 'SEO', component: <div>SEO</div> },
-  { key: 'correlati', label: 'Prodotti correlati', component: <div>Correlati</div> },
-  { key: 'incorpora', label: 'Incorpora prodotto', component: <div>Incorpora</div> },
+  { key: 'seo', label: 'SEO', component: <SeoTab/> },
+  { key: 'correlati', label: 'Prodotti correlati', component: <RelatedTab/> },
+  { key: 'incorpora', label: 'Incorpora prodotto', component: <EmbeddedTab/> },
 ];
 
 const ProductForm = () => {
   const { mode, slug } = useParams();
   const isEditMode = mode === 'edit' && slug;
+  const tabsContainerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const [isSelected, setIsSelected] = useState(false);
 
   const [activeTab, setActiveTab] = useState('generale');
+
+    const scrollTabs = (dir: 'left' | 'right') => {
+    if (!tabsContainerRef.current) return;
+    const { clientWidth } = tabsContainerRef.current;
+    tabsContainerRef.current.scrollBy({
+      left: dir === 'left' ? -clientWidth * 0.7 : clientWidth * 0.7,
+      behavior: 'smooth'
+    });
+  };
 
   const handleGoBack = () => {
     navigate('/apps/products');
@@ -48,82 +63,52 @@ const ProductForm = () => {
       <PageBreadcrumb subName="Apps" title={isEditMode ? "Modifica prodotto" : "Nuovo prodotto"} />
 
       {/* Accordion tab bar */}
-      <div className="product-tab-bar mt-1 mb-3 d-flex gap-1">
-        {tabs.map(tab => (
-          <button
-            key={tab.key}
-            className={`product-tab ${activeTab === tab.key ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab.key)}
-          >
-            {tab.label}
-          </button>
-        ))}
+      <div className="product-tab-wrapper">
+        {/* freccia sinistra */}
+        <button
+          className="scroll-btn scroll-btn-left d-md-none bg-transparent p-0"
+          onClick={() => scrollTabs('left')}
+          aria-label="Scroll left"
+        >
+          <MdOutlineKeyboardArrowLeft size={24} />
+        </button>
+
+        <div
+          className="product-tab-bar d-flex"
+          ref={tabsContainerRef}
+        >
+          {tabs.map(tab => (
+            <button
+              key={tab.key}
+              className={`product-tab ${activeTab === tab.key ? 'active' : ''}`}
+              onClick={() => setActiveTab(tab.key)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* freccia destra */}
+        <button
+          className="scroll-btn scroll-btn-right d-md-none bg-transparent p-0"
+          onClick={() => scrollTabs('right')}
+          aria-label="Scroll right"
+        >
+          <MdOutlineKeyboardArrowRight size={24} />
+        </button>
       </div>
+
+
 
       <div className="mt-3 d-flex align-items-start gap-3" style={{ alignItems: "stretch" }}>
         {/* Left side: General tab content */}
-        <div style={{width: "75%"}}>
+        <div className="col-12 col-md-9">
           {tabs.find(tab => tab.key === activeTab)?.component}
         </div>
 
-        {/*PREZZI DISP. CONTRO */}
-        <div style={{ width: "25%" }}>
-          <div className="card p-3 h-100">
-            <h4 className="fw-bold">Prezzi</h4>
-
-            <div className="mt-0" style={{ backgroundColor: "#ECEEF0", height: "55px", width: "250px" }}>
-              <div
-                className="d-flex align-items-center border border-secondary rounded"
-                style={{ overflow: "hidden",  backgroundColor: "#ECEEF0" }}
-              >
-                <input
-                  type="number"
-                  className="form-control border-0 rounded-0"
-                  placeholder="0.00"
-                  style={{
-                    boxShadow: "none",
-                    outline: "none",
-                    backgroundColor: "#ECEEF0",
-                    height: "55px",
-                    fontSize: "18px",
-                  }}
-                />
-                <div
-                  className="px-2 border-start border-secondary d-flex align-items-center"
-                  style={{  backgroundColor: "#ECEEF0" }}
-                >
-                  €
-                </div>
-              </div>
-            </div>
-            <p className="mt-1" style={{fontSize: "11px"}}>Tutti i prezzi includono tasse</p>
-            <p className="mt-2 fw-semibold" style={{color: "#2563EB", marginBottom: "2px"}}>Gestisci le opzioni del prezzo</p>
-          </div>
-
-          <div className="card p-3 h-100">
-            <h6 className="fw-bold">Disponibilità del prodotto</h6>
-            <Form.Check
-              type="switch"
-              label="Abilitato"
-              checked={isSelected}
-              readOnly
-            />
-          </div>
-
-          <div className="card p-3 h-100">
-            <h6 className="fw-bold">Controllo della Disponibilità</h6>
-            <Form.Check
-              type="switch"
-              label="Abilitato"
-              checked={isSelected}
-              readOnly
-            />
-            <p className="mb-0 mt-3 fw-semibold" style={{color: "#2563EB"}}>Gestisci le opzioni del prezzo</p>
-          </div>
-
-          <div className="card p-3 h-100">
-            <p className="mb-0 mt-3 fw-semibold" style={{color: "#2563EB"}}>Anteprima del prodotto</p>
-          </div>
+        {/*Right side: PREZZI DISP. CONTRO. Da tablet in su */}
+        <div className="d-none d-md-block col-md-3 pe-3">
+          <PriceTab />
       </div>
       </div>
       </div>

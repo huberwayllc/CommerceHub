@@ -3,6 +3,7 @@ import { GoPlus } from "react-icons/go";
 import {Form, } from 'react-bootstrap';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import PriceTab from './Price';
 
 
 const GeneralTab = () => {
@@ -53,6 +54,11 @@ const GeneralTab = () => {
               </div>
             </div>
         </div>
+        
+        <div className='d-block d-md-none '>
+          <PriceTab/>
+        </div>
+        
       
       {/* Product details section------------------------------ */}
     <div className='w-100 card p-3'>
