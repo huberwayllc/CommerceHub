@@ -101,6 +101,25 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--primary-color);
 }
 
+.borderBottomGray {
+  border-bottom: 1px solid var(--border-table-color);
+}
+
+.borderGray {
+  border: 1px solid var(--border-table-color);
+} 
+
+.colorPrimary {
+  color: var(--blue-color);
+}
+
+.noHover:hover {
+  background: none !important;
+  color: var(--bs-primary) !important;
+  box-shadow: none !important;
+  cursor: default;
+}
+
 
 //card di tutte le pagine----------------------------------------
 .card {
