@@ -1,0 +1,55 @@
+import { FaRegTrashCan, FaPlus } from "react-icons/fa6";
+import { TfiRulerAlt } from "react-icons/tfi";
+import { MdInvertColors } from "react-icons/md";
+import { ProductOption } from "./types";
+
+interface Props {
+  options: ProductOption[];
+  onAdd: () => void;
+  onEdit: (index: number) => void;
+  onDelete: (index: number) => void;
+}
+
+const OptionList = ({ options, onAdd, onEdit, onDelete }: Props) => (
+  <div className='w-100 card p-3'>
+    <h4 className="fw-bold">Opzioni e varianti del prodotto</h4>
+    <h5 className="mt-3 mb-0 colorPrimary fw-bold borderBottomGray pb-3">
+      Opzioni ({options.length})
+    </h5>
+    {options.map((opt, i) => (
+      <div key={i} style={{ padding: '12px 5px' }} className="borderBottomGray d-flex align-items-center px-2">
+        <div
+          style={{ width: '30%', cursor: 'pointer' }}
+          className="d-flex align-items-center gap-2"
+          onClick={() => onEdit(i)}
+        >
+          {opt.type === 'Taglia'
+            ? <TfiRulerAlt style={{ fontSize: '20px' }} />
+            : <MdInvertColors style={{ fontSize: '20px' }} />}
+          <p className="fw-bold mb-0">{opt.name}</p>
+        </div>
+        <div style={{ width: '65%', cursor: 'pointer' }} className="d-flex align-items-center gap-2" onClick={() => onEdit(i)}>
+          {opt.values.map(v => (
+            <div key={v.id} className="borderGray p-1 px-3 rounded-5">
+              <p className="mb-0 fw-semibold">{opt.type === 'Colore' ? v.name : v.name}</p>
+            </div>
+          ))}
+        </div>
+        <FaRegTrashCan
+          className="colorPrimary"
+          style={{ fontSize: '18px', cursor: 'pointer' }}
+          onClick={() => onDelete(i)}
+        />
+      </div>
+    ))}
+    <button
+      className="mt-3 bg-transparent text-black d-flex align-items-center gap-2 fw-semibold"
+      style={{ maxWidth: '250px', height: '40px', border: '1px solid black' }}
+      onClick={onAdd}
+    >
+      <FaPlus style={{ fontSize: '18px' }} /> Aggiungi opzione prodotto
+    </button>
+  </div>
+);
+
+export default OptionList;
