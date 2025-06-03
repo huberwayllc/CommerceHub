@@ -1,7 +1,9 @@
-import { Button } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import { Variation } from "./types";
 import { ProductOption } from "./types";
+import { FaRegTrashCan } from "react-icons/fa6";
 import { FaPlus } from "react-icons/fa6";
+import { MdOutlineEdit } from "react-icons/md";
 type TabKey = "OPTIONS" | "VARIATIONS";
 
 interface Props {
@@ -10,6 +12,13 @@ interface Props {
   onEdit: (index: number) => void;  activeTab: TabKey;
   setActiveTab: React.Dispatch<React.SetStateAction<TabKey>>;
 }
+
+const gridTemplate = {
+  display: 'grid',
+  gridTemplateColumns: '50px 2fr 1fr 0.8fr 1fr 0.8fr 60px',
+  gap: '8px',
+  alignItems: 'center'
+};
 
 const VariationList = ({ options, variations, onEdit, activeTab, setActiveTab }: Props) => (
   <div className="card p-3">
@@ -23,7 +32,7 @@ const VariationList = ({ options, variations, onEdit, activeTab, setActiveTab }:
       </h5>
     </div>
     <div className="d-inline-flex gap-2 mb-2">
-      <Button>
+      <Button className="d-flex align-items-center gap-1">
         <FaPlus/>
         Nuova combinazione
       </Button>
@@ -34,22 +43,48 @@ const VariationList = ({ options, variations, onEdit, activeTab, setActiveTab }:
         Elimina
       </Button>
     </div>
-    {variations.map((v, i) => (
-      <div key={v.id} className="d-flex justify-content-between borderBottomGray align-items-center py-3">
-        <div>
-          {Object.entries(v.options).map(([k, val]) => (
-            <span key={k} className="me-3">
-              <strong>{k}:</strong> {val}
-            </span>
-          ))}
+
+    <div style={{ ...gridTemplate, backgroundColor: "#808F9D" }} className="align-items-center text-white p-1 fw-semibold mt-1">
+      <span>
+        <Form.Check
+          type="checkbox"
+          className="big-checkbox"
+        />
+      </span>
+      <span>Opzioni</span>
+      <span>Cod. Art.</span>
+      <span>Peso, kg</span>
+      <span>Magazzino</span>
+      <span>Prezzo, €</span>
+      <span>Azioni</span>
+    </div>
+    {variations.map((v) => (
+      <div key={v.id} style={gridTemplate} className="py-3 borderBottomGray px-1">
+        <span>
+        <Form.Check
+          type="checkbox"
+
+          className="big-checkbox"
+        />
+        </span>
+        <div className="d-flex align-items-center gap-2">
+          <img style={{width: "50px", position: "relative", right: "7px"}} 
+          src="https://d11s7fcxy18ubx.cloudfront.net/node/static/2025/2025-18963-g963d82ffd3aa6d/icons/product-default.svg"/>
+          <div className="d-flex flex-column">
+            {Object.entries(v.options).map(([k, val]) => (
+              <span key={k}><strong>{k}:</strong> {val}</span>
+            ))}
+          </div>
         </div>
-        <div className="d-flex gap-3 ms-4">
-          <span><strong>Prezzo:</strong> {v.price}</span>
-          <span><strong>Quantità disonibile:</strong> {v.stock}</span>
-          
-          
+   
+        <span>{v.upc}</span>
+        <span>{v.weight}</span>
+        <span>{v.stock}</span>
+        <span>{v.price}</span>
+        <div className="d-flex flex-column gap-2">
+          <FaRegTrashCan style={{ fontSize: "16px", cursor: "pointer" }} />
+          <MdOutlineEdit style={{ fontSize: "18px", cursor: "pointer" }} />
         </div>
-        <button onClick={() => onEdit(i)} className="btn btn-sm btn-outline-primary">Modifica</button>
       </div>
     ))}
   </div>
