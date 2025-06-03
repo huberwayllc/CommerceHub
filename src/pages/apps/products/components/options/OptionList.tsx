@@ -18,7 +18,7 @@ interface Props {
 const OptionList = ({ options, onAdd, onEdit, onDelete, activeTab, setActiveTab }: Props) => (
   <div className='w-100 card p-3'>
     <h4 className="fw-bold">Opzioni e varianti del prodotto</h4>
-    <div className="d-flex mt-3 borderBottomGray pb-3 gap-4">
+    <div className="d-flex mt-1 borderBottomGray pb-3 gap-4">
       <h5 onClick={() => {setActiveTab("OPTIONS")}} style={{cursor: "pointer"}} className={`mb-0 ${ activeTab === "OPTIONS" ? "colorPrimary" : "text-black"} fw-bold`}>
         Opzioni ({options.length})
       </h5>

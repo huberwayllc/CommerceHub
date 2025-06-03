@@ -16,6 +16,9 @@ export interface Variation {
   id: string;                 
   options: Record<string,string>;
   price: number;
+  lowestPriceBeforeDiscount: number;
+  upc: number,
+  weight: number,
   stock: number;
   imageUrl?: string;
 }

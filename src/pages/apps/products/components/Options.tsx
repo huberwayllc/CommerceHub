@@ -44,7 +44,10 @@ const OptionsTab = () => {
         id,
         options: opts,
         price: old?.price ?? 0,
+        lowestPriceBeforeDiscount: old?.lowestPriceBeforeDiscount ?? 0,
+        upc: old?.upc ?? 0,
         stock: old?.stock ?? 0,
+        weight: old?.stock ?? 0,
         imageUrl: old?.imageUrl ?? ""
       };
     });

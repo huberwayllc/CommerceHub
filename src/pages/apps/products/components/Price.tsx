@@ -23,8 +23,8 @@ const PriceTab = () => {
                     boxShadow: "none",
                     outline: "none",
                     backgroundColor: "#ECEEF0",
-                    height: "55px",
-                    fontSize: "18px",
+                    height: "50px",
+                    fontSize: "20px",
                   }}
                 />
                 <div
@@ -36,7 +36,7 @@ const PriceTab = () => {
               </div>
             </div>
             <p className="mt-1" style={{fontSize: "11px"}}>Tutti i prezzi includono tasse</p>
-            <p className="mt-2 fw-semibold" style={{color: "#2563EB", marginBottom: "2px"}}>Gestisci le opzioni del prezzo</p>
+            <p className="mt-2 fw-semibold" style={{color: "#2563EB", marginBottom: "2px", cursor: "pointer"}}>Gestisci le opzioni del prezzo</p>
           </div>
 
           <div className="card p-3 h-100">

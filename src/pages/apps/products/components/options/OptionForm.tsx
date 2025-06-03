@@ -57,8 +57,8 @@ const OptionForm = ({ initial, existingNames, onSave, onCancel }: Props) => {
               <FaChevronDown />
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item eventKey="Taglia"><TfiRulerAlt /> Taglia</Dropdown.Item>
-              <Dropdown.Item eventKey="Colore"><MdInvertColors /> Colore</Dropdown.Item>
+              <Dropdown.Item className="py-2" style={{fontSize: "14px"}} eventKey="Taglia"><TfiRulerAlt /> Taglia</Dropdown.Item>
+              <Dropdown.Item className="py-2" style={{fontSize: "14px"}} eventKey="Colore"><MdInvertColors /> Colore</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
         </div>
@@ -71,9 +71,14 @@ const OptionForm = ({ initial, existingNames, onSave, onCancel }: Props) => {
           <div key={v.id} className="mt-3 pb-3 borderBottomGray d-flex align-items-center justify-content-between gap-2 px-2">
             {type === 'Colore' &&
               <> 
-              <div className="w-100 d-flex gap-2">
+              <div className="w-100 d-flex align-items-center gap-2">
+                  <input
+                    type="color" 
+                    value={v.hex || ''}
+                    onChange={e => changeField(v.id, 'hex', e.target.value)}
+                    className=""
+                  />
                 <input placeholder="Nome colore" value={v.name || ''} onChange={e => changeField(v.id, 'name', e.target.value)} className="input-product fw-semibold w-100" />
-                <input placeholder="Codice esadecimale" value={v.hex || ''} onChange={e => changeField(v.id, 'hex', e.target.value)} className="input-product w-100" />
                 <input placeholder="URL immagine" value={v.imageUrl || ''} onChange={e => changeField(v.id, 'imageUrl', e.target.value)} className="input-product w-100" />
               </div>   
               </>
