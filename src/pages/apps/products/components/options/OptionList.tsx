@@ -4,22 +4,25 @@ import { MdInvertColors } from "react-icons/md";
 import { ProductOption } from "./types";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 
+type TabKey = "OPTIONS" | "VARIATIONS";
 
 interface Props {
   options: ProductOption[];
   onAdd: () => void;
   onEdit: (index: number) => void;
   onDelete: (index: number) => void;
+  activeTab: TabKey;
+  setActiveTab: React.Dispatch<React.SetStateAction<TabKey>>;
 }
 
-const OptionList = ({ options, onAdd, onEdit, onDelete }: Props) => (
+const OptionList = ({ options, onAdd, onEdit, onDelete, activeTab, setActiveTab }: Props) => (
   <div className='w-100 card p-3'>
     <h4 className="fw-bold">Opzioni e varianti del prodotto</h4>
     <div className="d-flex mt-3 borderBottomGray pb-3 gap-4">
-      <h5 className="mb-0 colorPrimary fw-bold">
+      <h5 onClick={() => {setActiveTab("OPTIONS")}} style={{cursor: "pointer"}} className={`mb-0 ${ activeTab === "OPTIONS" ? "colorPrimary" : "text-black"} fw-bold`}>
         Opzioni ({options.length})
       </h5>
-      <h5 className="mb-0 fw-bold">
+      <h5 onClick={() => {setActiveTab("VARIATIONS")}} style={{cursor: "pointer"}} className={`mb-0 ${ activeTab === "VARIATIONS" ? "colorPrimary" : "text-black"} fw-bold`}>
         Varianti
       </h5>
     </div>
@@ -58,7 +61,7 @@ const OptionList = ({ options, onAdd, onEdit, onDelete }: Props) => (
     </button>
 
     <div className="mt-4" style={{maxWidth: "700px"}}>
-      <div className="d-flex align-items-center" style={{cursor: "pointer"}}>
+      <div onClick={() => setActiveTab("VARIATIONS")} className="d-flex align-items-center" style={{cursor: "pointer"}}>
         <h6 className="mb-0 colorPrimary fw-bold">
           Gestisci varianti
         </h6>

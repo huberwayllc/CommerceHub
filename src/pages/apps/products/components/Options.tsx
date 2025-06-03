@@ -7,6 +7,8 @@ import EmptyPlaceholder from "./options/EmptyPlaceholder";
 import VariationList from "./options/VariationList";
 import VariationForm from "./options/VariationForm";
 
+type TabKey = "OPTIONS" | "VARIATIONS";
+
 const OptionsTab = () => {
   const [options, setOptions] = useState<ProductOption[]>([]);
   const [editingOptionIdx, setEditingOptionIdx] = useState<number | null>(null);
@@ -15,6 +17,8 @@ const OptionsTab = () => {
   const [variations, setVariations] = useState<Variation[]>([]);
   const [editingVarIdx, setEditingVarIdx] = useState<number | null>(null);
   const [showVarForm, setShowVarForm] = useState(false);
+
+   const [activeTab, setActiveTab] = useState<TabKey>("OPTIONS");
 
   // Rigenera le variations quando cambiano le options,
   // ma mantiene i campi modificati dell'utente
@@ -84,16 +88,25 @@ const OptionsTab = () => {
       {/* Se non stai creando e ci sono options */}
       {!showOptionForm && options.length > 0 && (
         <>
+        {activeTab === "OPTIONS" &&
           <OptionList
             options={options}
             onAdd={handleAddOption}
             onEdit={handleEditOption}
             onDelete={handleDeleteOption}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
           />
+        }
+        {activeTab === "VARIATIONS" &&
           <VariationList
+            options={options}
             variations={variations}
             onEdit={handleEditVar}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
           />
+        } 
         </>
       )}
 
