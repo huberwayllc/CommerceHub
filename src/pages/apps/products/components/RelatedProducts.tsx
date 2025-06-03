@@ -7,10 +7,17 @@ const RelatedTab = () => {
   return (
     <>
     <div className='w-100 card p-3'>
-        <div style={{maxWidth: "600px"}}>
-            <h4 className="fw-bold">Prodotti correlati</h4>
-            <p>Visualizza la sezione "Potrebbe anche interessarti" nelle pagine dei prodotti per promuovere altri articoli e aumentare le vendite. È possibile selezionare i prodotti correlati manualmente oppure impostare che vengano selezionati automaticamente in modo casuale.</p>
-            <Button style={{width: "200px"}}><FaPlus /> Aggiungi prodotti</Button>
+        <div className="d-flex align-items-center">
+           <div style={{width: "60%"}}>
+            <div style={{maxWidth: "600px"}}>
+                <h4 className="fw-bold">Prodotti correlati</h4>
+                <p>Visualizza la sezione "Potrebbe anche interessarti" nelle pagine dei prodotti per promuovere altri articoli e aumentare le vendite. È possibile selezionare i prodotti correlati manualmente oppure impostare che vengano selezionati automaticamente in modo casuale.</p>
+                <Button style={{width: "200px"}}><FaPlus /> Aggiungi prodotti</Button>
+              </div>
+           </div>
+           <div style={{width: "40%"}} className="d-flex justify-content-end">
+             <img style={{width: "100%", maxWidth: "350px"}}  src="https://d11s7fcxy18ubx.cloudfront.net/node/static/2025/2025-18943-gfb57b852e665b0/ru.cdev.xnext.backend.CP/12FBD6B19DD2F4A89CF2516CE18DE4BA.cache.png"/>
+           </div>
         </div>
 
     </div>

@@ -17,7 +17,7 @@ const GeneralTab = () => {
         <div className="w-100 card p-3">
           <div className="w-100 d-flex align-items-center justify-content-between">
             <h6 className="fw-bold">Galleria prodotti</h6>
-            <h6 style={{color: "#2563EB"}} className="fw-semibold">Aggiungi Video</h6>
+            <h6 style={{color: "#2563EB", cursor: "pointer"}} className="fw-semibold">Aggiungi Video</h6>
           </div>
             <div className="d-flex align-items-center gap-2">
             <div className="position-relative card shadow-none mb-0 p-2" style={{

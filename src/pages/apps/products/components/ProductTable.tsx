@@ -115,7 +115,11 @@ const ProductTable: React.FC<{ products?: Product[] }> = ({ products = dummyProd
         		<Dropdown>
 					<Dropdown.Toggle style={{ height: '33px', fontSize: "11px" }} 
           className="fw-semibold text-black bg-white text-black d-flex align-items-center gap-1 border-0 boxShadow">
-					aggiornamento di massa <FaChevronDown />
+            <div className='d-flex align-items-center'>
+              aggiornamento di massa 
+              <FaChevronDown />
+            </div>
+
 					</Dropdown.Toggle>
 
 					<Dropdown.Menu>

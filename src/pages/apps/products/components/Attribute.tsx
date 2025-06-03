@@ -12,7 +12,7 @@ const AttributeTab = () => {
     <div className='w-100 card p-3'>
       <div className='w-100 d-flex justify-content-between'>
         <h4 className="fw-bold">Generale</h4>
-        <p className='fw-semibold' style={{color: "#2563EB"}}>Gestisci gli attributi</p>
+        <p className='fw-semibold' style={{color: "#2563EB", cursor: "pointer"}}>Gestisci gli attributi</p>
       </div>
 
       <div style={{backgroundColor: "#808F9D", height: "30px"}} className='d-flex align-items-center'>

@@ -57,6 +57,8 @@ const ProductList = () => {
 
       <ProductTable />
       <FeatureBoxGrid />
+
+      <div style={{marginTop: "200px"}}></div>
     </>
   );
 };

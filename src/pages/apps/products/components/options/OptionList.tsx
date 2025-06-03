@@ -2,6 +2,8 @@ import { FaRegTrashCan, FaPlus } from "react-icons/fa6";
 import { TfiRulerAlt } from "react-icons/tfi";
 import { MdInvertColors } from "react-icons/md";
 import { ProductOption } from "./types";
+import { MdOutlineKeyboardArrowRight } from "react-icons/md";
+
 
 interface Props {
   options: ProductOption[];
@@ -13,9 +15,14 @@ interface Props {
 const OptionList = ({ options, onAdd, onEdit, onDelete }: Props) => (
   <div className='w-100 card p-3'>
     <h4 className="fw-bold">Opzioni e varianti del prodotto</h4>
-    <h5 className="mt-3 mb-0 colorPrimary fw-bold borderBottomGray pb-3">
-      Opzioni ({options.length})
-    </h5>
+    <div className="d-flex mt-3 borderBottomGray pb-3 gap-4">
+      <h5 className="mb-0 colorPrimary fw-bold">
+        Opzioni ({options.length})
+      </h5>
+      <h5 className="mb-0 fw-bold">
+        Varianti
+      </h5>
+    </div>
     {options.map((opt, i) => (
       <div key={i} style={{ padding: '12px 5px' }} className="borderBottomGray d-flex align-items-center px-2">
         <div
@@ -49,6 +56,19 @@ const OptionList = ({ options, onAdd, onEdit, onDelete }: Props) => (
     >
       <FaPlus style={{ fontSize: '18px' }} /> Aggiungi opzione prodotto
     </button>
+
+    <div className="mt-4" style={{maxWidth: "700px"}}>
+      <div className="d-flex align-items-center" style={{cursor: "pointer"}}>
+        <h6 className="mb-0 colorPrimary fw-bold">
+          Gestisci varianti
+        </h6>
+        <MdOutlineKeyboardArrowRight className="colorPrimary" style={{fontSize: "20px", position: "relative", top: "5px"}}/>
+      </div>
+
+      <p className="mb-0 mt-2">
+        Usa le varianti del prodotto per gestire individualmente le scorte, le immagini, i codici articolo e i prezzi di ciascuna combinazione delle opzioni di prodotto.
+      </p>
+    </div>
   </div>
 );
 

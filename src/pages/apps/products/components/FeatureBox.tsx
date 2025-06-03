@@ -14,12 +14,13 @@ const FeatureBoxGrid: React.FC = () => {
 							<GrDocumentUpdate style={{fontSize: "80px"}}/>
 						</div>
 						
-						<div style={{width: "85%"}}>
+						<div style={{width: "85%", maxWidth: "500px"}}>
 							<h6 className='text-black fw-bold fs-5 mt-0'>Aggiorna in blocco </h6>
 							<p>Per accedere a più strumenti di aggiornamento di massa, seleziona uno o più prodotti.</p>
 							<Dropdown>
 								<Dropdown.Toggle style={{ height: '33px', fontSize: "14px" }} className="fw-semibold text-black bg-transparent text-black d-flex align-items-start gap-1">
-								aggiornamento di massa <FaChevronDown />
+								aggiornamento di massa
+								 <FaChevronDown style={{position: "relative", top: "3px"}}/>
 								</Dropdown.Toggle>
 
 								<Dropdown.Menu>
@@ -39,7 +40,7 @@ const FeatureBoxGrid: React.FC = () => {
 							<CiExport style={{fontSize: "80px"}}/>
 						</div>
 						
-						<div style={{width: "85%"}}>
+						<div style={{width: "85%", maxWidth: "500px"}}>
 							<h6 className='text-black fw-bold fs-5 mt-0'>Esporta prodotti </h6>
 							<p>L'esportazione dei prodotti produce un file CSV contenente tutte le informazioni dei prodotti selezionati. Puoi modificare il file CSV con qualsiasi foglio di calcolo e reimportarlo nel tuo negozio per aggiornare il tuo catalogo interamente. Scopri di più sull'esportazione dei dati: Conoscenza di Base.</p>
 							<Button className='bg-transparent text-black fw-semibold'>Aggiorna per ottenre questa funzionalità</Button>
@@ -55,7 +56,7 @@ const FeatureBoxGrid: React.FC = () => {
 							<GrDocumentUpdate style={{fontSize: "80px"}}/>
 						</div>
 						
-						<div style={{width: "85%"}}>
+						<div style={{width: "85%", maxWidth: "500px"}}>
 							<h6 className='text-black fw-bold fs-5 mt-0'>Importa prodotti </h6>
 							<p>L'importazione dei prodotti converte i dati provenienti dal file CSV in nuovi prodotti, o aggiorna quelli già esistenti.</p>
 							<Button className='bg-transparent text-black fw-semibold'>Importa prodotti</Button>
@@ -67,7 +68,7 @@ const FeatureBoxGrid: React.FC = () => {
 							<CiExport style={{fontSize: "80px"}}/>
 						</div>
 						
-						<div style={{width: "85%"}}>
+						<div style={{width: "85%", maxWidth: "500px"}}>
 							<h6 className='text-black fw-bold fs-5 mt-0'>Automatizza la gestione del catalogo </h6>
 							<p>Il nostro team di personalizzazione può aiutarti ad automatizzare l'aggiornamento dei prezzi, a sincronizzare le scorte con un sistema esterno di gestione dell'inventario e altro ancora.</p>
 							<Button className='bg-transparent text-black fw-semibold'>Scopri di più</Button>
