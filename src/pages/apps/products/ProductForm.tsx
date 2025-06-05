@@ -1,6 +1,6 @@
 import { PageBreadcrumb } from '@/components';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback  } from 'react';
 import { IoArrowBack } from "react-icons/io5";
 import GeneralTab from './components/General';
 import { MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight } from "react-icons/md";
@@ -13,10 +13,27 @@ import RelatedTab from './components/RelatedProducts';
 import FilesTab from './components/Files';
 import PriceTab from './components/Price';
 import OptionsTab from './components/Options';
-import { ProductOption, Variation } from './components/options/types';
+import { ProductOption, Variation, GeneralInfo, Attributes } from './components/options/types';
 
+const emptyGeneral: GeneralInfo = {
+  title: "",
+  itemCode: 0,
+  weight: 0,
+  price: 0,
+  description: "",
+  requiresShipping: false,
+};
+
+const emptyAttributes: Attributes = {
+  upc: "",
+  brand: "",
+};
+
+const STORAGE_KEY = "product_draft";
 
 const ProductForm = () => {
+  const [general, setGeneral] = useState<GeneralInfo>(emptyGeneral);
+  const [attributes, setAttributes] = useState<Attributes>(emptyAttributes);
   const [options, setOptions] = useState<ProductOption[]>([]);
   const [variations, setVariations] = useState<Variation[]>([]);
   const { mode, slug } = useParams();
@@ -25,10 +42,33 @@ const ProductForm = () => {
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('generale');
+  const [isDirty, setIsDirty] = useState<boolean>(false);
 
   const tabs = [
-  { key: 'generale', label: 'Generale', component: <GeneralTab/> },
-  { key: 'attributi', label: 'Attributi', component: <AttributeTab/> },
+  {
+    key: "generale",
+    label: "Generale",
+    component: (
+      <GeneralTab
+        data={general}
+        onChange={(newGen) => {
+          setGeneral(newGen);
+          setIsDirty(true);
+        }}
+      />
+    ),
+  },
+  {
+    key: "attributi",
+    label: "Attributi",
+    component: (
+      <AttributeTab data={attributes}    
+            onChange={(newAttr) => {
+            setAttributes(newAttr);
+            setIsDirty(true);
+          }} />
+    ),
+  },
   { 
     key: 'opzioni',
     label: 'Opzioni',
@@ -36,8 +76,14 @@ const ProductForm = () => {
       <OptionsTab
         options={options}
         variations={variations}
-        onOptionsChange={setOptions}
-        onVariationsChange={setVariations}
+           onOptionsChange={(newOpts) => {
+            setOptions(newOpts);
+            setIsDirty(true);
+          }}
+            onVariationsChange={(newVars) => {
+            setVariations(newVars);
+            setIsDirty(true);
+          }}
       />
     )
   },
@@ -63,17 +109,101 @@ const ProductForm = () => {
     navigate('/apps/products');
   };
 
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.general) setGeneral(parsed.general);
+        if (parsed.attributes) setAttributes(parsed.attributes);
+        if (parsed.options) setOptions(parsed.options);
+        if (parsed.variations) setVariations(parsed.variations);
+      } catch {
+      }
+    }
+  }, []);
+
+
+
+  const handleSave = useCallback(() => {
+    const toSave = { general, attributes, options, variations };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+    setIsDirty(false);
+    console.log("✅ Draft salvato in localStorage:", toSave);
+    // fetch("/api/products", {...}) backend
+  }, [general, attributes, options, variations]);
+
+
+  const handleSaveAndClose = () => {
+    handleSave();
+    navigate("/apps/products");
+  };
+
+  // ─── Ascolta Ctrl+S / Cmd+S per richiamare handleSave ───────────────
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        handleSave();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [handleSave]);
+
+
   return (
     <>
     <div style={{maxWidth: "1350px"}}>
-      <div className="mt-3 mb-0">
-        <button onClick={handleGoBack} className="btn btn-link text-decoration-none p-0">
-          <div className='d-flex align-items-center gap-1'>
-            <IoArrowBack size={20} style={{color: "#2563EB"}} />
-            <span style={{color: "#2563EB"}} className='fw-semibold'>Indietro</span>
+
+
+     {isDirty && (
+        <div
+          style={{
+            position: "sticky",
+            top: 0,
+            left: 0,
+            height: "60px",
+            marginRight: "-16px",
+            marginLeft: "-16px",
+            backgroundColor: "#D4DEF9",
+            borderBottom: "1px solid #f0e68c",
+            zIndex: 2000,
+            padding: "10px 20px",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <div>
+            <button onClick={handleGoBack} className="btn btn-link text-decoration-none p-0 me-3">
+              <div className='d-flex align-items-center gap-1'>
+                <IoArrowBack size={20} style={{color: "#2563EB"}} />
+                <span style={{color: "#2563EB"}} className='fw-semibold'>Indietro</span>
+              </div>
+            </button>
+              <span style={{ fontWeight: 500, color: "#333" }}>
+                In questa pagina ci sono modifiche non salvate.
+              </span>
           </div>
-        </button>
-      </div>
+          <div>
+            <button style={{fontSize: "13px"}} onClick={handleSaveAndClose} className="btn btn-sm bg-transparent me-2 fw-semibold colorPrimary">
+              Salva e Chiudi
+            </button>
+            <button
+              onClick={handleSave}
+              className="btn btn-sm btn-primary px-3 fw-semibold"
+              title="Ctrl+S"
+              style={{ height: "40px", fontSize: "14px" }}
+            >
+              Salva (Ctrl+S)
+            </button>
+          </div>
+        </div>
+      )}
+
+
 
       <PageBreadcrumb subName="Apps" title={isEditMode ? "Modifica prodotto" : "Nuovo prodotto"} />
 
@@ -123,7 +253,9 @@ const ProductForm = () => {
 
         {/*Right side: PREZZI DISP. CONTRO. Da tablet in su */}
         <div className="d-none d-md-block col-md-3 pe-3">
-          <PriceTab />
+          <PriceTab 
+          price={general.price}
+          onPriceChange={(p) => setGeneral({ ...general, price: p })}/>
       </div>
       </div>
       </div>

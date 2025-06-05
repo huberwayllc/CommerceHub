@@ -1,9 +1,20 @@
 import { useState } from "react";
+import { ChangeEvent } from "react";
 import { Form } from 'react-bootstrap';
 
+interface PriceTabProps {
+  price: number;
+  onPriceChange: (newPrice: number) => void;
+}
 
-const PriceTab = () => {
-      const [isSelected, setIsSelected] = useState(false);
+const PriceTab: React.FC<PriceTabProps> = ({ price, onPriceChange }) => {
+
+    const handlePriceInput = (e: ChangeEvent<HTMLInputElement>) => {
+    const val = Number(e.target.value);
+    onPriceChange(isNaN(val) ? 0 : val);
+  };
+
+    const [isSelected, setIsSelected] = useState(false);
 
   return (
     <>
@@ -19,6 +30,8 @@ const PriceTab = () => {
                   type="number"
                   className="form-control border-0 rounded-0"
                   placeholder="0.00"
+                   value={price.toString()}
+                  onChange={handlePriceInput}
                   style={{
                     boxShadow: "none",
                     outline: "none",

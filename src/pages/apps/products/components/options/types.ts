@@ -30,15 +30,18 @@ export interface Variation {
 
 
 export interface GeneralInfo {
-  title: string;
-  description: string;
-  brand: string;
-  itemCode: number;
-  sku: string;
+  title: string;           
+  itemCode: number;         
+  weight: number;           
+  price: number;            
+  description: string;      
+  requiresShipping: boolean;
 }
 
+
 export interface Attributes {
-  [key: string]: string; 
+  upc: string;
+  brand: string;
 }
 
 export interface Product {

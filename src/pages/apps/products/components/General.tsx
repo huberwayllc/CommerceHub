@@ -1,15 +1,43 @@
-import { useState } from 'react';
+import { ChangeEvent } from "react";
 import { GoPlus } from "react-icons/go";
 import {Form, } from 'react-bootstrap';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import PriceTab from './Price';
+import { GeneralInfo } from './options/types';
 
+interface GeneralTabProps {
+  data: GeneralInfo;
+  onChange: (newData: GeneralInfo) => void;
+}
 
-const GeneralTab = () => {
+const GeneralTab: React.FC<GeneralTabProps> = ({ data, onChange }) => {
+    const handleFieldChange = (
+    e: ChangeEvent<HTMLInputElement>
+  ) => {
+    const { name, value, type, checked } = e.target;
 
-  const [isSelected, setIsSelected] = useState(false);
-  const [description, setDescription] = useState('');
+    let parsedValue: string | number | boolean;
+    if (type === "checkbox") {
+      parsedValue = checked;
+    } else if (type === "number") {
+      parsedValue = Number(value);
+    } else {
+      parsedValue = value;
+    }
+
+    onChange({
+      ...data,
+      [name]: parsedValue,
+    });
+  };
+
+  const handleDescriptionChange = (html: string) => {
+    onChange({
+      ...data,
+      description: html,
+    });
+  };
 
   return (
     <>
@@ -56,7 +84,7 @@ const GeneralTab = () => {
         </div>
         
         <div className='d-block d-md-none '>
-          <PriceTab/>
+          <PriceTab price={data.price}   onPriceChange={(newPrice) => onChange({ ...data, price: newPrice })}/>
         </div>
         
       
@@ -65,22 +93,23 @@ const GeneralTab = () => {
       <div className="w-100 d-flex  gap-2">
         <div style={{width: "50%"}}>
           <h6 className="fw-bold">Nome</h6>
-          <input className="input-product w-100"/>
+          <input className="input-product w-100" name="title"  value={data.title} onChange={handleFieldChange}/>
         </div>
         <div style={{width: "30%"}}>
           <h6 className="fw-bold">Cod. Art.</h6>
-          <input className="input-product w-100"/>
+          <input className="input-product w-100" name="itemCode"  value={data.itemCode} onChange={handleFieldChange}/>
         </div>
         <div style={{width: "20%"}}>
           <h6 className="fw-bold">Peso, kg</h6>
-          <input className="input-product w-100"/>
+          <input className="input-product w-100" name='weight' value={data.weight} onChange={handleFieldChange}/>
           <div className='d-flex align-items-start gap-2 mt-2'>
           <Form.Check
               type="checkbox"
+              name='requiresShipping'
               className=" m-0"
               style={{ position: 'relative', bottom: '2px' }}
-              checked={isSelected}
-              onChange={(e) => setIsSelected(e.target.checked)}
+              checked={data.requiresShipping}
+              onChange={handleFieldChange}
             />
             <p className='mb-0' style={{fontSize: "11px"}}>Richiede spedizione o ritiro</p> 
           </div>
@@ -91,8 +120,8 @@ const GeneralTab = () => {
         <h6 className="fw-bold">Descrizione</h6>
         <ReactQuill
           theme="snow"
-          value={description}
-          onChange={setDescription}
+          value={data.description}
+          onChange={handleDescriptionChange}
         />
       </div>
     </div>

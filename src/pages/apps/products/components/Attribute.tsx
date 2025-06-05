@@ -1,10 +1,18 @@
 import { useState } from 'react';
-import {Form, } from 'react-bootstrap';
+import { ChangeEvent } from "react";
+import { Attributes } from './options/types';
 
+interface AttributeTabProps {
+  data: Attributes;
+  onChange: (newAttrs: Attributes) => void;
+}
 
-const AttributeTab = () => {
-
-  const [isSelected, setIsSelected] = useState(false);
+const AttributeTab: React.FC<AttributeTabProps> = ({ data, onChange }) => {
+  const handleFieldChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    onChange({ ...data, [name]: value });
+  };
+  
 
   return (
     <>
@@ -28,7 +36,7 @@ const AttributeTab = () => {
             <p className='mb-0'>UPC</p>
         </div>
         <div style={{ width: "70%" }}>
-            <input placeholder='UPC' className="input-product w-100"/>
+            <input placeholder='UPC' className="input-product w-100" name="upc" value={data.upc} onChange={handleFieldChange}/>
         </div>
        </div>
        <div style={{borderBottom: "1px solid #7f90aa", padding: "15px 0px"}} className='d-flex align-items-center'>
@@ -36,7 +44,7 @@ const AttributeTab = () => {
                 <p className='mb-0'>Marca</p>
             </div>
             <div style={{ width: "70%" }}>
-                <input placeholder='Marca' className="input-product w-100"/>
+                <input placeholder='Marca' className="input-product w-100" name="brand" value={data.brand} onChange={handleFieldChange}/>
             </div>
        </div>
        <p className='mt-2' style={{fontSize: "11px"}}>Attributi con valori nulli non vengono visualizzati nella vetrina.</p>
