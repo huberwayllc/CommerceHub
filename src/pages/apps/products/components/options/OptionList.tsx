@@ -1,13 +1,14 @@
 import { FaRegTrashCan, FaPlus } from "react-icons/fa6";
 import { TfiRulerAlt } from "react-icons/tfi";
 import { MdInvertColors } from "react-icons/md";
-import { ProductOption } from "./types";
+import { ProductOption, Variation } from "./types";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 
 type TabKey = "OPTIONS" | "VARIATIONS";
 
 interface Props {
   options: ProductOption[];
+  variations: Variation[];
   onAdd: () => void;
   onEdit: (index: number) => void;
   onDelete: (index: number) => void;
@@ -15,7 +16,7 @@ interface Props {
   setActiveTab: React.Dispatch<React.SetStateAction<TabKey>>;
 }
 
-const OptionList = ({ options, onAdd, onEdit, onDelete, activeTab, setActiveTab }: Props) => (
+const OptionList = ({ options, variations, onAdd, onEdit, onDelete, activeTab, setActiveTab }: Props) => (
   <div className='w-100 card p-3'>
     <h4 className="fw-bold">Opzioni e varianti del prodotto</h4>
     <div className="d-flex mt-1 borderBottomGray pb-3 gap-4">
@@ -23,7 +24,7 @@ const OptionList = ({ options, onAdd, onEdit, onDelete, activeTab, setActiveTab 
         Opzioni ({options.length})
       </h5>
       <h5 onClick={() => {setActiveTab("VARIATIONS")}} style={{cursor: "pointer"}} className={`mb-0 ${ activeTab === "VARIATIONS" ? "colorPrimary" : "text-black"} fw-bold`}>
-        Varianti
+        Varianti ({variations.length})
       </h5>
     </div>
     {options.map((opt, i) => (

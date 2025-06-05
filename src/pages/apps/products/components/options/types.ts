@@ -19,6 +19,11 @@ export interface Variation {
   lowestPriceBeforeDiscount: number;
   upc: number,
   weight: number,
+  length: number,
+  width: number,
+  height: number,
   stock: number;
   imageUrl?: string;
+  itemCode: number,
+  brand: string
 }

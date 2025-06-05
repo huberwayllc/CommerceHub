@@ -47,7 +47,12 @@ const OptionsTab = () => {
         lowestPriceBeforeDiscount: old?.lowestPriceBeforeDiscount ?? 0,
         upc: old?.upc ?? 0,
         stock: old?.stock ?? 0,
-        weight: old?.stock ?? 0,
+        weight: old?.weight ?? 0,
+        length: old?.length ?? 0,
+        width: old?.width ?? 0,
+        height: old?.height ?? 0,
+        itemCode: old?.itemCode ?? 0,
+        brand: old?.brand ?? "",
         imageUrl: old?.imageUrl ?? ""
       };
     });
@@ -70,16 +75,27 @@ const OptionsTab = () => {
   const handleCancelOption = () => setShowOptionForm(false);
 
   // Variation handlers
-  const handleEditVar = (i: number) => { setEditingVarIdx(i); setShowVarForm(true); };
+  const handleEditVar = (i: number) => {
+    setEditingVarIdx(i);
+    setShowVarForm(true); // questo flag servirà per aprire il modal
+  };
+
   const handleSaveVar = (v: Variation) => {
     setVariations(prev => {
       const arr = [...prev];
-      if (editingVarIdx !== null) arr[editingVarIdx] = v;
+      if (editingVarIdx !== null) {
+        arr[editingVarIdx] = v;
+      }
       return arr;
     });
     setShowVarForm(false);
+    setEditingVarIdx(null);
   };
-  const handleCancelVar = () => setShowVarForm(false);
+
+  const handleCancelVar = () => {
+    setShowVarForm(false);
+    setEditingVarIdx(null);
+  };
 
   return (
     <>
@@ -94,6 +110,7 @@ const OptionsTab = () => {
         {activeTab === "OPTIONS" &&
           <OptionList
             options={options}
+            variations={variations}
             onAdd={handleAddOption}
             onEdit={handleEditOption}
             onDelete={handleDeleteOption}
@@ -113,14 +130,15 @@ const OptionsTab = () => {
         </>
       )}
 
-      {/* Form per modificare una variation selezionata */}
-      {showVarForm && editingVarIdx !== null && (
-        <VariationForm
-          initial={variations[editingVarIdx]}
-          onSave={handleSaveVar}
-          onCancel={handleCancelVar}
-        />
-      )}
+       {/* Modal per modificare la variation selezionata */}
+        {editingVarIdx !== null && (
+          <VariationForm
+            show={showVarForm}
+            initial={variations[editingVarIdx]}
+            onSave={handleSaveVar}
+            onCancel={handleCancelVar}
+          />
+        )}
 
       {/* Form per creare/modificare un option */}
       {showOptionForm && (

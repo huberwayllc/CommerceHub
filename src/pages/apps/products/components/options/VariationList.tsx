@@ -28,7 +28,7 @@ const VariationList = ({ options, variations, onEdit, activeTab, setActiveTab }:
         Opzioni ({options.length})
       </h5>
       <h5 onClick={() => {setActiveTab("VARIATIONS")}} style={{cursor: "pointer"}} className={`mb-0 ${ activeTab === "VARIATIONS" ? "colorPrimary" : "text-black"} fw-bold`}>
-        Varianti
+        Varianti ({variations.length})
       </h5>
     </div>
     <div className="d-inline-flex gap-2 mb-2">
@@ -36,10 +36,10 @@ const VariationList = ({ options, variations, onEdit, activeTab, setActiveTab }:
         <FaPlus/>
         Nuova combinazione
       </Button>
-      <Button style={{border: "1px solid black"}} className="bg-white text-black">
+      <Button style={{border: "1px solid black"}} className="bg-white text-black disabled">
         Modifica
       </Button>
-      <Button style={{border: "1px solid black"}} className="bg-white text-black">
+      <Button style={{border: "1px solid black"}} className="bg-white text-black disabled">
         Elimina
       </Button>
     </div>
@@ -58,35 +58,37 @@ const VariationList = ({ options, variations, onEdit, activeTab, setActiveTab }:
       <span>Prezzo, €</span>
       <span>Azioni</span>
     </div>
-    {variations.map((v) => (
-      <div key={v.id} style={gridTemplate} className="py-3 borderBottomGray px-1">
-        <span>
-        <Form.Check
-          type="checkbox"
-
-          className="big-checkbox"
-        />
-        </span>
-        <div className="d-flex align-items-center gap-2">
-          <img style={{width: "50px", position: "relative", right: "7px"}} 
-          src="https://d11s7fcxy18ubx.cloudfront.net/node/static/2025/2025-18963-g963d82ffd3aa6d/icons/product-default.svg"/>
-          <div className="d-flex flex-column">
-            {Object.entries(v.options).map(([k, val]) => (
-              <span key={k}><strong>{k}:</strong> {val}</span>
-            ))}
-          </div>
-        </div>
-   
-        <span>{v.upc}</span>
-        <span>{v.weight}</span>
-        <span>{v.stock}</span>
-        <span>{v.price}</span>
-        <div className="d-flex flex-column gap-2">
-          <FaRegTrashCan style={{ fontSize: "16px", cursor: "pointer" }} />
-          <MdOutlineEdit style={{ fontSize: "18px", cursor: "pointer" }} />
-        </div>
-      </div>
-    ))}
+     {variations.map((v, index) => (
+       <div key={v.id} style={gridTemplate} className="py-3 borderBottomGray px-1">
+         <span>
+           <Form.Check type="checkbox" className="big-checkbox" />
+         </span>
+         <div className="d-flex align-items-center gap-2">
+           <img
+             style={{ width: "50px", position: "relative", right: "7px" }}
+             src="https://d11s7fcxy18ubx.cloudfront.net/node/static/2025/2025-18963-g963d82ffd3aa6d/icons/product-default.svg"
+           />
+           <div className="d-flex flex-column">
+             {Object.entries(v.options).map(([k, val]) => (
+               <span key={k}>
+                 <strong>{k}:</strong> {val}
+               </span>
+             ))}
+           </div>
+         </div>
+         <span>{v.itemCode}</span>
+         <span>{v.weight}</span>
+         <span>{v.stock}</span>
+         <span>{v.price}</span>
+         <div className="d-flex flex-column gap-2">
+           <FaRegTrashCan style={{ fontSize: "16px", cursor: "pointer" }} />
+           <MdOutlineEdit
+             style={{ fontSize: "18px", cursor: "pointer" }}
+             onClick={() => onEdit(index)}
+           />
+         </div>
+       </div>
+     ))}
   </div>
 );
 
