@@ -39,7 +39,7 @@ const VariationForm = ({ initial, show, onSave, onCancel }: Props) => {
             <div className="mb-0 text-white">
               {Object.entries(initial.options).map(([k, v]) => (
                 <span key={k} className="me-3">
-                  <strong>{k}:</strong> {v}
+                  {k}: <strong>{v}</strong>
                 </span>
               ))}
             </div>
@@ -114,7 +114,7 @@ const VariationForm = ({ initial, show, onSave, onCancel }: Props) => {
                 onChange={e => setPrice(parseFloat(e.target.value) || 0)}
               />
             </div>
-            <div className="mb-3">
+            <div className="mb-5">
               <label className="form-label text-black fw-semibold">Prezzo più basso prima dello sconto</label>
               <input
                 type="number"

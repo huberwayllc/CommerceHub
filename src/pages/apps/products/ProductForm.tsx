@@ -13,12 +13,34 @@ import RelatedTab from './components/RelatedProducts';
 import FilesTab from './components/Files';
 import PriceTab from './components/Price';
 import OptionsTab from './components/Options';
+import { ProductOption, Variation } from './components/options/types';
 
 
-const tabs = [
+const ProductForm = () => {
+  const [options, setOptions] = useState<ProductOption[]>([]);
+  const [variations, setVariations] = useState<Variation[]>([]);
+  const { mode, slug } = useParams();
+  const isEditMode = mode === 'edit' && slug;
+  const tabsContainerRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+
+  const [activeTab, setActiveTab] = useState('generale');
+
+  const tabs = [
   { key: 'generale', label: 'Generale', component: <GeneralTab/> },
   { key: 'attributi', label: 'Attributi', component: <AttributeTab/> },
-  { key: 'opzioni', label: 'Opzioni', component: <OptionsTab/> },
+  { 
+    key: 'opzioni',
+    label: 'Opzioni',
+    component: (
+      <OptionsTab
+        options={options}
+        variations={variations}
+        onOptionsChange={setOptions}
+        onVariationsChange={setVariations}
+      />
+    )
+  },
   { key: 'files', label: 'Files', component: <FilesTab/> },
   { key: 'spedizione', label: 'Spedizione e ritiro', component: <DeliveryTab/> },
   { key: 'tasse', label: 'Tasse', component: <TaxesTab/> },
@@ -27,15 +49,8 @@ const tabs = [
   { key: 'incorpora', label: 'Incorpora prodotto', component: <EmbeddedTab/> },
 ];
 
-const ProductForm = () => {
-  const { mode, slug } = useParams();
-  const isEditMode = mode === 'edit' && slug;
-  const tabsContainerRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState('generale');
-
-    const scrollTabs = (dir: 'left' | 'right') => {
+  const scrollTabs = (dir: 'left' | 'right') => {
     if (!tabsContainerRef.current) return;
     const { clientWidth } = tabsContainerRef.current;
     tabsContainerRef.current.scrollBy({

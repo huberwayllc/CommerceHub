@@ -27,3 +27,23 @@ export interface Variation {
   itemCode: number,
   brand: string
 }
+
+
+export interface GeneralInfo {
+  title: string;
+  description: string;
+  brand: string;
+  itemCode: number;
+  sku: string;
+}
+
+export interface Attributes {
+  [key: string]: string; 
+}
+
+export interface Product {
+  general: GeneralInfo;
+  attributes: Attributes;
+  options: ProductOption[];
+  variations: Variation[];
+}
