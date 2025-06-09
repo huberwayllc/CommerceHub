@@ -19,7 +19,7 @@ const FloatingInput2: React.FC<FloatingInputProps> = ({
 }) => {
   return (
     <div
-      className="position-relative flex-grow-1"
+      className="position-relative"
       style={style}
     >
       <input

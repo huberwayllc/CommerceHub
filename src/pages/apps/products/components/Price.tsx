@@ -5,9 +5,11 @@ import { Form } from 'react-bootstrap';
 interface PriceTabProps {
   price: number;
   onPriceChange: (newPrice: number) => void;
+  isAvailable: boolean;
+  onAvailabilityChange: (value: boolean) => void;
 }
 
-const PriceTab: React.FC<PriceTabProps> = ({ price, onPriceChange }) => {
+const PriceTab: React.FC<PriceTabProps> = ({ price, isAvailable, onAvailabilityChange, onPriceChange }) => {
 
     const handlePriceInput = (e: ChangeEvent<HTMLInputElement>) => {
     const val = Number(e.target.value);
@@ -52,13 +54,13 @@ const PriceTab: React.FC<PriceTabProps> = ({ price, onPriceChange }) => {
             <p className="mt-2 fw-semibold" style={{color: "#2563EB", marginBottom: "2px", cursor: "pointer"}}>Gestisci le opzioni del prezzo</p>
           </div>
 
-          <div className="card p-3 h-100">
+          <div className="card p-3 h-100"> 
             <h6 className="fw-bold">Disponibilità del prodotto</h6>
             <Form.Check
               type="switch"
               label="Abilitato"
-              checked={isSelected}
-              readOnly
+              checked={isAvailable}
+              onChange={(e) => onAvailabilityChange(e.target.checked)}
             />
           </div>
 

@@ -7,7 +7,8 @@ import OptionForm from "./options/OptionForm";
 import EmptyPlaceholder from "./options/EmptyPlaceholder";
 import VariationList from "./options/VariationList";
 import VariationForm from "./options/VariationForm";
-import { ProductOption, Variation } from "./options/types";
+import { ModelPart, ProductOption, Variation } from "./options/types";
+import ModelPartManager from "./options/ModelPartManager";
 
 type TabKey = "OPTIONS" | "VARIATIONS";
 
@@ -16,6 +17,9 @@ interface OptionsTabProps {
   variations: Variation[];
   onOptionsChange: (newOptions: ProductOption[]) => void;
   onVariationsChange: (newVariations: Variation[]) => void;
+  modelParts: ModelPart[];
+  onModelPartsChange: (parts: ModelPart[]) => void;
+  productType: "physical" | "digital" | "3d_customizable";
 }
 
 const OptionsTab: React.FC<OptionsTabProps> = ({
@@ -23,6 +27,9 @@ const OptionsTab: React.FC<OptionsTabProps> = ({
   variations,
   onOptionsChange,
   onVariationsChange,
+  modelParts,
+  onModelPartsChange,
+  productType,
 }) => {
 
   const [editingOptionIdx, setEditingOptionIdx] = useState<number | null>(null);
@@ -70,7 +77,7 @@ const OptionsTab: React.FC<OptionsTabProps> = ({
         width: old?.width ?? 0,
         height: old?.height ?? 0,
         itemCode: old?.itemCode ?? 0,
-        brand: old?.brand ?? "",
+        brand: old?.brand ?? "c",
         imageUrl: old?.imageUrl ?? "",
       };
     });
@@ -139,8 +146,18 @@ const OptionsTab: React.FC<OptionsTabProps> = ({
     setEditingVarIdx(null);
   };
 
-  // ── RENDER ─────────────────────────────────────────────────────────────────
 
+// ── RENDER per quanto riguarda il prodotto 3d─────────────────────────────────────────────────────────────────
+      if (productType === "3d_customizable") {
+      return (
+        <ModelPartManager
+        modelParts={modelParts}
+        onModelPartsChange={onModelPartsChange}
+        />
+      );
+    }
+
+// ── RENDER normale per PHYSICAL o DIGITAL ───────────────────────────────────
   return (
     <>
       {!showOptionForm && options.length === 0 && (
@@ -189,6 +206,7 @@ const OptionsTab: React.FC<OptionsTabProps> = ({
           initial={variations[editingVarIdx]!}
           onSave={handleSaveVar}
           onCancel={handleCancelVar}
+          productType={productType}
         />
       )}
     </>

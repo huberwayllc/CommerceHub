@@ -13,15 +13,18 @@ import RelatedTab from './components/RelatedProducts';
 import FilesTab from './components/Files';
 import PriceTab from './components/Price';
 import OptionsTab from './components/Options';
-import { ProductOption, Variation, GeneralInfo, Attributes, ShippingInfo } from './components/options/types';
+import { ProductOption, Variation, GeneralInfo, Attributes, ShippingInfo, ModelPart } from './components/options/types';
 
 const emptyGeneral: GeneralInfo = {
   title: "",
   itemCode: 0,
-  weight: 0,
+  productType: "physical",
   price: 0,
   description: "",
-  requiresShipping: false
+  requiresShipping: false,
+  isAvailable: true,
+  objUrl: undefined,
+  file: undefined,
 };
 
 const emptyAttributes: Attributes = {
@@ -44,6 +47,7 @@ const ProductForm = () => {
 });
   const [options, setOptions] = useState<ProductOption[]>([]);
   const [variations, setVariations] = useState<Variation[]>([]);
+  const [modelParts, setModelParts] = useState<ModelPart[]>([]);
   const { mode, slug } = useParams();
   const isEditMode = mode === 'edit' && slug;
   const tabsContainerRef = useRef<HTMLDivElement>(null);
@@ -94,10 +98,13 @@ const ProductForm = () => {
             setVariations(newVars);
             setIsDirty(true);
           }}
+        modelParts={modelParts}
+        onModelPartsChange={(parts) => { setModelParts(parts); setIsDirty(true); }}
+        productType={general.productType}
       />
     )
   },
-  { key: 'files', label: 'Files', component: <FilesTab/> },
+  // { key: 'files', label: 'Files', component: <FilesTab/> },
   {
     key: 'spedizione',
     label: 'Spedizione e ritiro',
@@ -136,6 +143,7 @@ const ProductForm = () => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
+        if (parsed.modelParts) setModelParts(parsed.modelParts);
         if (parsed.images) setImages(parsed.images);
         if (parsed.general) setGeneral(parsed.general);
         if (parsed.attributes) setAttributes(parsed.attributes);
@@ -150,12 +158,12 @@ const ProductForm = () => {
 
 
   const handleSave = useCallback(() => {
-    const toSave = { general, attributes, options, variations, shipping, images };
+    const toSave = { general, attributes, options, variations, shipping, images, modelParts };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
     setIsDirty(false);
     console.log("✅ Draft salvato in localStorage:", toSave);
     // fetch("/api/products", {...}) backend
-  }, [general, attributes, options, variations, shipping, images]);
+  }, [general, attributes, options, variations, shipping, images, modelParts]);
 
 
   const handleSaveAndClose = () => {
@@ -279,6 +287,11 @@ const ProductForm = () => {
         <div className="d-none d-md-block col-md-3 pe-3">
           <PriceTab 
             price={general.price}
+            isAvailable={general.isAvailable}
+            onAvailabilityChange={(val) => {
+              setGeneral({ ...general, isAvailable: val });
+              setIsDirty(true);
+            }}
             onPriceChange={(p) => {
               setGeneral({ ...general, price: p });
               setIsDirty(true);

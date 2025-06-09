@@ -1,5 +1,4 @@
 import { ChangeEvent } from "react";
-import {Form, } from 'react-bootstrap';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import PriceTab from './Price';
@@ -14,25 +13,23 @@ interface GeneralTabProps {
 }
 
 const GeneralTab: React.FC<GeneralTabProps> = ({ data, onChange,  images, onImagesChange  }) => {
-    const handleFieldChange = (
-    e: ChangeEvent<HTMLInputElement>
-  ) => {
-    const { name, value, type, checked } = e.target;
+const handleFieldChange = (
+  e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+) => {
+  const { name, value, type } = e.target;
 
-    let parsedValue: string | number | boolean;
-    if (type === "checkbox") {
-      parsedValue = checked;
-    } else if (type === "number") {
-      parsedValue = Number(value);
-    } else {
-      parsedValue = value;
-    }
+  let parsedValue: string | number | boolean;
+   if (type === "number") {
+    parsedValue = Number(value);
+  } else {
+    parsedValue = value;
+  }
 
-    onChange({
-      ...data,
-      [name]: parsedValue,
-    });
-  };
+  onChange({
+    ...data,
+    [name]: parsedValue,
+  });
+};
 
   const handleDescriptionChange = (html: string) => {
     onChange({
@@ -46,9 +43,57 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ data, onChange,  images, onImag
       {/* Product image section--------------------------- */}
       <ProductGallery  images={images} onChange={onImagesChange}  />
         
-        <div className='d-block d-md-none '>
-          <PriceTab price={data.price}   onPriceChange={(newPrice) => onChange({ ...data, price: newPrice })}/>
-        </div>
+      <div className='d-block d-md-none '>
+        <PriceTab 
+        price={data.price}   
+        onPriceChange={(newPrice) => onChange({ ...data, price: newPrice })}
+        isAvailable={data.isAvailable}
+          onAvailabilityChange={(newVal) => onChange({ ...data, isAvailable: newVal })}
+          />
+      </div>
+
+      {data.productType === 'digital' && (
+      <div className="w-100 card p-3 mt-3">
+        <h6 className="fw-bold">Prodotto digitale</h6>
+        <p>Carica qui il file per il prodotto digitale</p>
+        <input
+          type="file"
+          onChange={e => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            const url = URL.createObjectURL(file);
+            onChange({ ...data, file: url });
+          }}
+        />
+        {data.file && (
+          <p className="mt-2" style={{ fontSize: '0.9rem' }}>
+            File caricato: <strong>{data.file.split('/').pop()}</strong>
+          </p>
+        )}
+      </div>
+      )}
+
+      {data.productType === '3d_customizable' && (
+      <div className="w-100 card p-3 mt-3">
+        <h6 className="fw-bold">Modello 3D (.obj)</h6>
+        <p>Carica qui il file .obj del tuo prodotto</p>
+        <input
+          type="file"
+          accept=".obj"
+          onChange={e => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            const url = URL.createObjectURL(file);
+            onChange({ ...data, objUrl: url });
+          }}
+        />
+        {data.objUrl && (
+          <p className="mt-2" style={{ fontSize: '0.9rem' }}>
+            File caricato: <strong>{data.objUrl.split('/').pop()}</strong>
+          </p>
+        )}
+      </div>
+      )}
         
       
       {/* Product details section------------------------------ */}
@@ -58,28 +103,26 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ data, onChange,  images, onImag
           <h6 className="fw-bold">Nome</h6>
           <input className="input-product w-100" name="title"  value={data.title} onChange={handleFieldChange}/>
         </div>
-        <div style={{width: "30%"}}>
+        <div style={{width: "25%"}}>
           <h6 className="fw-bold">Cod. Art.</h6>
           <input className="input-product w-100" name="itemCode"  value={data.itemCode} onChange={handleFieldChange}/>
         </div>
-        <div style={{width: "20%"}}>
-          <h6 className="fw-bold">Peso, kg</h6>
-          <input className="input-product w-100" name='weight' value={data.weight} onChange={handleFieldChange}/>
-          <div className='d-flex align-items-start gap-2 mt-2'>
-          <Form.Check
-              type="checkbox"
-              name='requiresShipping'
-              className=" m-0"
-              style={{ position: 'relative', bottom: '2px' }}
-              checked={data.requiresShipping}
+        <div style={{width: "25%"}}>
+            <h6 className="fw-bold">Tipologia Prodotto</h6>
+            <select
+              className="input-product w-100"
+              name="productType"
+              value={data.productType}
               onChange={handleFieldChange}
-            />
-            <p className='mb-0' style={{fontSize: "11px"}}>Richiede spedizione o ritiro</p> 
-          </div>
+            >
+              <option value="physical">Fisico</option>
+              <option value="digital">Digitale</option>
+              <option value="3d_customizable">3D Personalizzabile</option>
+            </select>
         </div>
       </div>
 
-      <div className='w-100'>
+      <div className='w-100 mt-3'>
         <h6 className="fw-bold">Descrizione</h6>
         <ReactQuill
           theme="snow"

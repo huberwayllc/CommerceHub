@@ -28,6 +28,29 @@ export interface Variation {
   brand: string
 }
 
+export interface TextureColor {
+  id: string;
+  name: string;
+  hex: string;
+  extraPrice?: number;
+}
+
+export interface Texture {
+  id: string;
+  name: string;
+  baseColorFile: string;
+  normalMapFile: string;
+  roughnessMapFile: string;
+  extraPrice?: number;
+  colors: TextureColor[];
+}
+
+export interface ModelPart {
+  id: string;
+  name: string;
+  textures: Texture[];
+}
+
 export interface ShippingInfo {
   requiresShipping: boolean;
   weight: number;
@@ -40,10 +63,13 @@ export interface ShippingInfo {
 export interface GeneralInfo {
   title: string;           
   itemCode: number;         
-  weight: number;           
   price: number;            
   description: string;      
   requiresShipping: boolean;
+  productType: "physical" | "digital" | "3d_customizable";
+  isAvailable: boolean;
+  objUrl?: string;
+  file?: string;
 }
 
 

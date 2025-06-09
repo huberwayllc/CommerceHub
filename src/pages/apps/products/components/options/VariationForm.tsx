@@ -10,9 +10,10 @@ interface Props {
   show: boolean;
   onSave: (v: Variation) => void;
   onCancel: () => void;
+  productType: "physical" | "digital" | "3d_customizable";
 }
 
-const VariationForm = ({ initial, show, onSave, onCancel }: Props) => {
+const VariationForm = ({ initial, show, onSave, onCancel, productType }: Props) => {
   const [price, setPrice] = useState<number>(initial.price);
   const [stock, setStock] = useState<number>(initial.stock);
   const [lowestPriceBeforeDiscount, setLowestPriceBeforeDiscount] = useState<number>(initial.lowestPriceBeforeDiscount);
@@ -70,6 +71,8 @@ const VariationForm = ({ initial, show, onSave, onCancel }: Props) => {
                 value={itemCode.toString()}
                 onChange={(e) => setItemCode(parseFloat(e.target.value) || 0)}
             />
+            {productType !== "digital" && (
+            <>
             <FloatingInput2
                 placeholder="Peso, Kg"
                 value={weight.toString()}
@@ -91,14 +94,16 @@ const VariationForm = ({ initial, show, onSave, onCancel }: Props) => {
                 onChange={(e) => setHeight(parseFloat(e.target.value) || 0)}
             />
             <FloatingInput2
-                placeholder="UPC"
-                value={upc.toString()}
-                onChange={(e) => setUpc(parseFloat(e.target.value) || 0)}
-            />
-            <FloatingInput2
                 placeholder="Marca"
                 value={brand}
                 onChange={(e) => setBrand(e.target.value)}
+            />
+            </>
+            )}
+            <FloatingInput2
+                placeholder="UPC"
+                value={upc.toString()}
+                onChange={(e) => setUpc(parseFloat(e.target.value) || 0)}
             />
           </div>
 
