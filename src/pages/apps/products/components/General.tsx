@@ -1,17 +1,19 @@
 import { ChangeEvent } from "react";
-import { GoPlus } from "react-icons/go";
 import {Form, } from 'react-bootstrap';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import PriceTab from './Price';
 import { GeneralInfo } from './options/types';
+import ProductGallery from "./ProductGallery";
 
 interface GeneralTabProps {
   data: GeneralInfo;
   onChange: (newData: GeneralInfo) => void;
+  images: string[];                            
+  onImagesChange: (newImages: string[]) => void;
 }
 
-const GeneralTab: React.FC<GeneralTabProps> = ({ data, onChange }) => {
+const GeneralTab: React.FC<GeneralTabProps> = ({ data, onChange,  images, onImagesChange  }) => {
     const handleFieldChange = (
     e: ChangeEvent<HTMLInputElement>
   ) => {
@@ -42,46 +44,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ data, onChange }) => {
   return (
     <>
       {/* Product image section--------------------------- */}
-        <div className="w-100 card p-3">
-          <div className="w-100 d-flex align-items-center justify-content-between">
-            <h6 className="fw-bold">Galleria prodotti</h6>
-            <h6 style={{color: "#2563EB", cursor: "pointer"}} className="fw-semibold">Aggiungi Video</h6>
-          </div>
-            <div className="d-flex align-items-center gap-2">
-            <div className="position-relative card shadow-none mb-0 p-2" style={{
-              width: "130px",
-              height: "130px",
-              cursor: "pointer",
-              backgroundColor: "#ECEEF0"
-            }}>
-              <div style={{
-                position: "absolute",
-                top: "37%",
-                left: "50%",
-                transform: "translate(-50%, -50%)"
-              }}>
-                <GoPlus style={{fontSize: "50px"}}/>
-              </div>
-              <p className="text-center text-black fw-semibold position-absolute" style={{
-                fontSize: "10px",
-                bottom: "0px",
-                left: "50%",
-                transform: "translateX(-50%)"
-              }}>
-                Carica immagine
-              </p>
-            </div>
-              <div className="card shadow-none mb-0 p-2" style={{width: "130px", height: "130px", backgroundColor: "#ECEEF0"}}>
-
-              </div>
-              <div className="card shadow-none mb-0 p-2" style={{width: "130px", height: "130px", backgroundColor: "#ECEEF0"}}>
-
-              </div>
-              <div className="card shadow-none mb-0 p-2" style={{width: "130px", height: "130px", backgroundColor: "#ECEEF0"}}>
-
-              </div>
-            </div>
-        </div>
+      <ProductGallery  images={images} onChange={onImagesChange}  />
         
         <div className='d-block d-md-none '>
           <PriceTab price={data.price}   onPriceChange={(newPrice) => onChange({ ...data, price: newPrice })}/>

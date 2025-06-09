@@ -28,6 +28,14 @@ export interface Variation {
   brand: string
 }
 
+export interface ShippingInfo {
+  requiresShipping: boolean;
+  weight: number;
+  length: number;
+  width: number;
+  height: number;
+}
+
 
 export interface GeneralInfo {
   title: string;           
@@ -50,3 +58,4 @@ export interface Product {
   options: ProductOption[];
   variations: Variation[];
 }
+

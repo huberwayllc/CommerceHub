@@ -36,16 +36,16 @@ const OptionsTab: React.FC<OptionsTabProps> = ({
 
   useEffect(() => {
     if (options.length === 0) {
-      onVariationsChange([]); 
+      if (variations.length > 0) {
+        onVariationsChange([]);
+      }
       return;
     }
-
 
     const lists: string[][] = options.map((o) =>
       o.values.map((v) => v.name!)
     );
     const combos = cartesian(lists);
-
 
     const oldMap: Record<string, Variation> = Object.fromEntries(
       variations.map((v) => [v.id, v])
@@ -58,7 +58,6 @@ const OptionsTab: React.FC<OptionsTabProps> = ({
         opts[o.name] = combo[i];
       });
       const old = oldMap[id];
-
       return {
         id,
         options: opts,
@@ -76,9 +75,13 @@ const OptionsTab: React.FC<OptionsTabProps> = ({
       };
     });
 
+    const oldStr = JSON.stringify(variations);
+    const newStr = JSON.stringify(newVars);
 
-    onVariationsChange(newVars);
-  }, [options]);
+    if (oldStr !== newStr) {
+      onVariationsChange(newVars);
+    }
+  }, [options, variations, onVariationsChange]);
 
   // ── GESTIONE OPZIONI ─────────────────────────────────────────────────────────
 
@@ -180,10 +183,10 @@ const OptionsTab: React.FC<OptionsTabProps> = ({
       )}
 
 
-      {editingVarIdx !== null && (
+      {showVarForm && editingVarIdx !== null && (
         <VariationForm
           show={showVarForm}
-          initial={variations[editingVarIdx]}
+          initial={variations[editingVarIdx]!}
           onSave={handleSaveVar}
           onCancel={handleCancelVar}
         />

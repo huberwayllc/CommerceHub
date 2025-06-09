@@ -13,7 +13,7 @@ import RelatedTab from './components/RelatedProducts';
 import FilesTab from './components/Files';
 import PriceTab from './components/Price';
 import OptionsTab from './components/Options';
-import { ProductOption, Variation, GeneralInfo, Attributes } from './components/options/types';
+import { ProductOption, Variation, GeneralInfo, Attributes, ShippingInfo } from './components/options/types';
 
 const emptyGeneral: GeneralInfo = {
   title: "",
@@ -21,7 +21,7 @@ const emptyGeneral: GeneralInfo = {
   weight: 0,
   price: 0,
   description: "",
-  requiresShipping: false,
+  requiresShipping: false
 };
 
 const emptyAttributes: Attributes = {
@@ -32,8 +32,16 @@ const emptyAttributes: Attributes = {
 const STORAGE_KEY = "product_draft";
 
 const ProductForm = () => {
+  const [images, setImages] = useState<string[]>([]);
   const [general, setGeneral] = useState<GeneralInfo>(emptyGeneral);
   const [attributes, setAttributes] = useState<Attributes>(emptyAttributes);
+  const [shipping, setShipping] = useState<ShippingInfo>({
+  requiresShipping: false,
+  weight: 0,
+  length: 0,
+  width: 0,
+  height: 0,
+});
   const [options, setOptions] = useState<ProductOption[]>([]);
   const [variations, setVariations] = useState<Variation[]>([]);
   const { mode, slug } = useParams();
@@ -51,6 +59,8 @@ const ProductForm = () => {
     component: (
       <GeneralTab
         data={general}
+        images={images}
+        onImagesChange={(imgs) => { setImages(imgs); setIsDirty(true); }}
         onChange={(newGen) => {
           setGeneral(newGen);
           setIsDirty(true);
@@ -88,9 +98,21 @@ const ProductForm = () => {
     )
   },
   { key: 'files', label: 'Files', component: <FilesTab/> },
-  { key: 'spedizione', label: 'Spedizione e ritiro', component: <DeliveryTab/> },
+  {
+    key: 'spedizione',
+    label: 'Spedizione e ritiro',
+    component: (
+      <DeliveryTab
+        shipping={shipping}       
+        onChange={(newShipping) => {
+          setShipping(newShipping);
+          setIsDirty(true);
+        }}
+      />
+    )
+  },
   { key: 'tasse', label: 'Tasse', component: <TaxesTab/> },
-  { key: 'seo', label: 'SEO', component: <SeoTab/> },
+  { key: 'seo', label: 'SEO', component: <SeoTab title={general.title} description={general.description} /> },
   { key: 'correlati', label: 'Prodotti correlati', component: <RelatedTab/> },
   { key: 'incorpora', label: 'Incorpora prodotto', component: <EmbeddedTab/> },
 ];
@@ -114,10 +136,12 @@ const ProductForm = () => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
+        if (parsed.images) setImages(parsed.images);
         if (parsed.general) setGeneral(parsed.general);
         if (parsed.attributes) setAttributes(parsed.attributes);
         if (parsed.options) setOptions(parsed.options);
         if (parsed.variations) setVariations(parsed.variations);
+        if (parsed.shipping)   setShipping(parsed.shipping);
       } catch {
       }
     }
@@ -126,12 +150,12 @@ const ProductForm = () => {
 
 
   const handleSave = useCallback(() => {
-    const toSave = { general, attributes, options, variations };
+    const toSave = { general, attributes, options, variations, shipping, images };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
     setIsDirty(false);
     console.log("✅ Draft salvato in localStorage:", toSave);
     // fetch("/api/products", {...}) backend
-  }, [general, attributes, options, variations]);
+  }, [general, attributes, options, variations, shipping, images]);
 
 
   const handleSaveAndClose = () => {
@@ -254,8 +278,12 @@ const ProductForm = () => {
         {/*Right side: PREZZI DISP. CONTRO. Da tablet in su */}
         <div className="d-none d-md-block col-md-3 pe-3">
           <PriceTab 
-          price={general.price}
-          onPriceChange={(p) => setGeneral({ ...general, price: p })}/>
+            price={general.price}
+            onPriceChange={(p) => {
+              setGeneral({ ...general, price: p });
+              setIsDirty(true);
+            }}
+          />
       </div>
       </div>
       </div>

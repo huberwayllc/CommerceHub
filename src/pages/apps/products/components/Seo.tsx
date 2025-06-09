@@ -1,16 +1,27 @@
 
+type SeoTabProps = {
+  title: string;
+  description: string;
+};
 
+const SeoTab = ({ title, description }: SeoTabProps) => {
 
-const SeoTab = () => {
+const getPlainText = (html: string): string => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    return doc.body.textContent || '';
+  };
+
+  const plainDescription = getPlainText(description);
 
   return (
     <>
     <div className='w-100 card p-4'>
         <h4 className="fw-bold">Ecco come appare il tuo prodotto su Google</h4>
         <div style={{border: "1px solid #7f90aa"}} className="w-100 p-4 rounded-2">
-            <p className="mb-1 fw-semibold" style={{color: "#1a0dab", fontSize: "14px "}}>titolo</p>
-            <p className="mb-0 fw-semibold" style={{color: "#006621"}}>https://ciao123123.company.site/products/cavoletti</p>
-            <p className="mb-0 fw-semibold" style={{color: "#607385"}}>Descrizione Descrizione Descrizione Descrizione Descrizione</p>
+            <p className="mb-1 fw-semibold" style={{color: "#1a0dab", fontSize: "14px "}}>{title || 'Titolo del prodotto'}</p>
+            <p className="mb-0 fw-semibold" style={{color: "#006621"}}>https://ciao123123.company.site/products/{title}</p>
+            <p className="mb-0 fw-semibold" style={{color: "#607385"}}>{plainDescription || 'Descrizione del prodotto'}</p>
         </div>
     </div>
 

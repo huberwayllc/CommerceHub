@@ -1,6 +1,7 @@
 import FloatingInput2 from '@/components/FloatingInput2';
 import { useState } from 'react';
 import { Form } from 'react-bootstrap';
+import { ShippingInfo } from './options/types';
 
 type ShippingOption = 
   | 'storeMethods'
@@ -9,11 +10,19 @@ type ShippingOption =
   | 'freeShipping';
 
 
-const DeliveryTab = () => {
+  interface Props {
+  shipping: ShippingInfo;
+  onChange: (newShipping: ShippingInfo) => void;
+}
+
+const DeliveryTab: React.FC<Props> = ({ shipping, onChange }) => {
   const [selectedOption, setSelectedOption] = useState<ShippingOption>('storeMethods');
   const [isEnabled, setIsEnabled] = useState<boolean>(false);
   const [weight, setWeight] = useState<string>('');
   const [price, setPrice] = useState<string>('');
+
+  const update = (patch: Partial<ShippingInfo>) =>
+    onChange({ ...shipping, ...patch });
 
   const handleToggle = () => {
     setIsEnabled(!isEnabled);
@@ -34,12 +43,12 @@ const DeliveryTab = () => {
               <Form.Check 
                 type="switch"
                 id="delivery-switch"
-                checked={isEnabled}
-                onChange={handleToggle}
+                checked={shipping.requiresShipping}
+                onChange={() => update({ requiresShipping: !shipping.requiresShipping })}
                 style={{ transform: "scale(2.2)" }}
               />
             <div className="mt-2">
-                <p className='fw-bold' style={{position: "relative", right: "6px"}}>{isEnabled ? "Abilitato" : "Disabilitato"}</p>
+                <p className='fw-bold' style={{position: "relative", right: "6px"}}>{shipping.requiresShipping ? "Abilitato" : "Disabilitato"}</p>
             </div>
           </div>
         </div>
@@ -50,26 +59,26 @@ const DeliveryTab = () => {
             <div style={{ width: "50%" }}>
                 <FloatingInput2
                     placeholder="Peso, Kg"
-                    value={weight}
-                    onChange={(e) => setWeight(e.target.value)}
+                    value={shipping.weight.toString()}
+                    onChange={e => update({ weight: parseFloat(e.target.value) || 0 })}
                 />
             </div>
             <div style={{ width: "50%" }} >
                 <div className='d-flex justify-content-between gap-2'>
                     <FloatingInput2
                         placeholder="Lunghezza, cm"
-                        value={weight}
-                        onChange={(e) => setWeight(e.target.value)}
+                        value={shipping.length.toString()}
+                         onChange={e => update({ length: parseFloat(e.target.value) || 0 })}
                     />
                     <FloatingInput2
                         placeholder="Larghezza, cm"
-                        value={weight}
-                        onChange={(e) => setWeight(e.target.value)}
+                        value={shipping.width.toString()}
+                        onChange={e => update({ width: parseFloat(e.target.value) || 0 })}
                     />
                     <FloatingInput2
                         placeholder="Altezza, cm"
-                        value={weight}
-                        onChange={(e) => setWeight(e.target.value)}
+                        value={shipping.height.toString()}
+                        onChange={e => update({ height: parseFloat(e.target.value) || 0 })}
                     />
                 </div>
                 <p className='mt-1' style={{fontSize: "11px"}}>Il calcolo dimensionale del peso è disponibile con la sottoscrizione a Business o di livello superiore</p>
