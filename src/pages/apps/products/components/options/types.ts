@@ -32,7 +32,7 @@ export interface TextureColor {
   id: string;
   name: string;
   hex: string;
-  extraPrice?: number;
+  price?: number; 
 }
 
 export interface Texture {

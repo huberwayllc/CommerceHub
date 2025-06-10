@@ -84,12 +84,13 @@ File: App Css
 
 //body-------------------------------------
 .page-content-tab {
-  background-color: #ECEEF0;
+  background-color: var(--back-gray);
 }
 
 :root {
   --primary-color: #171f2c;
   --border-table-color: #7f90aa;
+  --back-gray: #ECEEF0;
   --blue-color: #2563EB;
 }
 

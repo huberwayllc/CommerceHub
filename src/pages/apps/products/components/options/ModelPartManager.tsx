@@ -1,4 +1,3 @@
-// components/ModelPartManager.tsx
 import React, { useState } from "react";
 import { ModelPart, Texture } from "./types";
 import TextureForm from "./TextureForm";
@@ -11,9 +10,10 @@ interface Props {
   onModelPartsChange: (parts: ModelPart[]) => void;
 }
 
-type Editing = { partIdx: number; texIdx?: number } | null;
+type Editing = { texIdx?: number } | null;
 
 const ModelPartManager: React.FC<Props> = ({ modelParts, onModelPartsChange }) => {
+  const [selectedPartIdx, setSelectedPartIdx] = useState<number>(0);
   const [editing, setEditing] = useState<Editing>(null);
 
   const handleAddPart = () => {
@@ -23,111 +23,126 @@ const ModelPartManager: React.FC<Props> = ({ modelParts, onModelPartsChange }) =
       ...modelParts,
       { id: name.toLowerCase(), name, textures: [] }
     ]);
+    setSelectedPartIdx(modelParts.length); // seleziona la nuova parte
   };
 
   const handleDeletePart = (idx: number) => {
-    onModelPartsChange(modelParts.filter((_, i) => i !== idx));
+    const newParts = modelParts.filter((_, i) => i !== idx);
+    onModelPartsChange(newParts);
+    if (selectedPartIdx >= newParts.length) setSelectedPartIdx(Math.max(0, newParts.length - 1));
   };
 
   const handleSaveTexture = (texture: Texture) => {
-    if (!editing) return;
+    if (selectedPartIdx < 0) return;
     const updated = [...modelParts];
-    const { partIdx, texIdx } = editing;
-
-    if (typeof texIdx === "number") {
-      // modifica
-      updated[partIdx].textures[texIdx] = texture;
+    if (editing && typeof editing.texIdx === "number") {
+      updated[selectedPartIdx].textures[editing.texIdx] = texture;
     } else {
-      // nuova
-      updated[partIdx].textures.push(texture);
+      updated[selectedPartIdx].textures.push(texture);
     }
     onModelPartsChange(updated);
     setEditing(null);
   };
 
+  const handleDeleteTexture = (texIdx: number) => {
+    const updated = [...modelParts];
+    updated[selectedPartIdx].textures = updated[selectedPartIdx].textures.filter((_, idx) => idx !== texIdx);
+    onModelPartsChange(updated);
+  };
+
+  const selectedPart = modelParts[selectedPartIdx];
+
   return (
-    <div className="w-100 card p-3">
-      <div className="d-inline-flex justify-content-between align-items-center mb-3">
-        <h4 className="fw-bold">Parti 3D e Texture</h4>
-        <button
-          className="btn btn-outline-primary d-flex align-items-center gap-2"
-          onClick={handleAddPart}
-        >
-          <FaPlus /> Aggiungi Parte
-        </button>
-      </div>
-
-      {modelParts.length === 0 && (
-        <p className="text-muted">Nessuna parte. Premi “Aggiungi Parte”.</p>
-      )}
-
-      {modelParts.map((part, i) => (
-        <div key={part.id} className="mb-4 border-bottom pb-3">
-          <div className="d-flex justify-content-between align-items-center mb-2">
-            <div className="d-flex align-items-center gap-2">
-              <MdOutlinePhotoSizeSelectActual className="fs-4" />
-              <h5 className="my-0">{part.name}</h5>
-            </div>
-            <FaRegTrashCan
-              className="text-danger"
-              style={{ cursor: 'pointer' }}
-              onClick={() => handleDeletePart(i)}
-            />
-          </div>
-
-          {part.textures.length === 0 && (
-            <p className="text-muted mb-2">Nessuna texture. Aggiungine una.</p>
-          )}
-
-          <div className="row g-3 mb-3">
-            <h6 className="mb-0 fw-bold mt-4">Texture</h6>
-            {part.textures.map((tex, ti) => (
-              <div key={tex.id} className="col-6 col-md-4">
-                <div className="border p-2 rounded position-relative">
-                  <div style={{cursor: "pointer"}} onClick={() => setEditing({ partIdx: i, texIdx: ti })} className="d-flex justify-content-between align-items-center mb-1">
-                    <strong>{tex.name}</strong>
-                    <div className="d-flex gap-2">
-                      <FaRegTrashCan
-                        className="text-danger"
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => {
-                          const upd = [...modelParts];
-                          upd[i].textures = upd[i].textures.filter((_, idx) => idx !== ti);
-                          onModelPartsChange(upd);
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <p className="mb-0 text-sm">Colori: {tex.colors.length}</p>
+    <div className="w-100">
+      <div className="d-flex gap-3" style={{ minHeight: 350 }}>
+        {/* Sidebar Parti */}
+        <div className="card p-3" style={{ width: "30%" }}>
+          <h4 className="fw-bold mb-3 mt-0">Parti 3D</h4>
+          <div className="d-flex flex-column gap-2">
+          {modelParts.map((part, i) => (
+              <div
+                key={part.id}
+                className={`d-flex align-items-center justify-content-between px-2 py-2 rounded ${selectedPartIdx === i ? "backgroundGray borderGray" : ""}`}
+                style={{ cursor: "pointer" }}
+                onClick={() => { setSelectedPartIdx(i); setEditing(null); }}
+              >
+                <div className="d-flex align-items-center gap-2">
+                  <span className="fw-bold" style={{ width: 24, display: "inline-block", textAlign: "center" }}>{i + 1}</span>
+                  <span className="fw-bold">{part.name}</span>
                 </div>
+                <FaRegTrashCan
+                  className="text-danger"
+                  style={{ cursor: 'pointer' }}
+                  onClick={e => { e.stopPropagation(); handleDeletePart(i); }}
+                />
               </div>
             ))}
+            <Button
+              className="mt-2 d-flex align-items-center gap-2 fw-semibold"
+              style={{ border: "1px solid #0d6efd", color: "#0d6efd", background: "transparent" }}
+              onClick={handleAddPart}
+            >
+              <FaPlus /> Aggiungi Parte
+            </Button>
           </div>
+        </div>
 
-          {/* Form per nuova o modifica texture */}
-          {editing?.partIdx === i && (
+        {/* Texture della parte selezionata */}
+        <div className="card p-3" style={{ width: "70%"}}>
+          <h4 className="fw-bold mb-3 mt-0">Texture</h4>
+          {!selectedPart ? (
+            <p className="text-muted">Nessuna parte selezionata.</p>
+          ) : editing ? (
             <TextureForm
-              initial={
-                typeof editing.texIdx === "number"
-                  ? part.textures[editing.texIdx]
-                  : undefined
-              }
+              initial={typeof editing.texIdx === "number" ? selectedPart.textures[editing.texIdx] : undefined}
               onSave={handleSaveTexture}
               onCancel={() => setEditing(null)}
             />
-          )}
-
-          {/* Bottone per aggiungere nuova texture */}
-          {!editing && (
-            <Button
-              className="btn d-flex align-items-center gap-2"
-              onClick={() => setEditing({ partIdx: i })}
-            >
-              <FaPlus /> Aggiungi Texture
-            </Button>
+          ) : (
+            <>
+              <div className="w-100 d-inline-flex justify-content-between align-items-center mb-2">
+                <h5 className="fw-bold my-0">Texture di {selectedPart.name}</h5>
+                <Button
+                  className="d-flex align-items-center gap-2"
+                  style={{ border: "1px solid #0d6efd", color: "#0d6efd", background: "transparent" }}
+                  onClick={() => setEditing({})}
+                >
+                  <FaPlus /> Aggiungi Texture
+                </Button>
+              </div>
+                {selectedPart.textures.length === 0 ? (
+                  <p className="text-muted">Nessuna texture. Premi "Aggiungi Texture".</p>
+                ) : (
+                  <div className="d-flex flex-wrap gap-3">
+                    {selectedPart.textures.map((tex, ti) => (
+                      <div
+                        key={tex.id}
+                        className="backgroundGray borderGray rounded-2"
+                        style={{ maxWidth: 200, flex: "1 1 220px"}}
+                      >
+                        <div
+                          className="border p-2 rounded position-relative"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => setEditing({ texIdx: ti })}
+                        >
+                          <div className="d-flex justify-content-between align-items-center mb-1">
+                            <strong>{tex.name}</strong>
+                            <FaRegTrashCan
+                              className="text-danger"
+                              style={{ cursor: 'pointer' }}
+                              onClick={e => { e.stopPropagation(); handleDeleteTexture(ti); }}
+                            />
+                          </div>
+                          <p className="mb-0 text-sm">Colori: {tex.colors.length}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+            </>
           )}
         </div>
-      ))}
+      </div>
     </div>
   );
 };
