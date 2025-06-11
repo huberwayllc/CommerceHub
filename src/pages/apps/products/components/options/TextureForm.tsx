@@ -25,6 +25,7 @@ const TextureForm: React.FC<Props> = ({ initial, onSave, onCancel }) => {
   const [newColorHex, setNewColorHex] = useState("#aabbcc");
   const [newColorName, setNewColorName] = useState("");
   const [newColorPrice, setNewColorPrice] = useState<string>("");
+  const [flagAddColor, setFlagAddColor] = useState<boolean>(false);
 
   // Se cambio initial, aggiorno i campi
   useEffect(() => {
@@ -214,7 +215,19 @@ const TextureForm: React.FC<Props> = ({ initial, onSave, onCancel }) => {
       <hr className="my-4" />
 
       {/* Sezione Colori */}
-      <h6 className="fw-bold mb-3">Colori della Texture</h6>
+      <div className="w-100 d-inline-flex align-items-center justify-content-between mb-3">
+        <h6 className="fw-bold my-0">Colori della Texture</h6>
+        {flagAddColor === false &&
+          <Button
+            onClick={() => {setFlagAddColor(true)}}
+            className="d-flex align-items-center gap-2 bg-transparent colorPrimary noHover"
+            style={{cursor: "pointer"}}
+          >
+            <Plus /> Aggiungi Colore
+          </Button>
+        }
+      </div>
+      
       {colors.length === 0 && (
         <p className="text-muted">Nessun colore aggiunto. Aggiungine uno.</p>
       )}
@@ -241,42 +254,46 @@ const TextureForm: React.FC<Props> = ({ initial, onSave, onCancel }) => {
                 )}
               </span>
             </div>
-            <Trash2 // Icona del cestino
+            <Trash2 
               className="text-danger"
-              style={{ cursor: "pointer" }}
+              size={16}
+              style={{ cursor: "pointer", fontSize: "10px" }}
               onClick={() => handleDeleteColor(color.id)}
             />
           </div>
         ))}
       </div>
 
+      {flagAddColor &&
       <div className=" mb-4">
         <hr className="my-4" />
         <h6 className="fw-bold mb-3">Aggiungi Nuovo Colore</h6>
-        <Row className="g-3 mb-3 align-items-end">
-          <Col md={4}>
+        <div className="w-100 d-inline-flex align-items-center justify-content-between gap-3 mb-3">
+          <div className="w-100">
             <Form.Group>
-              <Form.Label className="text-black fw-semibold">Nome colore</Form.Label>
-              <Form.Control
+              <p className="text-black fw-semibold mb-1">Nome colore</p>
+              <input
                 type="text"
+                className="input-product w-100"
                 placeholder='Es. "Nero Opaco"'
                 value={newColorName}
                 onChange={(e) => setNewColorName(e.target.value)}
               />
             </Form.Group>
-          </Col>
-          <Col md={4}>
-            <Form.Group>
-              <Form.Label className="text-black fw-semibold">Codice HEX</Form.Label>
-              <InputGroup>
-                <Form.Control
+          </div>
+          <div className="w-100">
+              <p className="text-black fw-semibold mb-1">Codice HEX</p>
+              <div className="d-flex">
+                <input
                   type="text"
+                  className="input-product"
                   value={newColorHex}
                   onChange={(e) => {
                     const hexValue = e.target.value;
                     setNewColorHex(hexValue);
                   }}
                   style={{
+                    width: "75%", borderTopRightRadius: "0px", borderBottomRightRadius: "0px",
                     borderColor: /^#([0-9A-Fa-f]{3}){1,2}$/.test(newColorHex) ? '' : 'red'
                   }}
                 />
@@ -284,20 +301,22 @@ const TextureForm: React.FC<Props> = ({ initial, onSave, onCancel }) => {
                   type="color"
                   value={newColorHex}
                   onChange={(e) => setNewColorHex(e.target.value)}
-                  className="form-control form-control-color"
+                  className="w-25 input-product"
                   title="Scegli il colore dalla tavolozza"
-                  style={{ width: '40px', height: '38px', padding: '0', border: 'none', cursor: 'pointer' }}
+                  style={{padding: '0', border: 'none', cursor: 'pointer', 
+                    borderTopLeftRadius: "0px", borderBottomLeftRadius: "0px"
+                   }}
                 />
-              </InputGroup>
-            </Form.Group>
-          </Col>
-          <Col md={4}>
+              </div>
+          </div>
+          <div className="w-100">
             <Form.Group>
-              <Form.Label className="text-black fw-semibold">
-                Prezzo aggiuntivo (opzionale)
-              </Form.Label>
+              <p className="text-black fw-semibold mb-1">
+                Prezzo aggiuntivo, €
+              </p>
               <InputGroup>
-                <Form.Control
+                <input
+                className="w-100 input-product"
                   type="number"
                   placeholder="0.00"
                   value={newColorPrice}
@@ -305,21 +324,30 @@ const TextureForm: React.FC<Props> = ({ initial, onSave, onCancel }) => {
                   min="0"
                   step="0.01"
                 />
-                <InputGroup.Text>€</InputGroup.Text>
               </InputGroup>
             </Form.Group>
-          </Col>
-        </Row>
+          </div>
+        </div>
 
+      <div className="d-inline-flex gap-2 justify-content-start ">
         <Button
-          variant="outline-primary"
           onClick={handleAddColor}
           disabled={!newColorName.trim() || !/^#([0-9A-Fa-f]{3}){1,2}$/.test(newColorHex)}
           className="d-flex align-items-center gap-2"
         >
           <Plus /> Aggiungi Colore
         </Button>
+        <Button
+        onClick={()=> {setFlagAddColor(false)}}
+          className="d-flex align-items-center gap-2 bg-transparent colorPrimary noHover"
+          style={{cursor: "pointer"}}
+        >
+          Annulla
+        </Button>
       </div>
+      </div>
+      }
+
 
       <div className=" d-inline-flex gap-2 mt-2">
         <Button
