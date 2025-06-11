@@ -10,7 +10,7 @@ import TaxesTab from './components/Taxes';
 import SeoTab from './components/Seo';
 import EmbeddedTab from './components/EmbeddedProduct';
 import RelatedTab from './components/RelatedProducts';
-import FilesTab from './components/Files';
+//import FilesTab from './components/Files';
 import PriceTab from './components/Price';
 import OptionsTab from './components/Options';
 import { ProductOption, Variation, GeneralInfo, Attributes, ShippingInfo, ModelPart } from './components/options/types';

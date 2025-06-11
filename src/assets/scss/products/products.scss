@@ -182,8 +182,9 @@
   opacity: 0;
   font-size: 12px;
   transition: opacity 0.2s ease-in-out;
-  pointer-events: none
+  pointer-events: auto;
 }
+
 
 .image-card:hover .overlay {
   opacity: 1;

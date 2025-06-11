@@ -10,6 +10,7 @@ interface ProductGalleryProps {
 
 const ProductGallery: React.FC<ProductGalleryProps> = ({ images, onChange }) => {
   const [loading, setLoading] = useState(false);
+  const [isDraggingFiles, setIsDraggingFiles] = useState(false);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
 
@@ -35,25 +36,66 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, onChange }) => 
     }
   };
 
+  const handleFileDrop = async (e: DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    setIsDraggingFiles(false);
+    const files = Array.from(e.dataTransfer.files).filter(file =>
+      file.type.startsWith('image/')
+    );
+    if (!files.length) return;
+    setLoading(true);
+
+    const readImage = (file: File): Promise<string> =>
+      new Promise((res, rej) => {
+        const reader = new FileReader();
+        reader.onload = () => reader.result ? res(reader.result as string) : rej();
+        reader.onerror = () => rej();
+        reader.readAsDataURL(file);
+      });
+
+    try {
+      const results = await Promise.all(files.map(readImage));
+      onChange([...images, ...results]);
+    } catch {
+      // handle error
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDragOver = (e: DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+  };
+
+  const handleDragEnter = (e: DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    setIsDraggingFiles(true);
+  };
+
+  const handleDragLeave = (e: DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    setIsDraggingFiles(false);
+  };
+
   const onDragStart = (index: number) => (e: DragEvent) => {
     setDragIndex(index);
     e.dataTransfer.effectAllowed = 'move';
   };
 
-  const onDragOver = (index: number) => (e: DragEvent) => {
+  const onDragOverReorder = (index: number) => (e: DragEvent) => {
     e.preventDefault();
     if (dragIndex !== null && dragIndex !== index) {
       setHoverIndex(index);
     }
   };
 
-  const onDragLeave = (index: number) => () => {
+  const onDragLeaveReorder = (index: number) => () => {
     if (hoverIndex === index) {
       setHoverIndex(null);
     }
   };
 
-  const onDrop = (index: number) => (e: DragEvent) => {
+  const onDropReorder = (index: number) => (e: DragEvent) => {
     e.preventDefault();
     if (dragIndex === null) return;
     const updated = [...images];
@@ -70,10 +112,10 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, onChange }) => 
   };
 
   const handleDelete = (index: number) => {
-  const updated = [...images];
-  updated.splice(index, 1);
-  onChange(updated);
-};
+    const updated = [...images];
+    updated.splice(index, 1);
+    onChange(updated);
+  };
 
   return (
     <div className="w-100 card p-3">
@@ -96,9 +138,9 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, onChange }) => 
             }}
             draggable
             onDragStart={onDragStart(index)}
-            onDragOver={onDragOver(index)}
-            onDragLeave={onDragLeave(index)}
-            onDrop={onDrop(index)}
+            onDragOver={onDragOverReorder(index)}
+            onDragLeave={onDragLeaveReorder(index)}
+            onDrop={onDropReorder(index)}
             onDragEnd={onDragEnd}
           >
             <img
@@ -110,44 +152,79 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, onChange }) => 
             />
             <div className="overlay">
               <strong>Trascina per ordinare</strong>
-            <div
+              <button
+                type="button"
+                draggable={false}
                 style={{
-                position: 'absolute',
-                top: 4,
-                right: 4,
-                width: 24,
-                height: 24,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
+                  position: 'absolute',
+                  top: 4,
+                  right: 4,
+                  width: 24,
+                  height: 24,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  zIndex: 10,
+                  background: 'transparent',
+                  border: 'none',
+                  padding: 0,
                 }}
                 onClick={(e) => {
-                e.stopPropagation();
-                handleDelete(index);
+                  e.stopPropagation();
+                  handleDelete(index);
                 }}
                 title="Elimina immagine"
-            >
+              >
                 <FaTrashAlt color="white" size={12} />
+              </button>
             </div>
-            </div>
-
           </div>
         ))}
         <label
           className="position-relative card shadow-none mb-0 p-2"
-          style={{ width: 130, height: 130, cursor: 'pointer', backgroundColor: '#ECEEF0' }}
+          style={{
+            width: 130,
+            height: 130,
+            cursor: 'pointer',
+            backgroundColor: isDraggingFiles ? '#cfe3ff' : '#ECEEF0',
+            border: isDraggingFiles ? '2px dashed #337ab7' : undefined,
+            transition: 'background-color 0.2s, border 0.2s'
+          }}
+          onDrop={handleFileDrop}
+          onDragOver={handleDragOver}
+          onDragEnter={handleDragEnter}
+          onDragLeave={handleDragLeave}
         >
           <input type="file" accept="image/*" multiple onChange={handleImageUpload} hidden />
-          <div style={{ position: 'absolute', top: '37%', left: '50%', transform: 'translate(-50%, -50%)' }}>
-            <GoPlus style={{ fontSize: 50 }} />
-          </div>
-          <p
-            className="text-center text-black fw-semibold position-absolute"
-            style={{ fontSize: 10, bottom: 0, left: '50%', transform: 'translateX(-50%)' }}
-          >
-            Carica immagine
-          </p>
+
+          {isDraggingFiles ? (
+            <div
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                textAlign: 'center',
+                fontSize: 12,
+                color: '#337ab7'
+              }}
+            >
+              Trascina e rilascia qui<br/>le tue immagini
+            </div>
+          ) : (
+            <>
+              <div style={{ position: 'absolute', top: '37%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+                <GoPlus style={{ fontSize: 50 }} />
+              </div>
+              <p
+                className="text-center text-black fw-semibold position-absolute"
+                style={{ fontSize: 10, bottom: 0, left: '50%', transform: 'translateX(-50%)' }}
+              >
+                Carica immagine
+              </p>
+            </>
+          )}
         </label>
       </div>
     </div>
