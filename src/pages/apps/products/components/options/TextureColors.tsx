@@ -1,4 +1,3 @@
-// TextureColors.tsx
 import React, { useState } from "react";
 import { TextureColor } from "./types";
 import { Button, Form, InputGroup } from "react-bootstrap";
@@ -21,6 +20,11 @@ export const TextureColors: React.FC<TextureColorsProps> = ({
   const [newColorName, setNewColorName] = useState("");
   const [newColorHex, setNewColorHex] = useState("#aabbcc");
   const [newColorPrice, setNewColorPrice] = useState("");
+  const [editingColorId, setEditingColorId] = useState<string | null>(null);
+  const [editColorName, setEditColorName] = useState("");
+  const [editColorHex, setEditColorHex] = useState("#aabbcc");
+  const [editColorPrice, setEditColorPrice] = useState("");
+  const [editColorIsDefault, setEditColorIsDefault] = useState(false);
   const [dragIndex,  setDragIndex]  = useState<number | null>(null);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
   const [newColorIsDefault, setNewColorIsDefault] = useState(false);
@@ -84,6 +88,45 @@ const handleAdd = () => {
   setFlagAddColor(false);
 };
 
+
+const handleAddOrEdit = () => {
+  const payload: Omit<TextureColor, "id"> & { id?: string } = {
+    name: editingColorId ? editColorName.trim() : newColorName.trim(),
+    hex: editingColorId ? editColorHex.trim() : newColorHex.trim(),
+    price: parseFloat(editingColorId ? editColorPrice : newColorPrice) || 0,
+    isDefault: editingColorId ? editColorIsDefault : newColorIsDefault,
+    ...(editingColorId && { id: editingColorId }),
+  };
+
+  // Se stiamo editando
+  if (editingColorId) {
+    let updated = colors.map((c) =>
+      c.id === editingColorId
+        ? { ...c, ...payload as any }  // aggiorna solo quello
+        : payload.isDefault
+        ? { ...c, isDefault: false }    // se edit imposta default, resetta altri
+        : c
+    );
+    onReorderColors(updated);
+  } else {
+    // Aggiungi nuovo colore
+    if (payload.isDefault) {
+      // resetta tutti gli altri
+      onReorderColors(colors.map((c) => ({ ...c, isDefault: false })));
+    }
+    onAddColor(payload as Omit<TextureColor, "id">);
+  }
+
+  // Reset form
+  setNewColorName("");
+  setNewColorHex("#aabbcc");
+  setNewColorPrice("");
+  setNewColorIsDefault(false);
+  setEditingColorId(null);
+  setFlagAddColor(false);
+};
+
+
   return (
     <>
       <div className="w-100 d-inline-flex align-items-center justify-content-between mb-3">
@@ -111,6 +154,14 @@ const handleAdd = () => {
             onDragLeave={onDragLeave(index)}
             onDrop={onDrop(index)}
             onDragEnd={onDragEnd}
+            onClick={() => {
+            setEditingColorId(color.id);
+            setFlagAddColor(true);
+            setEditColorName(color.name);
+            setEditColorHex(color.hex);
+            setEditColorPrice(color.price?.toString() || "");
+            setEditColorIsDefault(color.isDefault || false);
+          }}
             className={
                 "d-flex align-items-center justify-content-between border rounded p-2 mb-2" +
                 (hoverIndex === index ? " bg-light" : "")
@@ -130,115 +181,164 @@ const handleAdd = () => {
               <span>
                 {color.name} ({color.hex})
                 {(color.price ?? 0) > 0 && <span className="ms-2 text-muted">+{color.price ?? 0}€</span>}
+                {color.isDefault && <span className="badge bg-primary ms-2">Predefinito</span>}
               </span>
             </div>
             <Trash2
               className="text-danger"
               size={16}
               style={{ cursor: "pointer", fontSize: "10px" }}
-              onClick={() => onDeleteColor(color.id)}
+               onClick={(e) => {
+                  e.stopPropagation();      // ← previene il click sul padre
+                  onDeleteColor(color.id);
+                }}
             />
           </div>
         ))}
       </div>
 
-      {flagAddColor && (
-        <div className="mb-4">
-          <hr className="my-4" />
-          <h6 className="fw-bold mb-3">Aggiungi Nuovo Colore</h6>
-          <div className="w-100 d-inline-flex align-items-center justify-content-between gap-3 mb-0">
-            <div className="w-100">
-              <Form.Group>
-                <p className="text-black fw-semibold mb-1">Nome colore</p>
-                <input
-                  type="text"
-                  className="input-product w-100"
-                  placeholder='Es. "Nero Opaco"'
-                  value={newColorName}
-                  onChange={(e) => setNewColorName(e.target.value)}
-                />
-              </Form.Group>
-            </div>
-            <div className="w-100">
-              <p className="text-black fw-semibold mb-1">Codice HEX</p>
-              <div className="d-flex">
-                <input
-                  type="text"
-                  className="input-product"
-                  value={newColorHex}
-                  onChange={(e) => setNewColorHex(e.target.value)}
-                  style={{
-                    width: "75%",
-                    borderTopRightRadius: 0,
-                    borderBottomRightRadius: 0,
-                    borderColor: /^#([0-9A-Fa-f]{3}){1,2}$/.test(newColorHex)
-                      ? ""
-                      : "red",
-                  }}
-                />
-                <input
-                  type="color"
-                  value={newColorHex}
-                  onChange={(e) => setNewColorHex(e.target.value)}
-                  className="w-25 input-product"
-                  title="Scegli il colore dalla tavolozza"
-                  style={{
-                    padding: 0,
-                    border: "none",
-                    cursor: "pointer",
-                    borderTopLeftRadius: 0,
-                    borderBottomLeftRadius: 0,
-                  }}
-                />
-              </div>
-            </div>
-            <div className="w-100">
-              <Form.Group>
-                <p className="text-black fw-semibold mb-1">Prezzo aggiuntivo, €</p>
-                <InputGroup>
-                  <input
-                    className="w-100 input-product"
-                    type="number"
-                    placeholder="0.00"
-                    value={newColorPrice}
-                    onChange={(e) => setNewColorPrice(e.target.value)}
-                    min="0"
-                    step="0.01"
-                  />
-                </InputGroup>
-              </Form.Group>
-            </div>
-          </div>
-            <Form.Group className="mb-4 mt-3">
-              <Form.Check
-                type="checkbox"
-                id="default-color-checkbox"
-                label="Imposta come colore predefinito"
-                checked={newColorIsDefault}
-                onChange={(e) => setNewColorIsDefault(e.target.checked)}
-              />
-            </Form.Group>
-          <div className="d-inline-flex gap-2 justify-content-start">
-            <Button
-              onClick={handleAdd}
-              disabled={
-                !newColorName.trim() ||
-                !/^#([0-9A-Fa-f]{3}){1,2}$/.test(newColorHex)
-              }
-              className="d-flex align-items-center gap-2"
-            >
-              <Plus /> Aggiungi Colore
-            </Button>
-            <Button
-              onClick={() => setFlagAddColor(false)}
-              className="d-flex align-items-center gap-2 bg-transparent colorPrimary noHover"
-              style={{ cursor: "pointer" }}
-            >
-              Annulla
-            </Button>
-          </div>
+{flagAddColor && (
+  <div className="mb-4">
+    <hr className="my-4" />
+    <h6 className="fw-bold mb-3">
+      {editingColorId ? "Modifica Colore" : "Aggiungi Nuovo Colore"}
+    </h6>
+
+    {/* RIGA DEGLI INPUT */}
+    <div className="w-100 d-inline-flex align-items-center justify-content-between gap-3 mb-0">
+      {/* Nome */}
+      <div className="w-100">
+        <Form.Group>
+          <p className="text-black fw-semibold mb-1">Nome colore</p>
+          <input
+            type="text"
+            className="input-product w-100"
+            placeholder='Es. "Nero Opaco"'
+            value={editingColorId ? editColorName : newColorName}
+            onChange={(e) =>
+              editingColorId
+                ? setEditColorName(e.target.value)
+                : setNewColorName(e.target.value)
+            }
+          />
+        </Form.Group>
+      </div>
+
+      {/* Codice HEX */}
+      <div className="w-100">
+        <p className="text-black fw-semibold mb-1">Codice HEX</p>
+        <div className="d-flex">
+          <input
+            type="text"
+            className="input-product"
+            value={editingColorId ? editColorHex : newColorHex}
+            onChange={(e) =>
+              editingColorId
+                ? setEditColorHex(e.target.value)
+                : setNewColorHex(e.target.value)
+            }
+            style={{
+              width: "75%",
+              borderTopRightRadius: 0,
+              borderBottomRightRadius: 0,
+              borderColor: /^#([0-9A-Fa-f]{3}){1,2}$/.test(
+                editingColorId ? editColorHex : newColorHex
+              )
+                ? ""
+                : "red",
+            }}
+          />
+          <input
+            type="color"
+            value={editingColorId ? editColorHex : newColorHex}
+            onChange={(e) =>
+              editingColorId
+                ? setEditColorHex(e.target.value)
+                : setNewColorHex(e.target.value)
+            }
+            className="w-25 input-product"
+            title="Scegli il colore dalla tavolozza"
+            style={{
+              padding: 0,
+              border: "none",
+              cursor: "pointer",
+              borderTopLeftRadius: 0,
+              borderBottomLeftRadius: 0,
+            }}
+          />
         </div>
-      )}
+      </div>
+
+      {/* Prezzo */}
+      <div className="w-100">
+        <Form.Group>
+          <p className="text-black fw-semibold mb-1">Prezzo aggiuntivo, €</p>
+          <InputGroup>
+            <input
+              className="w-100 input-product"
+              type="number"
+              placeholder="0.00"
+              value={editingColorId ? editColorPrice : newColorPrice}
+              onChange={(e) =>
+                editingColorId
+                  ? setEditColorPrice(e.target.value)
+                  : setNewColorPrice(e.target.value)
+              }
+              min="0"
+              step="0.01"
+            />
+          </InputGroup>
+        </Form.Group>
+      </div>
+    </div>
+
+    {/* Checkbox Predefinito */}
+    <Form.Group className="mb-4 mt-3">
+      <Form.Check
+        type="checkbox"
+        id="default-color-checkbox"
+        label="Imposta come colore predefinito"
+        checked={
+          editingColorId ? editColorIsDefault : newColorIsDefault
+        }
+        onChange={(e) =>
+          editingColorId
+            ? setEditColorIsDefault(e.target.checked)
+            : setNewColorIsDefault(e.target.checked)
+        }
+      />
+    </Form.Group>
+
+    {/* Pulsanti Salva/Annulla */}
+    <div className="d-inline-flex gap-2 justify-content-start">
+      <Button
+        onClick={handleAddOrEdit}
+        disabled={
+          !(editingColorId
+            ? editColorName.trim()
+            : newColorName.trim()) ||
+          !/^#([0-9A-Fa-f]{3}){1,2}$/.test(
+            editingColorId ? editColorHex : newColorHex
+          )
+        }
+        className="d-flex align-items-center gap-2"
+      >
+        {editingColorId ? "Salva Modifice" : <><Plus /> Aggiungi Colore</>}
+      </Button>
+      <Button
+        onClick={() => {
+          setFlagAddColor(false);
+          setEditingColorId(null);
+        }}
+        className="d-flex align-items-center gap-2 bg-transparent colorPrimary noHover"
+        style={{ cursor: "pointer" }}
+      >
+        Annulla
+      </Button>
+    </div>
+  </div>
+)}
+
     </>
   );
 };
