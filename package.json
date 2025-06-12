@@ -48,6 +48,7 @@
     "prismjs": "^1.29.0",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.1",
+    "react-beautiful-dnd": "^13.1.1",
     "react-bootstrap": "^2.9.2",
     "react-color": "^2.19.3",
     "react-cropper": "^2.3.3",

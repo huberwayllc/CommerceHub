@@ -33,11 +33,13 @@ export interface TextureColor {
   name: string;
   hex: string;
   price?: number; 
+  isDefault: boolean;
 }
 
 export interface Texture {
   id: string;
   name: string;
+  isDefault: boolean;
   baseColorFile: string;
   normalMapFile: string;
   roughnessMapFile: string;

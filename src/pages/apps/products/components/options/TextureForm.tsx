@@ -15,6 +15,7 @@ interface Props {
 const TextureForm: React.FC<Props> = ({ initial, onSave, onCancel }) => {
   const [open, setOpen] = useState(true);
   const [name, setName] = useState(initial?.name || "");
+  const [isDefault, setIsDefault] = useState(initial?.isDefault || false);
   const [baseColorFile, setBaseColorFile] = useState<string | null>(
     initial?.baseColorFile || null
   );
@@ -120,6 +121,7 @@ const handleDrop =
       id: initial?.id || Date.now().toString(),
       name: name.trim(),
       baseColorFile,
+      isDefault,
       normalMapFile: normalMapFile || "",
       roughnessMapFile: roughnessMapFile || "",
       colors,
@@ -151,16 +153,28 @@ const handleDrop =
       {open && (
         <>
           <Form.Group className="mb-2">
-            <p className="text-black mb-1 fw-semibold">Nome texture</p>
-            <input
-              type="text"
-              className="w-50 input-product"
-              placeholder="Es. Pelle Lux"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+            <div className="d-flex align-items-center gap-3">
+              <div className="flex-grow-1">
+                <p className="text-black mb-1 fw-semibold">Nome texture</p>
+                <input
+                  type="text"
+                  className="w-100 input-product"
+                  placeholder="Es. Pelle Lux"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+              <Form.Check
+                type="checkbox"
+                id="default-checkbox"
+                label="Predefinita"
+                checked={isDefault}
+                onChange={(e) => setIsDefault(e.target.checked)}
+                className="mt-4"
+              />
+            </div>
           </Form.Group>
-
+          
           <h6 className="text-black mb-3 fw-bold mt-4">
             Inserisci i file (.jpg/.png)
           </h6>
@@ -348,6 +362,7 @@ const handleDrop =
         colors={colors}
         onAddColor={handleAddColor}
         onDeleteColor={handleDeleteColor}
+        onReorderColors={setColors}
       />
 
       {/* Salva / Annulla */}

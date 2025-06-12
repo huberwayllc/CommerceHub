@@ -8,30 +8,81 @@ interface TextureColorsProps {
   colors: TextureColor[];
   onAddColor: (c: Omit<TextureColor, "id">) => void;
   onDeleteColor: (id: string) => void;
+  onReorderColors: (newColors: TextureColor[]) => void;
 }
 
 export const TextureColors: React.FC<TextureColorsProps> = ({
   colors,
   onAddColor,
   onDeleteColor,
+  onReorderColors
 }) => {
   const [flagAddColor, setFlagAddColor] = useState(false);
   const [newColorName, setNewColorName] = useState("");
   const [newColorHex, setNewColorHex] = useState("#aabbcc");
   const [newColorPrice, setNewColorPrice] = useState("");
+  const [dragIndex,  setDragIndex]  = useState<number | null>(null);
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+  const [newColorIsDefault, setNewColorIsDefault] = useState(false);
 
-  const handleAdd = () => {
-    onAddColor({
-      name: newColorName.trim(),
-      hex: newColorHex.trim(),
-      price: parseFloat(newColorPrice) || 0,
-    });
-    // reset
-    setNewColorName("");
-    setNewColorHex("#aabbcc");
-    setNewColorPrice("");
-    setFlagAddColor(false);
+
+
+const onDragStart = (index: number) => (e: React.DragEvent) => {
+  setDragIndex(index);
+  e.dataTransfer.effectAllowed = "move";
+};
+
+const onDragOver = (index: number) => (e: React.DragEvent) => {
+  e.preventDefault();
+  if (dragIndex !== null && dragIndex !== index) {
+    setHoverIndex(index);
+  }
+};
+
+const onDragLeave = (index: number) => () => {
+  if (hoverIndex === index) {
+    setHoverIndex(null);
+  }
+};
+
+const onDrop = (index: number) => (e: React.DragEvent) => {
+  e.preventDefault();
+  if (dragIndex === null) return;
+  const updated = [...colors];
+  const [moved] = updated.splice(dragIndex, 1);
+  updated.splice(index, 0, moved);
+  onReorderColors(updated);
+  setDragIndex(null);
+  setHoverIndex(null);
+};
+
+const onDragEnd = () => {
+  setDragIndex(null);
+  setHoverIndex(null);
+};
+
+
+const handleAdd = () => {
+  const baseColor = {
+    name: newColorName.trim(),
+    hex: newColorHex.trim(),
+    price: parseFloat(newColorPrice) || 0,
+    isDefault: newColorIsDefault,
   };
+
+  if (newColorIsDefault) {
+    const updatedColors = colors.map(c => ({ ...c, isDefault: false }));
+    onReorderColors(updatedColors); // Reset predefinito prima
+  }
+
+  onAddColor(baseColor);
+
+  setNewColorName("");
+  setNewColorHex("#aabbcc");
+  setNewColorPrice("");
+  setNewColorIsDefault(false);
+  setFlagAddColor(false);
+};
 
   return (
     <>
@@ -51,11 +102,21 @@ export const TextureColors: React.FC<TextureColorsProps> = ({
       {colors.length === 0 && <p className="text-muted">Nessun colore aggiunto. Aggiungine uno.</p>}
 
       <div className="mb-3">
-        {colors.map((color) => (
-          <div
+        {colors.map((color, index) => (
+            <div 
             key={color.id}
-            className="d-flex align-items-center justify-content-between border rounded p-2 mb-2"
-          >
+            draggable
+            onDragStart={onDragStart(index)}
+            onDragOver={onDragOver(index)}
+            onDragLeave={onDragLeave(index)}
+            onDrop={onDrop(index)}
+            onDragEnd={onDragEnd}
+            className={
+                "d-flex align-items-center justify-content-between border rounded p-2 mb-2" +
+                (hoverIndex === index ? " bg-light" : "")
+            }
+            style={{ cursor: "move" }}
+            >
             <div className="d-flex align-items-center gap-2">
               <div
                 style={{
@@ -85,7 +146,7 @@ export const TextureColors: React.FC<TextureColorsProps> = ({
         <div className="mb-4">
           <hr className="my-4" />
           <h6 className="fw-bold mb-3">Aggiungi Nuovo Colore</h6>
-          <div className="w-100 d-inline-flex align-items-center justify-content-between gap-3 mb-3">
+          <div className="w-100 d-inline-flex align-items-center justify-content-between gap-3 mb-0">
             <div className="w-100">
               <Form.Group>
                 <p className="text-black fw-semibold mb-1">Nome colore</p>
@@ -148,6 +209,15 @@ export const TextureColors: React.FC<TextureColorsProps> = ({
               </Form.Group>
             </div>
           </div>
+            <Form.Group className="mb-4 mt-3">
+              <Form.Check
+                type="checkbox"
+                id="default-color-checkbox"
+                label="Imposta come colore predefinito"
+                checked={newColorIsDefault}
+                onChange={(e) => setNewColorIsDefault(e.target.checked)}
+              />
+            </Form.Group>
           <div className="d-inline-flex gap-2 justify-content-start">
             <Button
               onClick={handleAdd}
