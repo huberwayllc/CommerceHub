@@ -1,0 +1,133 @@
+import React, { useEffect, useState, useRef } from "react";
+import { useNavigate, Link, useLocation } from "react-router-dom";
+import Avatar from "@mui/material/Avatar";
+import { IoIosSearch } from "react-icons/io";
+import { SquaresPlusIcon, StarIcon, Cog6ToothIcon } from "@heroicons/react/24/outline";
+import AppsMenu from "./AppsMenu";
+
+interface User {
+	email: string;
+	name: string;
+	id: number | null;
+	company?: any;
+	sub_accounts?: any;
+	subscription?: any;
+}
+
+interface HeaderProps {
+	onActionClick?: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ onActionClick }) => {
+	const [user, setUser] = useState<User>({ email: "", name: "", id: null });
+	const [menuVisible, setMenuVisible] = useState(false);
+	const [iaOpen, setIaOpen] = useState(false);
+	const [appsOpen, setAppsOpen] = useState(false);
+	const [searchQuery, setSearchQuery] = useState("");
+	const [showSearch, setShowSearch] = useState(false);
+	const navigate = useNavigate();
+	const location = useLocation();
+	const menuRef = useRef<HTMLDivElement>(null);
+	const searchInputRef = useRef<HTMLInputElement>(null);
+
+
+
+	const handleLogout = () => {
+		document.cookie.split(";").forEach((cookie) => {
+			const [name] = cookie.split("=");
+			document.cookie = `${name}=; Path=/; Domain=.huberway.com; Expires=Thu, 01 Jan 1970 00:00:00 UTC; Secure; SameSite=Strict`;
+		});
+		navigate("/account/login");
+	};
+
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+				setMenuVisible(false);
+			}
+		};
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => document.removeEventListener("mousedown", handleClickOutside);
+	}, []);
+
+	const getPageData = () => {
+		if (location.pathname.includes("websites")) {
+			return { title: "Websites", button: "+ Add Website", buttonLink: "/account/websites" };
+		} else if (location.pathname.includes("dashboard")) {
+			return { title: "Dashboard" };
+		}
+		return { title: "Huberway", button: null };
+	};
+
+	const pageData = getPageData();
+
+	const handleActionClick = () => {
+		if (onActionClick) return onActionClick();
+		if (pageData.buttonLink) navigate(pageData.buttonLink);
+	};
+
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+				e.preventDefault();
+				searchInputRef.current?.focus();
+			}
+		};
+		window.addEventListener("keydown", handleKeyDown);
+		return () => window.removeEventListener("keydown", handleKeyDown);
+	}, []);
+
+	return (
+		<>
+			<header className="hw-header">
+				<div className="hw-header-left">
+					<h1 className="hw-section-title">{pageData.title}</h1>
+					<span className="hw-separator" />
+					<div className="hw-search-wrapper">
+						<IoIosSearch style={{fontSize: "30px"}} className="hw-search-icon" />
+						<input
+							ref={searchInputRef}
+							className="hw-search-input"
+							placeholder="Search..."
+							value={searchQuery}
+							onChange={(e) => setSearchQuery(e.target.value)}
+							onFocus={() => setShowSearch(true)}
+						/>
+						<kbd className="hw-kbd">Ctrl k</kbd>
+					</div>
+				</div>
+
+				<div className="hw-header-right" ref={menuRef}>
+					<span className="hw-separator" />
+					<button
+						className="hw-icon-button-circle"
+						onClick={() => setAppsOpen(!appsOpen)}
+						title="App menu"
+					>
+						<SquaresPlusIcon className="hw-icon" />
+					</button>
+					<AppsMenu open={appsOpen} setOpen={setAppsOpen} />
+					<a className="hw-icon-button" href="https://app.huberway.com/settings">
+						<Cog6ToothIcon className="hw-icon" />
+					</a>
+					<Link to="/account/pricing" style={{height: "36px"}} className="hw-button primary">
+						<StarIcon /> Upgrade
+					</Link>
+                    <span className="hw-separator" />
+					{pageData.button && (
+						<button className="hw-button primary" onClick={handleActionClick}>
+							{pageData.button}
+						</button>
+					)}
+					<div onClick={() => setMenuVisible(!menuVisible)} className="hw-avatar-wrapper">
+						<Avatar sx={{ bgcolor: "#3b82f6" }}>
+							{(user.name || "U").charAt(0).toUpperCase()}
+						</Avatar>
+					</div>
+				</div>
+			</header>
+		</>
+	);
+};
+
+export default Header;

@@ -1,0 +1,185 @@
+/* Header.css - Stile moderno per header unificato Huberway */
+
+.hw-header {
+    position: relative;
+    top: 0;
+    width: 100%;
+    height: 65px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1.5rem;
+    z-index: 1000;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.hw-header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.hw-logo {
+    height: 45px;
+    cursor: pointer;
+}
+
+.hw-section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.hw-header-center {
+    flex: 1;
+    max-width: 600px;
+    padding: 0 1.5rem;
+}
+
+.hw-search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    border-radius: 8px;
+    padding: 6px 12px;
+}
+
+.hw-search-icon {
+    color: #64748b;
+    margin-right: 0.5rem;
+}
+
+.hw-search-input {
+    border: none;
+    background: transparent;
+    width: 100%;
+    font-size: 0.875rem;
+    color: #0f172a;
+    outline: none;
+}
+.hw-kbd {
+    text-align: center;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 14px;
+    padding: 0px 9px;
+    margin-left: auto;
+    color: #334155;
+    height: 25px;
+    line-height: 22px;
+    box-shadow: none;
+    background: transparent;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.hw-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.hw-icon-button {
+    background: rgb(226 232 240);
+    border: none;
+    padding: 6px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.hw-icon-button-circle {
+    background: #ffffff;
+    border: 1px solid rgb(203, 213, 225);
+    padding: 6px 8px;
+    border-radius: 49px;
+    cursor: pointer;
+}
+
+.hw-icon {
+    width: 23px;
+    height: 22px;
+    color: #334155;
+    margin-bottom: 2px;
+}
+
+.hw-button {
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.hw-button > svg {
+    height: 20px;
+}
+
+.hw-button.ghost {
+    background: #f8fafc;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+}
+
+.hw-button.primary {
+    background: #6366f1;
+    color: #fff;
+    border: none;
+}
+
+.hw-button.primary:hover {
+    background: #4f46e5;
+}
+
+.hw-avatar-wrapper {
+    cursor: pointer;
+}
+.hw-separator {
+    margin: 0 1rem;
+    height: var(--navbar-height, 65px);
+    border-left: 1px solid #e5e7eb; /* border-neutral-200 */
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    .hw-separator {
+        display: block;
+    }
+}
+
+
+.apps-dropdown {
+  position: absolute;
+  top: 45px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  min-width: 250px;
+  box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.app-link {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  text-decoration: none;
+  color: black;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.app-link:hover {
+  background-color: #f1f5f9;
+}

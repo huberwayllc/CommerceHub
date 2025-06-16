@@ -11,11 +11,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@fullcalendar/core": "^6.1.10",
     "@fullcalendar/daygrid": "^6.1.10",
     "@fullcalendar/react": "^6.1.10",
     "@hello-pangea/dnd": "^16.5.0",
+    "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^3.3.4",
+    "@mui/icons-material": "^7.1.1",
+    "@mui/material": "^7.1.1",
     "@smastrom/react-rating": "^1.5.0",
     "@tinymce/tinymce-react": "^4.3.2",
     "@toast-ui/chart": "^4.6.1",
