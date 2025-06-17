@@ -1,13 +1,11 @@
-// components/OptionsTab.tsx
-import { useState, useEffect } from "react";
-
-import { cartesian } from "./options/utils"; // Suppongo tu abbia già questa utilità
+import { useState } from "react";
+import { cartesian } from "./options/utils";
 import OptionList from "./options/OptionList";
 import OptionForm from "./options/OptionForm";
 import EmptyPlaceholder from "./options/EmptyPlaceholder";
 import VariationList from "./options/VariationList";
 import VariationForm from "./options/VariationForm";
-import { ModelPart, ProductOption, Variation } from "./options/types";
+import { Attributes, GeneralInfo, ModelPart, Product, ProductOption, ShippingInfo, Variation } from "./options/types";
 import ModelPartManager from "./options/ModelPartManager";
 
 type TabKey = "OPTIONS" | "VARIATIONS";
@@ -20,6 +18,12 @@ interface OptionsTabProps {
   modelParts: ModelPart[];
   onModelPartsChange: (parts: ModelPart[]) => void;
   productType: "physical" | "digital" | "3d_customizable";
+   product: {
+    general: GeneralInfo;
+    attributes: Attributes;
+    shipping: ShippingInfo;
+    images: string[];
+  };
 }
 
 const OptionsTab: React.FC<OptionsTabProps> = ({
@@ -30,7 +34,9 @@ const OptionsTab: React.FC<OptionsTabProps> = ({
   modelParts,
   onModelPartsChange,
   productType,
+  product,
 }) => {
+
 
   const [editingOptionIdx, setEditingOptionIdx] = useState<number | null>(null);
   const [showOptionForm, setShowOptionForm] = useState(false);
@@ -41,54 +47,21 @@ const OptionsTab: React.FC<OptionsTabProps> = ({
   const [activeTab, setActiveTab] = useState<TabKey>("OPTIONS");
 
 
-  useEffect(() => {
-    if (options.length === 0) {
-      if (variations.length > 0) {
-        onVariationsChange([]);
-      }
-      return;
-    }
+const handleDeleteVar = (i: number) => {
+  const newVars = variations.filter((_, idx) => idx !== i);
+  onVariationsChange(newVars);
+};
 
-    const lists: string[][] = options.map((o) =>
-      o.values.map((v) => v.name!)
-    );
-    const combos = cartesian(lists);
+const handleAddVar = () => {
+  setEditingVarIdx(null);
+  setShowVarForm(true);
+};
 
-    const oldMap: Record<string, Variation> = Object.fromEntries(
-      variations.map((v) => [v.id, v])
-    );
+const handleDeleteMultipleVars = (indexes: number[]) => {
+  const newVars = variations.filter((_, idx) => !indexes.includes(idx));
+  onVariationsChange(newVars);
+};
 
-    const newVars: Variation[] = combos.map((combo) => {
-      const id = combo.join("_");
-      const opts: Record<string, string> = {};
-      options.forEach((o, i) => {
-        opts[o.name] = combo[i];
-      });
-      const old = oldMap[id];
-      return {
-        id,
-        options: opts,
-        price: old?.price ?? 0,
-        lowestPriceBeforeDiscount: old?.lowestPriceBeforeDiscount ?? 0,
-        upc: old?.upc ?? 0,
-        stock: old?.stock ?? 0,
-        weight: old?.weight ?? 0,
-        length: old?.length ?? 0,
-        width: old?.width ?? 0,
-        height: old?.height ?? 0,
-        itemCode: old?.itemCode ?? 0,
-        brand: old?.brand ?? "c",
-        imageUrl: old?.imageUrl ?? "",
-      };
-    });
-
-    const oldStr = JSON.stringify(variations);
-    const newStr = JSON.stringify(newVars);
-
-    if (oldStr !== newStr) {
-      onVariationsChange(newVars);
-    }
-  }, [options, variations, onVariationsChange]);
 
   // ── GESTIONE OPZIONI ─────────────────────────────────────────────────────────
 
@@ -131,20 +104,7 @@ const OptionsTab: React.FC<OptionsTabProps> = ({
     setShowVarForm(true);
   };
 
-  const handleSaveVar = (v: Variation) => {
-    const newVars = [...variations];
-    if (editingVarIdx !== null) {
-      newVars[editingVarIdx] = v;
-      onVariationsChange(newVars);
-    }
-    setShowVarForm(false);
-    setEditingVarIdx(null);
-  };
 
-  const handleCancelVar = () => {
-    setShowVarForm(false);
-    setEditingVarIdx(null);
-  };
 
 
 // ── RENDER per quanto riguarda il prodotto 3d─────────────────────────────────────────────────────────────────
@@ -179,13 +139,52 @@ const OptionsTab: React.FC<OptionsTabProps> = ({
           )}
 
           {activeTab === "VARIATIONS" && (
-            <VariationList
-             options={options}
-             variations={variations}
-             onEdit={handleEditVar}
-             activeTab={activeTab}
-             setActiveTab={setActiveTab}
-           />
+          <VariationList
+            onAdd={handleAddVar}
+            options={options}
+            variations={variations}
+            onEdit={handleEditVar}
+            onDelete={handleDeleteVar}
+            onDeleteMultiple={handleDeleteMultipleVars}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            onAutoGenerate={() => {
+              const lists: string[][] = options.map((o) => o.values.map((v) => v.name!));
+              const combos = cartesian(lists);
+
+              const oldMap: Record<string, Variation> = Object.fromEntries(
+                variations.map((v) => [v.id, v])
+              );
+
+              const newVars: Variation[] = combos.map((combo) => {
+                const id = combo.join("_");
+                const opts: Record<string, string> = {};
+                options.forEach((o, i) => {
+                  opts[o.name] = combo[i];
+                });
+
+                const old = oldMap[id];
+                return {
+                  id,
+                  options: opts,
+                  price: old?.price ?? product.general.price,                   
+                  lowestPriceBeforeDiscount: old?.lowestPriceBeforeDiscount ?? 0,
+                  upc: old?.upc ?? (Number(product.attributes.upc) || 0),
+                  stock: old?.stock ?? 0,
+                  weight: old?.weight ?? product.shipping.weight ?? 0,
+                  length: old?.length ?? product.shipping.length ?? 0,
+                  width: old?.width ?? product.shipping.width ?? 0,
+                  height: old?.height ?? product.shipping.height ?? 0,
+                  itemCode: old?.itemCode ?? product.general.itemCode,          
+                  brand: old?.brand ?? product.attributes.brand,                
+                  imageUrl: old?.imageUrl ?? "",
+                };
+              });
+
+              onVariationsChange(newVars);
+            }}
+
+          />
           )}
         </>
       )}
@@ -200,12 +199,27 @@ const OptionsTab: React.FC<OptionsTabProps> = ({
       )}
 
 
-      {showVarForm && editingVarIdx !== null && (
+      {showVarForm && (
         <VariationForm
+          options={options}
+          existingVariations={variations}
           show={showVarForm}
-          initial={variations[editingVarIdx]!}
-          onSave={handleSaveVar}
-          onCancel={handleCancelVar}
+          initial={editingVarIdx !== null ? variations[editingVarIdx] : undefined}
+          onSave={(v) => {
+            if (editingVarIdx === null) {
+              onVariationsChange([...variations, v]);
+            } else {
+              const newVars = [...variations];
+              newVars[editingVarIdx] = v;
+              onVariationsChange(newVars);
+            }
+            setShowVarForm(false);
+            setEditingVarIdx(null);
+          }}
+          onCancel={() => {
+            setShowVarForm(false);
+            setEditingVarIdx(null);
+          }}
           productType={productType}
         />
       )}

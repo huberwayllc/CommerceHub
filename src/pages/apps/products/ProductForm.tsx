@@ -45,6 +45,12 @@ const ProductForm = () => {
   width: 0,
   height: 0,
 });
+  const product = {
+  general,
+  attributes,
+  shipping,
+  images,
+};
   const [options, setOptions] = useState<ProductOption[]>([]);
   const [variations, setVariations] = useState<Variation[]>([]);
   const [modelParts, setModelParts] = useState<ModelPart[]>([]);
@@ -101,6 +107,7 @@ const ProductForm = () => {
         modelParts={modelParts}
         onModelPartsChange={(parts) => { setModelParts(parts); setIsDirty(true); }}
         productType={general.productType}
+        product={product}
       />
     )
   },

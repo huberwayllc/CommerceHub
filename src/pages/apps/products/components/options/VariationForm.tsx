@@ -1,19 +1,31 @@
 // VariationForm.tsx
 import { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
-import { Variation } from "./types";
+import { ProductOption, Variation } from "./types";
 import FloatingInput2 from "@/components/FloatingInput2";
 import { FaSave } from "react-icons/fa";
 
 interface Props {
-  initial: Variation;
+  options: ProductOption[];            
+  existingVariations: Variation[]; 
+  initial?: Variation;
   show: boolean;
   onSave: (v: Variation) => void;
   onCancel: () => void;
   productType: "physical" | "digital" | "3d_customizable";
 }
 
-const VariationForm = ({ initial, show, onSave, onCancel, productType }: Props) => {
+export const defaultVariation: Variation = {
+  id: "", options: {}, price:0, lowestPriceBeforeDiscount:0,
+  upc:0, stock:0, weight:0, length:0, width:0,
+  height:0, itemCode:0, brand:"", imageUrl:""
+};
+
+const VariationForm = ({ initial = defaultVariation, show, onSave, onCancel, productType, options, existingVariations }: Props) => {
+  const isEdit = Boolean(initial && Object.keys(initial.options).length);
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(
+    initial?.options ?? {}
+  );
   const [price, setPrice] = useState<number>(initial.price);
   const [stock, setStock] = useState<number>(initial.stock);
   const [lowestPriceBeforeDiscount, setLowestPriceBeforeDiscount] = useState<number>(initial.lowestPriceBeforeDiscount);
@@ -27,8 +39,30 @@ const VariationForm = ({ initial, show, onSave, onCancel, productType }: Props) 
   const [brand, setBrand] = useState<string>(initial.brand);
 
 
+  const handleSelect = (optName: string, val: string) => {
+    setSelectedOptions(prev => ({ ...prev, [optName]: val }));
+  };
+
   const save = () => {
-    onSave({ ...initial, price, stock, imageUrl, lowestPriceBeforeDiscount, upc, weight, length, width, height, itemCode, brand });
+    if (!isEdit) {
+      const exists = existingVariations.some(v =>
+        Object.entries(v.options)
+          .every(([k, val]) => selectedOptions[k] === val)
+      );
+      if (exists) {
+        alert("Questa variante esiste già.");
+        return;
+      }
+    }
+    onSave({
+      id: isEdit
+        ? initial!.id
+        : Object.values(selectedOptions).join("_"),
+      options: selectedOptions,
+      price, stock, imageUrl, lowestPriceBeforeDiscount,
+      upc, weight, length, width, height,
+      itemCode, brand
+    });
   };
 
   return (
@@ -36,19 +70,42 @@ const VariationForm = ({ initial, show, onSave, onCancel, productType }: Props) 
       <Modal.Header closeButton className="align-items-center">
         <div className="w-100 d-inline-flex align-items-center justify-content-between">
           <div>
-            <h4 className="fw-bold text-white mt-0">Modifica variante</h4>
-            <div className="mb-0 text-white">
-              {Object.entries(initial.options).map(([k, v]) => (
-                <span key={k} className="me-3">
-                  {k}: <strong>{v}</strong>
-                </span>
-              ))}
-            </div>
+            <h4 className="fw-bold text-white mt-0">
+              {isEdit ? "Modifica variante" : "Aggiungi variante"}
+            </h4>
+
+            {isEdit ? (
+              <div className="mb-0 text-white">
+                {Object.entries(initial!.options).map(([k, v]) => (
+                  <span key={k} className="me-3">
+                    {k}: <strong>{v}</strong>
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <div className="mb-0 d-flex gap-3">
+                {options.map(opt => (
+                  <div key={opt.name}>
+                    <label className="text-white me-2">{opt.name}:</label>
+                    <select
+                      className="form-select"
+                      value={selectedOptions[opt.name] || ""}
+                      onChange={e => handleSelect(opt.name, e.target.value)}
+                    >
+                      <option value="" disabled>Seleziona</option>
+                      {opt.values.map(v => (
+                        <option key={v.name} value={v.name}>{v.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <button style={{height: "40px", border: "none"}} className="bg-white colorPrimary fw-semibold me-4 rounded-1 px-2" onClick={save}>
             <div className="d-flex gap-2 align-items-center colorPrimary">
               <FaSave style={{fontSize: "16px"}}/>
-              Salva
+              {isEdit ? "Salva" : "Crea"}
             </div>
           </button>
         </div>
