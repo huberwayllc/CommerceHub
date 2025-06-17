@@ -4,6 +4,7 @@ import 'react-quill/dist/quill.snow.css';
 import PriceTab from './Price';
 import { GeneralInfo } from './options/types';
 import ProductGallery from "./ProductGallery";
+import { Button } from "react-bootstrap";
 
 interface GeneralTabProps {
   data: GeneralInfo;
@@ -130,6 +131,15 @@ const handleFieldChange = (
           onChange={handleDescriptionChange}
         />
       </div>
+    </div>
+
+
+    <div className='w-100 card p-3'>
+      <h6 className="fw-bold">Categorie</h6>
+      <div className="d-inline-flex borderBottomGray pb-2">
+         <Button className="">Gestisci Categorie</Button>
+      </div>
+
     </div>
 
     {/* Product options section---------------------------- */}
