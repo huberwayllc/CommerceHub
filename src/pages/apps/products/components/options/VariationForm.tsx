@@ -1,5 +1,5 @@
 // VariationForm.tsx
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { ProductOption, Variation } from "./types";
 import FloatingInput2 from "@/components/FloatingInput2";
@@ -37,6 +37,8 @@ const VariationForm = ({ initial = defaultVariation, show, onSave, onCancel, pro
   const [height, setHeight] = useState<number>(initial.height);
   const [itemCode, setItemCode] = useState<number>(initial.itemCode);
   const [brand, setBrand] = useState<string>(initial.brand);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
 
   const handleSelect = (optName: string, val: string) => {
@@ -114,10 +116,76 @@ const VariationForm = ({ initial = defaultVariation, show, onSave, onCancel, pro
       <Modal.Body className="p-0">
         <div className="w-100 p-3 d-flex gap-3">
           <div className="w-100">
-            <div className="borderGray rounded-2 d-flex flex-column align-items-center justify-content-center p-2 gap-1">
-              <img style={{width: "100%"}}
-               src="https://d11s7fcxy18ubx.cloudfront.net/node/static/2025/2025-18963-g963d82ffd3aa6d/icons/product-default.svg"/>
-              <Button className="bg-white text-black borderGray fw-semibold px-4">Cambia</Button>
+          <div
+              className={`borderGray rounded-2 d-flex flex-column align-items-center justify-content-center p-2 gap-1 text-center ${isDragging ? "bg-light border-primary" : ""}`}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = "move";
+                setIsDragging(true);
+              }}
+              onDragLeave={(e) => {
+                e.preventDefault();
+                setIsDragging(false);
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                setIsDragging(false);
+                const file = e.dataTransfer.files?.[0];
+                if (file && (file.type === "image/png" || file.type === "image/jpeg")) {
+                  const reader = new FileReader();
+                  reader.onload = () => {
+                    const base64 = reader.result as string;
+                    setImageUrl(base64);
+                    localStorage.setItem("variation-image", base64);
+                  };
+                  reader.readAsDataURL(file);
+                }
+              }}
+            >
+             {isDragging ? (
+                <div className="w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4 text-primary fw-bold" style={{ minHeight: 200 }}>
+                  <div className="fs-5">📂 Sposta qui l'immagine</div>
+                </div>
+              ) : (
+            <>
+              <img
+                    style={{ width: "100%", objectFit: "contain", maxHeight: 200 }}
+                    src={
+                      imageUrl ||
+                      "https://d11s7fcxy18ubx.cloudfront.net/node/static/2025/2025-18963-g963d82ffd3aa6d/icons/product-default.svg"
+                    }
+                    alt="Anteprima"
+                  />
+                  <div>
+                    <Button
+                      className="bg-white text-black borderGray fw-semibold px-4 mt-2"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      Cambia
+                    </Button>
+                  </div>
+                </>
+              )}
+
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/png, image/jpeg"
+                style={{ display: "none" }}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+
+                  const reader = new FileReader();
+                  reader.onload = () => {
+                    const base64 = reader.result as string;
+                    setImageUrl(base64);
+                    localStorage.setItem("variation-image", base64);
+                  };
+                  reader.readAsDataURL(file);
+                }}
+              />
             </div>
           </div>
 
