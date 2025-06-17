@@ -38,16 +38,33 @@ const VariationList = ({
   setActiveTab,
   onAutoGenerate
 }: Props) => {
-  // track selected rows
   const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [filters, setFilters] = useState<Record<string, string>>({});
 
-  const allSelected = variations.length > 0 && selected.size === variations.length;
+  // Compute filtered variations with their original indexes
+  const filtered = variations
+    .map((v, idx) => ({ ...v, idx }))
+    .filter(({ options: vOpts }) =>
+      Object.entries(filters).every(([key, val]) =>
+        val === "" || vOpts[key] === val
+      )
+    );
+
+  const allSelected = filtered.length > 0 && filtered.every(item => selected.has(item.idx));
 
   const toggleAll = () => {
     if (allSelected) {
-      setSelected(new Set());
+      setSelected(prev => {
+        const next = new Set(prev);
+        filtered.forEach(item => next.delete(item.idx));
+        return next;
+      });
     } else {
-      setSelected(new Set(variations.map((_, i) => i)));
+      setSelected(prev => {
+        const next = new Set(prev);
+        filtered.forEach(item => next.add(item.idx));
+        return next;
+      });
     }
   };
 
@@ -61,10 +78,15 @@ const VariationList = ({
   };
 
   const handleDeleteSelected = () => {
-    if (selected.size === 0) return;
+    const toDelete = filtered.map(item => item.idx);
+    if (toDelete.length === 0) return;
     if (!window.confirm("Vuoi eliminare le varianti selezionate?")) return;
-    onDeleteMultiple(Array.from(selected));
-    setSelected(new Set());
+    onDeleteMultiple(toDelete);
+    setSelected(prev => {
+      const next = new Set(prev);
+      toDelete.forEach(i => next.delete(i));
+      return next;
+    });
   };
 
   const handleDelete = (index: number) => {
@@ -78,25 +100,54 @@ const VariationList = ({
     }
   };
 
+  const handleFilterChange = (optName: string, value: string) => {
+    setFilters(prev => ({
+      ...prev,
+      [optName]: value
+    }));
+  };
+
   return (
     <div className="card p-3">
       <h4 className="fw-bold">Opzioni e varianti del prodotto</h4>
 
-      <div className="d-flex mt-1 pb-3 gap-4">
-        <h5
-          onClick={() => setActiveTab("OPTIONS")}
-          style={{ cursor: "pointer" }}
-          className={`mb-0 ${activeTab === "OPTIONS" ? "colorPrimary" : "text-black"} fw-bold`}
-        >
-          Opzioni ({options.length})
-        </h5>
-        <h5
-          onClick={() => setActiveTab("VARIATIONS")}
-          style={{ cursor: "pointer" }}
-          className={`mb-0 ${activeTab === "VARIATIONS" ? "colorPrimary" : "text-black"} fw-bold`}
-        >
-          Varianti ({variations.length})
-        </h5>
+      <div className="w-100 d-flex mt-1 justify-content-between align-items-center mb-3">
+        <div className="d-flex mt-1 pb-0 gap-4">
+          <h5
+            onClick={() => setActiveTab("OPTIONS")}
+            style={{ cursor: "pointer" }}
+            className={`mt-0 mb-0 ${activeTab === "OPTIONS" ? "colorPrimary" : "text-black"} fw-bold`}
+          >
+            Opzioni ({options.length})
+          </h5>
+          <h5
+            onClick={() => setActiveTab("VARIATIONS")}
+            style={{ cursor: "pointer" }}
+            className={`mt-0 mb-0 ${activeTab === "VARIATIONS" ? "colorPrimary" : "text-black"} fw-bold`}
+          >
+            Varianti ({variations.length})
+          </h5>
+        </div>
+        {options.length > 0 && (
+          <div className="d-flex gap-3 mb-0 flex-wrap align-items-center">
+            <h5 className="m-0">Filtri:</h5>
+            {options.map(opt => (
+              <div key={opt.name}>
+                <label className="me-2 fw-semibold">{opt.name}:</label>
+                <select
+                  className="form-select"
+                  value={filters[opt.name] || ""}
+                  onChange={e => handleFilterChange(opt.name, e.target.value)}
+                >
+                  <option value="">Tutte</option>
+                  {opt.values.map(val => (
+                    <option key={val.name} value={val.name}>{val.name}</option>
+                  ))}
+                </select>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="w-100 d-flex gap-2 mb-2 justify-content-between align-items-center">
@@ -105,8 +156,11 @@ const VariationList = ({
             <FaPlus />
             Nuova combinazione
           </Button>
-          <Button onClick={handleDeleteSelected} disabled={selected.size === 0} 
-          style={{ border: "1px solid red", color: "red"}} className="bg-white">
+          <Button  style={{ border: "1px solid black" }} className="bg-white text-black">
+            Modifica
+          </Button>
+          <Button onClick={handleDeleteSelected} disabled={filtered.length === 0}
+            style={{ border: "1px solid red", color: "red"}} className="bg-white">
             Elimina
           </Button>
         </div>
@@ -135,14 +189,14 @@ const VariationList = ({
         <span>Azioni</span>
       </div>
 
-      {variations.map((v, index) => (
+      {filtered.map(({ idx, ...v }) => (
         <div key={v.id} style={gridTemplate} className="py-3 borderBottomGray px-1">
           <span>
             <Form.Check
               type="checkbox"
               className="big-checkbox"
-              checked={selected.has(index)}
-              onChange={() => toggleRow(index)}
+              checked={selected.has(idx)}
+              onChange={() => toggleRow(idx)}
             />
           </span>
           <div className="d-flex align-items-center gap-2">
@@ -165,11 +219,11 @@ const VariationList = ({
           <div className="d-flex flex-column gap-2">
             <FaRegTrashCan
               style={{ fontSize: "16px", cursor: "pointer" }}
-              onClick={() => handleDelete(index)}
+              onClick={() => handleDelete(idx)}
             />
             <MdOutlineEdit
               style={{ fontSize: "18px", cursor: "pointer" }}
-              onClick={() => onEdit(index)}
+              onClick={() => onEdit(idx)}
             />
           </div>
         </div>
