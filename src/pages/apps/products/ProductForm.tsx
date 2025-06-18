@@ -68,7 +68,8 @@ const ProductForm = () => {
   const [variations, setVariations] = useState<Variation[]>([]);
   const [modelParts, setModelParts] = useState<ModelPart[]>([]);
   const { mode, slug } = useParams();
-  const isEditMode = mode === 'edit' && slug;
+  const isEditMode = mode === "edit" && Boolean(slug);
+  const [currentId, setCurrentId] = useState<string | null>(slug || null);
   const tabsContainerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -159,31 +160,85 @@ const ProductForm = () => {
   };
 
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (parsed.modelParts) setModelParts(parsed.modelParts);
-        if (parsed.images) setImages(parsed.images);
-        if (parsed.general) setGeneral(parsed.general);
-        if (parsed.attributes) setAttributes(parsed.attributes);
-        if (parsed.options) setOptions(parsed.options);
-        if (parsed.variations) setVariations(parsed.variations);
-        if (parsed.shipping)   setShipping(parsed.shipping);
-      } catch {
-      }
+  if (mode === "new" && !currentId) {
+    setCurrentId(Date.now().toString());
+  }
+}, [mode, currentId]);
+
+
+useEffect(() => {
+  // Carico il draft solo in edit mode
+  if (isEditMode && slug) {
+    const all = loadProducts();
+    const found = all.find(p => p.id === slug);
+    if (found) {
+      // Carico il prodotto esistente
+      setGeneral(found.general);
+      setAttributes(found.attributes);
+      setShipping(found.shipping);
+      setImages(found.images);
+      setOptions(found.options);
+      setVariations(found.variations);
+      setModelParts(found.modelParts);
+    } else {
+      navigate("/apps/products");
     }
-  }, []);
+  }
+}, [isEditMode, slug]);
 
 
 
-  const handleSave = useCallback(() => {
-    const toSave = { general, attributes, options, variations, shipping, images, modelParts };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
-    setIsDirty(false);
-    console.log("✅ Draft salvato in localStorage:", toSave);
-    // fetch("/api/products", {...}) backend
-  }, [general, attributes, options, variations, shipping, images, modelParts]);
+
+
+    function loadProducts(): SavedProduct[] {
+    const raw = localStorage.getItem(STORAGE_PRODUCTS);
+    return raw ? JSON.parse(raw) : [];
+  }
+
+  // Salva l’array completo
+  function saveProducts(list: SavedProduct[]) {
+    localStorage.setItem(STORAGE_PRODUCTS, JSON.stringify(list));
+  }
+
+
+const handleSave = useCallback(() => {
+  if (!currentId) return; 
+
+  const prod: SavedProduct = {
+    id: currentId,
+    general,
+    attributes,
+    shipping,
+    images,
+    options,
+    variations,
+    modelParts,
+  };
+
+  const all = loadProducts();
+  const updated = isEditMode
+    ? all.map(p => (p.id === currentId ? prod : p)) 
+    : [...all, prod];                                
+
+  saveProducts(updated);
+  setIsDirty(false);
+
+  if (!isEditMode) {
+    navigate(`/apps/products/edit/${currentId}`, { replace: true });
+  }
+}, [
+  currentId,
+  isEditMode,
+  general,
+  attributes,
+  shipping,
+  images,
+  options,
+  variations,
+  modelParts,
+  navigate
+]);
+
 
 
   const handleSaveAndClose = () => {

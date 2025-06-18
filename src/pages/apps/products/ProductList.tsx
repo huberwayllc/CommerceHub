@@ -5,13 +5,21 @@ import ProductTable from './components/ProductTable';
 import FeatureBoxGrid from './components/FeatureBox';
 import { PageBreadcrumb } from '@/components';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import FloatingInput from '@/components/FloatingInput';
+import { Product } from './components/options/types';
+
+const STORAGE_PRODUCTS = "products_list_v1";
 
 const ProductList = () => {
     const navigate = useNavigate();
 
     const [search, setSearch] = useState('');
+    const [products, setProducts] = useState<Product[]>([]);
+    useEffect(() => {
+      const saved: Product[] = JSON.parse(localStorage.getItem(STORAGE_PRODUCTS) || "[]");
+      setProducts(saved);
+    }, []);
 
   return (
     <>
@@ -55,7 +63,7 @@ const ProductList = () => {
           />
       </div>
 
-      <ProductTable />
+      <ProductTable products={products}/>
       <FeatureBoxGrid />
 
       <div style={{marginTop: "200px"}}></div>

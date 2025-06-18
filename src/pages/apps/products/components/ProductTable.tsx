@@ -4,99 +4,29 @@ import { FaChevronRight, FaEdit, FaChevronDown } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { IoDocumentsOutline } from "react-icons/io5";
 import { MdOutlineLocalShipping } from "react-icons/md";
+import { Product } from './options/types';
 
-interface Product {
-  title: string;
-  slug: string;
-  description: string;
-  price: number;
-  status: boolean;
-  visibility: boolean;
-  tags: string[];
-  category_id: number;
-  images: string[];
-  shipping: boolean;
+
+interface ProductTableProps {
+  products: Product[];
 }
 
-// Dummy data
-const dummyProducts: Product[] = [
-  {
-    title: 'Big Maczs',
-    slug: 'prodotto-1',
-    description: 'Descrizione del prodotto 1',
-    price: 19.99,
-    status: true,
-    visibility: true,
-    tags: ['rosso', 'taglia M'],
-    category_id: 101,
-    images: ['https://www.mcdonalds.it/sites/default/files/products/isolated--bigmac.png'],
-    shipping: true,
-  },
-  {
-    title: 'Prodotto 2',
-    slug: 'prodotto-2',
-    description: 'Descrizione del prodotto 2',
-    price: 29.99,
-    status: false,
-    visibility: true,
-    tags: ['blu', 'taglia L'],
-    category_id: 102,
-    images: ['https://m.media-amazon.com/images/I/71Wxj1yXNlL.jpg'],
-    shipping: false,
-  },
-  {
-    title: 'Prodotto 3',
-    slug: 'prodotto-3',
-    description: 'Descrizione del prodotto 3',
-    price: 9.99,
-    status: true,
-    visibility: false,
-    tags: ['verde'],
-    category_id: 103,
-    images: ['https://assets.unileversolutions.com/v1/124981112.png'],
-    shipping: true,
-  },
-  {
-    title: 'Prodotto 4',
-    slug: 'prodotto-4',
-    description: 'Descrizione del prodotto 4',
-    price: 49.99,
-    status: true,
-    visibility: true,
-    tags: ['nero', 'taglia S', 'edizione limitata'],
-    category_id: 104,
-    images: ['https://www.burgerking.it/assets/img/console/mo/products/2166image_sito_slide_it.png'],
-    shipping: false,
-  },
-  {
-    title: 'Prodotto 5',
-    slug: 'prodotto-5',
-    description: 'Descrizione del prodotto 5',
-    price: 15.49,
-    status: false,
-    visibility: false,
-    tags: ['bianco'],
-    category_id: 105,
-    images: ['https://store.tomarket.it/images/tomarket/products/large/0046414.webp'],
-    shipping: true,
-  },
-];
 
-const ProductTable: React.FC<{ products?: Product[] }> = ({ products = dummyProducts }) => {
+const ProductTable: React.FC<ProductTableProps> = ({ products }) => {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [selectAll, setSelectAll] = useState(false);
   const navigate = useNavigate();
 
-  const toggleSelectAll = () => {
-    setSelected(selectAll ? new Set() : new Set(products.map(p => p.slug)));
-    setSelectAll(!selectAll);
-  };
+const toggleSelectAll = () => {
+  setSelected(selectAll ? new Set() : new Set(products.map(p => p.id)));
+  setSelectAll(!selectAll);
+};
 
-  const toggleSelect = (slug: string) => {
-    const newSet = new Set(selected);
-    newSet.has(slug) ? newSet.delete(slug) : newSet.add(slug);
-    setSelected(newSet);
-  };
+const toggleSelect = (id: string) => {
+  const newSet = new Set(selected);
+  newSet.has(id) ? newSet.delete(id) : newSet.add(id);
+  setSelected(newSet);
+};
 
   return (
     <div>
@@ -137,69 +67,36 @@ const ProductTable: React.FC<{ products?: Product[] }> = ({ products = dummyProd
       </div>
 
       <Table hover className="custom-table">
-        <tbody>
-          {products.map(product => (
-            <tr key={product.slug}>
-              <td style={{ width: '40px' }}>
+       <tbody>
+          {products.map((product) => (
+            <tr key={product.id}>
+              <td>
                 <Form.Check
                   type="checkbox"
-                  checked={selected.has(product.slug)}
-                  onChange={() => toggleSelect(product.slug)}
-                  className="big-checkbox"
+                  checked={selected.has(product.id)}
+                  onChange={() => toggleSelect(product.id)}
                 />
               </td>
-
-              <td style={{  width: '90px' }}>
-                <Image
-                  src={product.images[0]}
-                  rounded
-                  style={{ width: '90px', height: '90px', objectFit: 'cover' }}
-                />
-              </td>
-
               <td>
-                <div>
-                  <strong style={{fontSize: "16px"}}>{product.title}</strong>
-                  <div className="d-flex align-items-center gap-2 mt-1">
-                    <Form.Check
-                      type="switch"
-                      id={`switch-${product.slug}`}
-                      label="Disponibile"
-                      checked={product.status}
-                      readOnly
-                    />
-                  </div>
-                  <div className="mt-2 d-flex align-items-center gap-3">
-                    <div className='d-flex align-items-center gap-1'>
-                        <IoDocumentsOutline style={{fontSize: "18px"}}/>
-                        <span>{product.tags.length} opzioni</span>
-                    </div>
-                    <div className='d-flex align-items-center gap-1'>
-                        <MdOutlineLocalShipping style={{ fontSize: '18px' }} />
-                        <span>{product.shipping ? 'Sono previste spese di spedizione' : 'Non sono previste spese di spedizione'}</span>
-                    </div>
-                  </div>
-                </div>
+                <Image
+                  src={product.general.objUrl || product.images?.[0] || "/fallback.png"}
+                  rounded
+                  style={{ width: 90, height: 90, objectFit: "cover" }}
+                />
               </td>
-
-              {/* Ultime tre colonne allineate a destra */}
-              <td style={{ width: '100px' }} className="text-end">
-                <p className="mb-0 fw-bold fs-5">€ {product.price.toFixed(2)}</p>
+              <td>
+                <strong>{product.general.title}</strong>
+                <div>Codice: {product.general.itemCode}</div>
               </td>
-              <td style={{ width: '130px' }} className="text-end">
+              <td className="text-end">
+                € {product.general.price.toFixed(2)}
+              </td>
+              <td className="text-end">
                 <Button
                   variant="outline-primary"
-                  onClick={() => navigate(`/products/${product.slug}/edit`)}
+                  onClick={() => navigate(`/apps/products/edit/${product.id}`)}
                 >
-                  <FaEdit /> Modifica
-                </Button>
-              </td>
-              <td style={{ width: '60px' }} className="text-end">
-                <Button
-                  variant="link"
-                  onClick={() => navigate(`/products/${product.slug}/edit`)}
-                >
-                  <FaChevronRight />
+                  Modifica
                 </Button>
               </td>
             </tr>

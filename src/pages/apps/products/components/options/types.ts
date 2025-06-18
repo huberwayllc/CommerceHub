@@ -81,9 +81,11 @@ export interface Attributes {
 }
 
 export interface Product {
+  id: string;
   general: GeneralInfo;
   attributes: Attributes;
   options: ProductOption[];
   variations: Variation[];
+  images?: string[];
 }
 
