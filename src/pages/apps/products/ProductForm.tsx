@@ -45,6 +45,7 @@ interface SavedProduct {
   options: ProductOption[];
   variations: Variation[];
   modelParts: ModelPart[];
+  relatedIds: string[]; 
 }
 
 const ProductForm = () => {
@@ -66,6 +67,7 @@ const ProductForm = () => {
 };
   const [options, setOptions] = useState<ProductOption[]>([]);
   const [variations, setVariations] = useState<Variation[]>([]);
+  const [relatedIds, setRelatedIds] = useState<string[]>([]);
   const [modelParts, setModelParts] = useState<ModelPart[]>([]);
   const { mode, slug } = useParams();
   const isEditMode = mode === "edit" && Boolean(slug);
@@ -141,7 +143,11 @@ const ProductForm = () => {
   },
   { key: 'tasse', label: 'Tasse', component: <TaxesTab/> },
   { key: 'seo', label: 'SEO', component: <SeoTab title={general.title} description={general.description} /> },
-  { key: 'correlati', label: 'Prodotti correlati', component: <RelatedTab/> },
+  { key: 'correlati', label: 'Prodotti correlati', component: 
+  <RelatedTab
+    relatedIds={relatedIds}
+    onChangeRelatedIds={ids => { setRelatedIds(ids); setIsDirty(true); }}
+    /> },
   { key: 'incorpora', label: 'Incorpora prodotto', component: <EmbeddedTab/> },
 ];
 
@@ -167,12 +173,10 @@ const ProductForm = () => {
 
 
 useEffect(() => {
-  // Carico il draft solo in edit mode
   if (isEditMode && slug) {
     const all = loadProducts();
     const found = all.find(p => p.id === slug);
     if (found) {
-      // Carico il prodotto esistente
       setGeneral(found.general);
       setAttributes(found.attributes);
       setShipping(found.shipping);
@@ -180,6 +184,7 @@ useEffect(() => {
       setOptions(found.options);
       setVariations(found.variations);
       setModelParts(found.modelParts);
+      setRelatedIds(found.relatedIds || []); 
     } else {
       navigate("/apps/products");
     }
@@ -213,6 +218,7 @@ const handleSave = useCallback(() => {
     options,
     variations,
     modelParts,
+    relatedIds, 
   };
 
   const all = loadProducts();
@@ -236,6 +242,7 @@ const handleSave = useCallback(() => {
   options,
   variations,
   modelParts,
+  relatedIds,
   navigate
 ]);
 
@@ -312,7 +319,10 @@ const handleSave = useCallback(() => {
 
 
 
-      <PageBreadcrumb subName="Apps" title={isEditMode ? "Modifica prodotto" : "Nuovo prodotto"} />
+      <PageBreadcrumb
+        subName="Apps"
+        title={isEditMode ? (general.title || "Modifica prodotto") : "Nuovo prodotto"}
+      />
 
       {/* Accordion tab bar */}
       <div className="product-tab-wrapper">

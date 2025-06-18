@@ -83,6 +83,7 @@ export interface Attributes {
 export interface Product {
   id: string;
   general: GeneralInfo;
+  shipping: ShippingInfo; 
   attributes: Attributes;
   options: ProductOption[];
   variations: Variation[];

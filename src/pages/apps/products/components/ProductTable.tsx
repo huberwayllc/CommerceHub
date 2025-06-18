@@ -47,7 +47,7 @@ const toggleSelect = (id: string) => {
           className="fw-semibold text-black bg-white text-black d-flex align-items-center gap-1 border-0 boxShadow">
             <div className='d-flex align-items-center'>
               aggiornamento di massa 
-              <FaChevronDown />
+              <FaChevronDown className='ms-2'/>
             </div>
 
 					</Dropdown.Toggle>
@@ -66,37 +66,83 @@ const toggleSelect = (id: string) => {
         </div>
       </div>
 
-      <Table hover className="custom-table">
-       <tbody>
-          {products.map((product) => (
+       <Table hover className="custom-table">
+        <tbody>
+          {products.map(product => (
             <tr key={product.id}>
-              <td>
+              {/* Checkbox */}
+              <td style={{ width: 40 }}>
                 <Form.Check
                   type="checkbox"
                   checked={selected.has(product.id)}
                   onChange={() => toggleSelect(product.id)}
+                  className="big-checkbox"
                 />
               </td>
-              <td>
+
+              {/* Immagine */}
+              <td style={{ width: 90 }}>
                 <Image
                   src={product.general.objUrl || product.images?.[0] || "/fallback.png"}
                   rounded
                   style={{ width: 90, height: 90, objectFit: "cover" }}
                 />
               </td>
+
+              {/* Titolo, switch disponibilità, tag e spedizione */}
               <td>
-                <strong>{product.general.title}</strong>
-                <div>Codice: {product.general.itemCode}</div>
+                <strong style={{ fontSize: 16, cursor: "pointer" }}
+                 onClick={() => navigate(`/apps/products/edit/${product.id}`)} >{product.general.title}</strong>
+                <div className="d-flex align-items-center gap-2 mt-1">
+                  <Form.Check
+                    type="switch"
+                    id={`switch-${product.id}`}
+                    label="Disponibile"
+                    checked={product.general.isAvailable}
+                    readOnly
+                  />
+                </div>
+                <div className="mt-2 d-flex align-items-center gap-3">
+                  <div className="d-flex align-items-center gap-1">
+                    <IoDocumentsOutline style={{ fontSize: 18 }} />
+                    <span>{product.variations.length} varianti</span>
+                  </div>
+                  <div className="d-flex align-items-center gap-1">
+                    <MdOutlineLocalShipping style={{ fontSize: 18 }} />
+                    <span>
+                      {product.shipping.requiresShipping
+                        ? "Spese di spedizione previste"
+                        : "Spedizione gratuita"}
+                    </span>
+                  </div>
+                </div>
+                <div className="mt-1">Codice: {product.general.itemCode}</div>
               </td>
-              <td className="text-end">
-                € {product.general.price.toFixed(2)}
+
+              {/* Prezzo */}
+              <td style={{ width: 100 }} className="text-end">
+                <p className="mb-0 fw-bold fs-5">
+                  € {product.general.price.toFixed(2)}
+                </p>
               </td>
-              <td className="text-end">
+
+              {/* Bottone Modifica */}
+              <td style={{ width: 130 }} className="text-end">
                 <Button
                   variant="outline-primary"
                   onClick={() => navigate(`/apps/products/edit/${product.id}`)}
                 >
-                  Modifica
+                  <FaEdit /> Modifica
+                </Button>
+              </td>
+
+              {/* Freccia per dettaglio/edit */}
+              <td style={{ width: 60 }} className="text-end">
+                <Button
+                  variant="link"
+                  onClick={() => navigate(`/apps/products/edit/${product.id}`)}
+                >
+                  <FaChevronRight />
                 </Button>
               </td>
             </tr>
