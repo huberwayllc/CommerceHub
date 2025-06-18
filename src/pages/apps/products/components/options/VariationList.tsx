@@ -180,8 +180,18 @@ const handleBulkSubmit = () => {
               <option value="price">Prezzo</option>
               <option value="image">Immagine</option>
             </select>
-          <Button onClick={handleDeleteSelected} disabled={filtered.length === 0}
-            style={{ border: "1px solid red", color: "red"}} className="bg-white px-2">
+          <Button
+            onClick={handleDeleteSelected}
+            disabled={selected.size === 0} // meglio che filtered.length === 0
+            style={{
+              border: "1px solid red",
+              color: selected.size === 0 ? "red" : "red",
+              cursor: selected.size === 0 ? "not-allowed" : "pointer",
+              backgroundColor: "white",
+              opacity: selected.size === 0 ? 0.7 : 1
+            }}
+            className="px-2"
+          >
             Elimina
           </Button>
         </div>

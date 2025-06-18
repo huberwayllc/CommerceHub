@@ -33,6 +33,19 @@ const emptyAttributes: Attributes = {
 };
 
 const STORAGE_KEY = "product_draft";
+const STORAGE_PRODUCTS = "products_list_v1";
+
+
+interface SavedProduct {
+  id: string;
+  general: GeneralInfo;
+  attributes: Attributes;
+  shipping: ShippingInfo;
+  images: string[];
+  options: ProductOption[];
+  variations: Variation[];
+  modelParts: ModelPart[];
+}
 
 const ProductForm = () => {
   const [images, setImages] = useState<string[]>([]);

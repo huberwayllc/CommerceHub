@@ -169,34 +169,38 @@ const handleDeleteMultipleVars = (indexes: number[]) => {
                 variations.map((v) => [v.id, v])
               );
 
-              const newVars: Variation[] = combos.map((combo) => {
-                const id = combo.join("_");
-                const opts: Record<string, string> = {};
-                options.forEach((o, i) => {
-                  opts[o.name] = combo[i];
+              // Varianti nuove da aggiungere (solo quelle mancanti)
+              const newVars: Variation[] = combos
+                .filter(combo => {
+                  const id = combo.join("_");
+                  return !(id in oldMap);  // prendo solo quelle mancanti
+                })
+                .map((combo) => {
+                  const id = combo.join("_");
+                  const opts: Record<string, string> = {};
+                  options.forEach((o, i) => {
+                    opts[o.name] = combo[i];
+                  });
+
+                  return {
+                    id,
+                    options: opts,
+                    price: product.general.price,
+                    lowestPriceBeforeDiscount: 0,
+                    upc: Number(product.attributes.upc) || 0,
+                    stock: 0,
+                    weight: product.shipping.weight ?? 0,
+                    length: product.shipping.length ?? 0,
+                    width: product.shipping.width ?? 0,
+                    height: product.shipping.height ?? 0,
+                    itemCode: product.general.itemCode,
+                    brand: product.attributes.brand,
+                    imageUrl: "",
+                  };
                 });
 
-                const old = oldMap[id];
-                return {
-                  id,
-                  options: opts,
-                  price: old?.price ?? product.general.price,                   
-                  lowestPriceBeforeDiscount: old?.lowestPriceBeforeDiscount ?? 0,
-                  upc: old?.upc ?? (Number(product.attributes.upc) || 0),
-                  stock: old?.stock ?? 0,
-                  weight: old?.weight ?? product.shipping.weight ?? 0,
-                  length: old?.length ?? product.shipping.length ?? 0,
-                  width: old?.width ?? product.shipping.width ?? 0,
-                  height: old?.height ?? product.shipping.height ?? 0,
-                  itemCode: old?.itemCode ?? product.general.itemCode,          
-                  brand: old?.brand ?? product.attributes.brand,                
-                  imageUrl: old?.imageUrl ?? "",
-                };
-              });
-
-              onVariationsChange(newVars);
+              onVariationsChange([...variations, ...newVars]);
             }}
-
           />
           )}
         </>
