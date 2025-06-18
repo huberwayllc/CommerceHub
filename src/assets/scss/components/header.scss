@@ -183,3 +183,9 @@
 .app-link:hover {
   background-color: #f1f5f9;
 }
+
+@media (min-width: 1324px) {
+  .show-on-mobile {
+    display: none !important;
+  }
+}

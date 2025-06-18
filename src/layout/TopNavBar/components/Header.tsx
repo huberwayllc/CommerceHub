@@ -4,6 +4,8 @@ import Avatar from "@mui/material/Avatar";
 import { IoIosSearch } from "react-icons/io";
 import { SquaresPlusIcon, StarIcon, Cog6ToothIcon } from "@heroicons/react/24/outline";
 import AppsMenu from "./AppsMenu";
+import IconButton from "@mui/material/IconButton";
+import { RxHamburgerMenu } from "react-icons/rx";
 
 interface User {
 	email: string;
@@ -26,11 +28,18 @@ const Header: React.FC<HeaderProps> = ({ onActionClick }) => {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [showSearch, setShowSearch] = useState(false);
 	const navigate = useNavigate();
+	const [sidebarOpen, setSidebarOpen] = useState(false);
 	const location = useLocation();
 	const menuRef = useRef<HTMLDivElement>(null);
 	const searchInputRef = useRef<HTMLInputElement>(null);
 
-
+	useEffect(() => {
+		if (sidebarOpen) {
+			document.body.classList.add("enlarge-menu");
+		} else {
+			document.body.classList.remove("enlarge-menu");
+		}
+	}, [sidebarOpen]);
 
 	const handleLogout = () => {
 		document.cookie.split(";").forEach((cookie) => {
@@ -81,6 +90,13 @@ const Header: React.FC<HeaderProps> = ({ onActionClick }) => {
 		<>
 			<header className="hw-header">
 				<div className="hw-header-left">
+					<IconButton
+						className="show-on-mobile"
+						onClick={() => setSidebarOpen(!sidebarOpen)}
+						title="Toggle sidebar"
+					>
+						<RxHamburgerMenu style={{color: "black"}}/>
+					</IconButton>
 					<h1 className="hw-section-title">{pageData.title}</h1>
 					<span className="hw-separator" />
 					<div className="hw-search-wrapper">

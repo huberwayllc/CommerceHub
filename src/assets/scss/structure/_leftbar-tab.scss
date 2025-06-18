@@ -159,7 +159,8 @@ File: Leftbar-tab
                     border-radius: 3px;  
                     &.active i,
                     &.active {
-                        color: $sidebar-menu-item-active-color; 
+                        color: $primary !important; 
+                        font-weight: bold !important;
                     }                          
                 } 
             }        

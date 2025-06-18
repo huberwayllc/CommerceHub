@@ -111,8 +111,8 @@ const VariationList = ({
     <div className="card p-3">
       <h4 className="fw-bold">Opzioni e varianti del prodotto</h4>
 
-      <div className="w-100 d-flex mt-1 justify-content-between align-items-center mb-3">
-        <div className="d-flex mt-1 pb-0 gap-4">
+      <div className="w-100 d-flex justify-content-between align-items-center mb-0 mt-2">
+        <div className="d-flex pb-0 gap-4">
           <h5
             onClick={() => setActiveTab("OPTIONS")}
             style={{ cursor: "pointer" }}
@@ -128,14 +128,37 @@ const VariationList = ({
             Varianti ({variations.length})
           </h5>
         </div>
+      </div>
+
+      <div className="w-100 d-flex gap-2 mb-2 justify-content-between align-items-end">
+        <div className="d-inline-flex gap-2 align-items-end">
+          <Button onClick={onAdd} className="d-flex align-items-center px-2 gap-1">
+            <FaPlus />
+            Nuova combinazione
+          </Button>
+          <select
+              className="input-product bg-transparent fw-normal"
+              style={{border: "1px solid black", width: "95px", height: "34px"}}
+            >
+              <option value="physical">Modifica</option>
+              <option value="digital">Digitale</option>
+              <option value="3d_customizable">3D Personalizzabile</option>
+            </select>
+          <Button onClick={handleDeleteSelected} disabled={filtered.length === 0}
+            style={{ border: "1px solid red", color: "red"}} className="bg-white px-2">
+            Elimina
+          </Button>
+        </div>
+
         {options.length > 0 && (
-          <div className="d-flex gap-3 mb-0 flex-wrap align-items-center">
-            <h5 className="m-0">Filtri:</h5>
+          <div className="d-flex gap-2 mb-0 align-items-end">
+            <h6 style={{margin: "9px 0px"}} className=" fw-semibold">Filtri:</h6>
             {options.map(opt => (
               <div key={opt.name}>
                 <label className="me-2 fw-semibold">{opt.name}:</label>
                 <select
-                  className="form-select"
+                  className="input-product w-100 bg-transparent"
+                  style={{height: "34px", border: "1px solid black", fontWeight: "400"}}
                   value={filters[opt.name] || ""}
                   onChange={e => handleFilterChange(opt.name, e.target.value)}
                 >
@@ -148,25 +171,9 @@ const VariationList = ({
             ))}
           </div>
         )}
-      </div>
-
-      <div className="w-100 d-flex gap-2 mb-2 justify-content-between align-items-center">
-        <div className="d-inline-flex gap-2">
-          <Button onClick={onAdd} className="d-flex align-items-center gap-1">
-            <FaPlus />
-            Nuova combinazione
-          </Button>
-          <Button  style={{ border: "1px solid black" }} className="bg-white text-black">
-            Modifica
-          </Button>
-          <Button onClick={handleDeleteSelected} disabled={filtered.length === 0}
-            style={{ border: "1px solid red", color: "red"}} className="bg-white">
-            Elimina
-          </Button>
-        </div>
 
         <div className="d-inline-flex gap-2">
-          <Button onClick={onAutoGenerate} style={{ border: "1px solid black" }} className="bg-white text-black">
+          <Button className="px-2" onClick={onAutoGenerate}>
             Genera tutte le variazioni
           </Button>
         </div>

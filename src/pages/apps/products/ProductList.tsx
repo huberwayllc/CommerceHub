@@ -17,7 +17,7 @@ const ProductList = () => {
     <>
     <PageBreadcrumb subName="Apps" title="Prodotti" />
       <div className="d-inline-flex align-items-center gap-2 mb-4">
-        <Button className='boxShadow' style={{ height: '45px', background: "#2563EB", border: "0px" }} onClick={() => navigate('/apps/products/new')}>
+        <Button className='boxShadow' style={{ height: '45px', border: "0px" }} onClick={() => navigate('/apps/products/new')}>
           <div className='d-flex align-items-center gap-1'>
             <FaPlus /> Nuovo prodotto
           </div>
