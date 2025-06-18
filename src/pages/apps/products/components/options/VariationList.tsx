@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Modal } from "react-bootstrap";
 import { Variation } from "./types";
 import { ProductOption } from "./types";
 import { FaRegTrashCan } from "react-icons/fa6";
@@ -18,6 +18,8 @@ interface Props {
   activeTab: TabKey;
   setActiveTab: React.Dispatch<React.SetStateAction<TabKey>>;
   onAutoGenerate: () => void;
+  onBulkUpdatePrice: (indexes: number[], newPrice: number) => void;
+  onBulkUpdateImage: (indexes: number[], file: File) => void;
 }
 
 const gridTemplate = {
@@ -36,12 +38,41 @@ const VariationList = ({
   onDeleteMultiple,
   activeTab,
   setActiveTab,
-  onAutoGenerate
+  onAutoGenerate,
+  onBulkUpdateImage,
+  onBulkUpdatePrice
 }: Props) => {
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [filters, setFilters] = useState<Record<string, string>>({});
 
-  // Compute filtered variations with their original indexes
+  const [bulkType, setBulkType] = useState<"price"|"image"|"modify" | "">("");
+  const [showBulkModal, setShowBulkModal] = useState(false);
+  const [bulkValue, setBulkValue] = useState<string>("");
+  const [bulkFile, setBulkFile] = useState<File | null>(null);
+
+  const handleBulkChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const type = e.target.value as "modify"|"price"|"image"|"";
+  if (!type) return;
+  setBulkType(type);
+  setShowBulkModal(true);
+  e.target.value = ""; // resetto la select
+};
+
+const handleBulkSubmit = () => {
+  const indexes = Array.from(selected);
+  if (bulkType === "price") {
+    const parsed = parseFloat(bulkValue);
+    if (!isNaN(parsed)) {
+      onBulkUpdatePrice(indexes, parsed);
+    }
+  } else if (bulkType === "image" && bulkFile) {
+    onBulkUpdateImage(indexes, bulkFile);
+  }
+  setShowBulkModal(false);
+  setBulkValue("");
+  setBulkFile(null);
+};
+
   const filtered = variations
     .map((v, idx) => ({ ...v, idx }))
     .filter(({ options: vOpts }) =>
@@ -78,7 +109,9 @@ const VariationList = ({
   };
 
   const handleDeleteSelected = () => {
-    const toDelete = filtered.map(item => item.idx);
+    const toDelete = filtered
+  .filter(item => selected.has(item.idx))
+  .map(item => item.idx);
     if (toDelete.length === 0) return;
     if (!window.confirm("Vuoi eliminare le varianti selezionate?")) return;
     onDeleteMultiple(toDelete);
@@ -108,6 +141,7 @@ const VariationList = ({
   };
 
   return (
+    <>
     <div className="card p-3">
       <h4 className="fw-bold">Opzioni e varianti del prodotto</h4>
 
@@ -136,13 +170,15 @@ const VariationList = ({
             <FaPlus />
             Nuova combinazione
           </Button>
-          <select
+            <select
               className="input-product bg-transparent fw-normal"
-              style={{border: "1px solid black", width: "95px", height: "34px"}}
+              style={{ border: "1px solid black", width: "95px", height: "34px" }}
+              onChange={handleBulkChange}
+              disabled={selected.size === 0}
             >
-              <option value="physical">Modifica</option>
-              <option value="digital">Digitale</option>
-              <option value="3d_customizable">3D Personalizzabile</option>
+              <option value="">Modifica</option>
+              <option value="price">Prezzo</option>
+              <option value="image">Immagine</option>
             </select>
           <Button onClick={handleDeleteSelected} disabled={filtered.length === 0}
             style={{ border: "1px solid red", color: "red"}} className="bg-white px-2">
@@ -236,6 +272,56 @@ const VariationList = ({
         </div>
       ))}
     </div>
+
+    <Modal show={showBulkModal} onHide={() => setShowBulkModal(false)}>
+      <Modal.Header closeButton>
+        <Modal.Title>
+          {bulkType === "price" ? "Modifica Prezzo di massa" : "Carica Immagine di massa"}
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {bulkType === "price" && (
+          <Form.Group>
+            <p className="text-black mb-1 fw-semibold">Nuovo prezzo (€)</p>
+            <input
+              type="number"
+              className="input-product w-100"
+              value={bulkValue}
+              onChange={e => setBulkValue(e.target.value)}
+              placeholder="Inserisci prezzo"
+            />
+          </Form.Group>
+        )}
+        {bulkType === "image" && (
+          <Form.Group>
+            <Form.Label>Seleziona immagine</Form.Label>
+            <Form.Control
+              type="file"
+              accept="image/*"
+              onChange={e => setBulkFile((e.target as HTMLInputElement).files?.[0] || null)}
+            />
+          </Form.Group>
+        )}
+      </Modal.Body>
+      <Modal.Footer>
+        <Button className="bg-transparent text-black" onClick={() => setShowBulkModal(false)}>
+          Annulla
+        </Button>
+        <Button
+          variant="primary"
+          onClick={handleBulkSubmit}
+          disabled={
+            bulkType === "price" ? bulkValue === "" :
+            bulkType === "image" ? bulkFile === null :
+            true
+          }
+        >
+          Salva
+        </Button>
+      </Modal.Footer>
+    </Modal>
+
+  </>
   );
 };
 

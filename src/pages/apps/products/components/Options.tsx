@@ -148,6 +148,19 @@ const handleDeleteMultipleVars = (indexes: number[]) => {
             onDeleteMultiple={handleDeleteMultipleVars}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
+            onBulkUpdatePrice={(indexes, newPrice) => {
+                const newVars = variations.map((v, i) =>
+                  indexes.includes(i) ? { ...v, price: newPrice } : v
+                );
+                onVariationsChange(newVars);
+            }}
+            onBulkUpdateImage={(indexes, file) => {
+              const url = URL.createObjectURL(file);
+              const newVars = variations.map((v, i) =>
+                indexes.includes(i) ? { ...v, imageUrl: url } : v
+              );
+              onVariationsChange(newVars);
+            }}
             onAutoGenerate={() => {
               const lists: string[][] = options.map((o) => o.values.map((v) => v.name!));
               const combos = cartesian(lists);
