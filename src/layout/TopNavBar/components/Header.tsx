@@ -16,6 +16,13 @@ interface User {
 	subscription?: any;
 }
 
+interface PageData {
+	title: string;
+	button: string | null;
+	buttonLink: string | null;
+}
+
+
 interface HeaderProps {
 	onActionClick?: () => void;
 }
@@ -59,14 +66,31 @@ const Header: React.FC<HeaderProps> = ({ onActionClick }) => {
 		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, []);
 
-	const getPageData = () => {
-		if (location.pathname.includes("websites")) {
-			return { title: "Websites", button: "+ Add Website", buttonLink: "/account/websites" };
-		} else if (location.pathname.includes("dashboard")) {
-			return { title: "Dashboard" };
+	
+	const getPageData = (): PageData => {
+		const path = location.pathname;
+
+		const pageMap: { [key: string]: { title: string; button?: string; buttonLink?: string } } = {
+			"/dashboard": { title: "Dashboard" },
+			"/websites": { title: "Websites", button: "+ Add Website", buttonLink: "/account/websites" },
+			"/apps/categories": { title: "Categorie", button: "+ Aggiungi Categoria", buttonLink: "/apps/categories/new" },
+			"/apps/products": { title: "Prodotti", button: "+ Aggiungi Prodotto", buttonLink: "/apps/products/new" },
+			"/apps/settings": { title: "Impostazioni" },
+			"/apps/orders": { title: "Ordini" },
+			"/account/profile": { title: "Profilo" },
+			"/account/pricing": { title: "Abbonamenti" },
+		};
+		const matchedEntry = Object.entries(pageMap).find(([url]) =>
+			path.startsWith(url)
+		);
+		if (matchedEntry) {
+			const { title, button = null, buttonLink = null } = matchedEntry[1];
+			return { title, button, buttonLink };
 		}
-		return { title: "Huberway", button: null };
+		return { title: "Huberway", button: null, buttonLink: null };
 	};
+
+
 
 	const pageData = getPageData();
 

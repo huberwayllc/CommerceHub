@@ -216,3 +216,13 @@
   max-height: 100%;
   border-radius: 8px;
 }
+
+.custom-tabs .nav-link {
+  border: none;
+  border-bottom: 2px solid transparent;
+}
+
+
+.custom-tabs .nav-link.active {
+  border-bottom: 3px solid var(--bs-primary);
+}
