@@ -268,7 +268,7 @@ const handleSave = useCallback(() => {
 
   return (
     <>
-    <div style={{maxWidth: "1350px"}}>
+    <div>
 
 
      {isDirty && (
