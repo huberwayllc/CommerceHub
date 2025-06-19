@@ -492,7 +492,7 @@ const renderCategoryItems = (cats: Category[], level = 0) =>
                         ))}
                     </Modal.Body>
                     <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowProductModal(false)}>Annulla</Button>
+                    <Button className='bg-transparent text-black' onClick={() => setShowProductModal(false)}>Annulla</Button>
                     <Button variant="primary" onClick={confirmProductSelection}>Conferma</Button>
                     </Modal.Footer>
                 </Modal>
