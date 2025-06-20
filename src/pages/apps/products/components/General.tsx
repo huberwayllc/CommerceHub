@@ -1,19 +1,27 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, useState } from "react";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import PriceTab from './Price';
 import { GeneralInfo } from './options/types';
 import ProductGallery from "./ProductGallery";
-import { Button } from "react-bootstrap";
+import { Button, Modal, Form } from "react-bootstrap";
+import { Category } from "../../categories/components/types";
 
 interface GeneralTabProps {
   data: GeneralInfo;
   onChange: (newData: GeneralInfo) => void;
   images: string[];                            
   onImagesChange: (newImages: string[]) => void;
+  categories: Category[];
+  selectedCategoryIds: string[];
+  onCategoriesChange: (cats: Category[]) => void;
 }
 
-const GeneralTab: React.FC<GeneralTabProps> = ({ data, onChange,  images, onImagesChange  }) => {
+const GeneralTab: React.FC<GeneralTabProps> = ({ data, onChange,  images, onImagesChange, categories, selectedCategoryIds, onCategoriesChange  }) => {
+
+const [showCatModal, setShowCatModal] = useState(false);
+const [tempSelection, setTempSelection] = useState<string[]>(selectedCategoryIds);
+
 const handleFieldChange = (
   e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
 ) => {
@@ -38,6 +46,12 @@ const handleFieldChange = (
       description: html,
     });
   };
+
+    const openCatModal = () => {
+    setTempSelection(selectedCategoryIds);
+    setShowCatModal(true);
+  };
+
 
   return (
     <>
@@ -137,7 +151,17 @@ const handleFieldChange = (
     <div className='w-100 card p-3'>
       <h6 className="fw-bold">Categorie</h6>
       <div className="d-inline-flex borderBottomGray pb-2">
-         <Button className="">Gestisci Categorie</Button>
+         <Button onClick={openCatModal}>Gestisci Categorie</Button>
+         <div className="mb-2">
+            {categories
+              .filter(c => selectedCategoryIds.includes(c.id))
+              .map(c => (
+                <span key={c.id} className="badge bg-secondary me-1">
+                  {c.name}
+                </span>
+              ))
+            }
+          </div>
       </div>
 
     </div>
@@ -153,6 +177,38 @@ const handleFieldChange = (
       <h6 className="fw-bold">Aggiungi descrizione breve</h6>
       <p>Abbina l'immagine del tuo prodotto ad un breve testo che dia una descrizione o promozione extra per il prodotto. Il testo sarà mostrato sul tuo elenco dei prodotti e la pagina dei dettagli del prodotto.</p>
     </div>
+
+
+    <Modal show={showCatModal} onHide={() => setShowCatModal(false)}>
+      <Modal.Header closeButton><Modal.Title>Seleziona Categorie</Modal.Title></Modal.Header>
+      <Modal.Body>
+        {categories.map(cat => (
+          <Form.Check
+            key={cat.id}
+            type="checkbox"
+            id={`cat-${cat.id}`}
+            label={cat.name}
+            checked={tempSelection.includes(cat.id)}
+            onChange={() => {
+              setTempSelection(sel =>
+                sel.includes(cat.id)
+                  ? sel.filter(x => x !== cat.id)
+                  : [...sel, cat.id]
+              );
+            }}
+          />
+        ))}
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={() => setShowCatModal(false)}>Annulla</Button>
+        <Button variant="primary" onClick={() => {
+          const selected = categories.filter(c => tempSelection.includes(c.id));
+          onCategoriesChange(selected);
+          setShowCatModal(false);
+        }}>Salva</Button>
+      </Modal.Footer>
+    </Modal>
+
     </>
   );
 };

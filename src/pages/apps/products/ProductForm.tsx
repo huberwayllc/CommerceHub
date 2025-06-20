@@ -14,6 +14,7 @@ import RelatedTab from './components/RelatedProducts';
 import PriceTab from './components/Price';
 import OptionsTab from './components/Options';
 import { ProductOption, Variation, GeneralInfo, Attributes, ShippingInfo, ModelPart } from './components/options/types';
+import { Category } from '../categories/components/types';
 
 const emptyGeneral: GeneralInfo = {
   title: "",
@@ -34,6 +35,7 @@ const emptyAttributes: Attributes = {
 
 const STORAGE_KEY = "product_draft";
 const STORAGE_PRODUCTS = "products_list_v1";
+const STORAGE_CATEGORIES = 'categories_list_v1';
 
 
 interface SavedProduct {
@@ -42,6 +44,7 @@ interface SavedProduct {
   attributes: Attributes;
   shipping: ShippingInfo;
   images: string[];
+  categories: { id: string; name: string }[];
   options: ProductOption[];
   variations: Variation[];
   modelParts: ModelPart[];
@@ -50,6 +53,8 @@ interface SavedProduct {
 
 const ProductForm = () => {
   const [images, setImages] = useState<string[]>([]);
+  const [allCategories, setAllCategories] = useState<Category[]>([]);
+  const [selectedCategoryIds, setSelectedCatIds]  = useState<string[]>([]);
   const [general, setGeneral] = useState<GeneralInfo>(emptyGeneral);
   const [attributes, setAttributes] = useState<Attributes>(emptyAttributes);
   const [shipping, setShipping] = useState<ShippingInfo>({
@@ -84,14 +89,17 @@ const ProductForm = () => {
     label: "Generale",
     component: (
       <GeneralTab
-        data={general}
-        images={images}
-        onImagesChange={(imgs) => { setImages(imgs); setIsDirty(true); }}
-        onChange={(newGen) => {
-          setGeneral(newGen);
-          setIsDirty(true);
-        }}
-      />
+       data={general}
+       images={images}
+       onImagesChange={(imgs) => { setImages(imgs); setIsDirty(true); }}
+       onChange={(g) => { setGeneral(g); setIsDirty(true); }}
+       categories={allCategories}
+       selectedCategoryIds={selectedCategoryIds}
+       onCategoriesChange={(cats: Category[]) => {
+         setSelectedCatIds(cats.map(c => c.id));
+         setIsDirty(true);
+       }}
+     />
     ),
   },
   {
@@ -192,7 +200,16 @@ useEffect(() => {
 }, [isEditMode, slug]);
 
 
+  useEffect(() => {
+    const raw = localStorage.getItem(STORAGE_CATEGORIES);
+    if (raw) setAllCategories(JSON.parse(raw));
+  }, []);
 
+
+  const saveCategories = (cats: Category[]) => {
+    setAllCategories(cats);
+    localStorage.setItem(STORAGE_CATEGORIES, JSON.stringify(cats));
+  };
 
 
     function loadProducts(): SavedProduct[] {
@@ -219,6 +236,9 @@ const handleSave = useCallback(() => {
     variations,
     modelParts,
     relatedIds, 
+    categories: allCategories
+   .filter(c => selectedCategoryIds.includes(c.id))
+   .map(c => ({ id: c.id, name: c.name })),
   };
 
   const all = loadProducts();
