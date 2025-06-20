@@ -1,6 +1,7 @@
 import { PageBreadcrumb } from '@/components';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useRef, useState, useCallback  } from 'react';
+import { Modal, Form, Image } from "react-bootstrap";
 import { IoArrowBack } from "react-icons/io5";
 import GeneralTab from './components/General';
 import { MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight } from "react-icons/md";
@@ -13,7 +14,7 @@ import RelatedTab from './components/RelatedProducts';
 //import FilesTab from './components/Files';
 import PriceTab from './components/Price';
 import OptionsTab from './components/Options';
-import { ProductOption, Variation, GeneralInfo, Attributes, ShippingInfo, ModelPart } from './components/options/types';
+import { ProductOption, Variation, GeneralInfo, Attributes, ShippingInfo, ModelPart, Product } from './components/options/types';
 import { Category } from '../categories/components/types';
 
 const emptyGeneral: GeneralInfo = {
@@ -33,7 +34,7 @@ const emptyAttributes: Attributes = {
   brand: "",
 };
 
-const STORAGE_KEY = "product_draft";
+//const STORAGE_KEY = "product_draft";
 const STORAGE_PRODUCTS = "products_list_v1";
 const STORAGE_CATEGORIES = 'categories_list_v1';
 
@@ -52,6 +53,11 @@ interface SavedProduct {
 }
 
 const ProductForm = () => {
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [showProductModal, setShowProductModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [tempSelection, setTempSelection] = useState<Set<string>>(new Set());
+
   const [images, setImages] = useState<string[]>([]);
   const [allCategories, setAllCategories] = useState<Category[]>([]);
   const [selectedCategoryIds, setSelectedCatIds]  = useState<string[]>([]);
