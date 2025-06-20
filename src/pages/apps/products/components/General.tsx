@@ -67,6 +67,33 @@ const toggleItem = (id: string) => {
   );
 };
 
+function findPath(id: string, list: Category[], trail: string[] = []): string[] | null {
+  for (const cat of list) {
+    const newTrail = [...trail, cat.name];
+    if (cat.id === id) return newTrail;
+    if (cat.subcategories.length) {
+      const res = findPath(id, cat.subcategories, newTrail);
+      if (res) return res;
+    }
+  }
+  return null;
+}
+
+const renderTree = (list: Category[], level = 0) =>
+  list.map(cat => (
+    <div key={cat.id} style={{ paddingLeft: 20 * level, marginBottom: 4 }}>
+      <Form.Check
+        type="checkbox"
+        id={cat.id}
+        label={cat.name}
+        checked={tempSelection.includes(cat.id)}
+        onChange={() => toggleItem(cat.id)}
+      />
+      {cat.subcategories.length > 0 &&
+        renderTree(cat.subcategories, level + 1)}
+    </div>
+  ));
+
 
 useEffect(() => {
   if (showCatModal) {
@@ -184,21 +211,24 @@ const gatherAncestors = (id: string, list: Category[], chain: string[] = []): st
       <h6 className="fw-bold">Categorie</h6>
       <div className="d-inline-flex borderBottomGray pb-2">
          <Button onClick={openCatModal}>Gestisci Categorie</Button>
-         <div className="mb-2">
-            {categories.map(cat => (
-              <>
-                {selectedCategoryIds.includes(cat.id) && (
-                  <span key={cat.id} className="badge bg-secondary me-1">{cat.name}</span>
-                )}
-                {cat.subcategories.map(sub => (
-                  selectedCategoryIds.includes(sub.id) && (
-                    <span key={sub.id} className="badge bg-info me-1">{sub.name}</span>
-                  )
-                ))}
-              </>
-            ))}
-          </div>
       </div>
+        <div className="mt-2 d-flex flex-wrap gap-2">
+            {selectedCategoryIds.map(id => {
+              const path = findPath(id, categories);
+              if (!path) return null;
+              const label = path.join(' > ');
+              return (
+                <span
+                  key={id}
+                  className="badge bg-secondary"
+                  style={{ fontSize: '14px' }}
+                >
+                  {label}
+                </span>
+              );
+            })}
+          </div>
+
     </div>
 
     {/* Product options section---------------------------- */}
@@ -216,43 +246,17 @@ const gatherAncestors = (id: string, list: Category[], chain: string[] = []): st
 
     <Modal show={showCatModal} onHide={() => setShowCatModal(false)}>
       <Modal.Header closeButton><Modal.Title>Seleziona Categorie</Modal.Title></Modal.Header>
-      <Modal.Body>
-        {categories.map(cat => (
-          <div key={cat.id} style={{ marginBottom: '0.5rem' }}>
-            <Form.Check
-              type="checkbox"
-              id={`cat-${cat.id}`}
-              label={cat.name}
-              checked={tempSelection.includes(cat.id)}
-              onChange={() => toggleItem(cat.id)}
-            />
-
-            <div style={{ paddingLeft: 20, marginTop: 2 }}>
-              {cat.subcategories.map(sub => (
-                <Form.Check
-                  key={sub.id}
-                  type="checkbox"
-                  id={`sub-${sub.id}`}
-                  label={sub.name}
-                  checked={tempSelection.includes(sub.id)}
-                  onChange={() => toggleItem(sub.id)}
-                />
-              ))}
-            </div>
-          </div>
-        ))}
+      <Modal.Body style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+        {renderTree(categories)}
       </Modal.Body>
 
       <Modal.Footer>
         <Button variant="secondary" onClick={() => setShowCatModal(false)}>Annulla</Button>
 
         <Button variant="primary" onClick={() => {
-          // Costruisci la struttura categoria → sottocategorie selezionate
           const selectedCats: Category[] = categories
             .map(cat => {
-              // Sottocategorie selezionate
               const selectedSubs = cat.subcategories.filter(sub => tempSelection.includes(sub.id));
-              // Se la categoria è selezionata o almeno una sottocategoria lo è
               if (tempSelection.includes(cat.id) || selectedSubs.length > 0) {
                 return {
                   ...cat,
