@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState, useEffect  } from "react";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import PriceTab from './Price';
@@ -51,6 +51,38 @@ const handleFieldChange = (
     setTempSelection(selectedCategoryIds);
     setShowCatModal(true);
   };
+
+  const gatherDescendants = (cat: Category): string[] => {
+  return cat.subcategories.reduce<string[]>((acc, sub) => {
+    return acc.concat(sub.id, gatherDescendants(sub));
+  }, []);
+};
+
+
+const toggleItem = (id: string) => {
+  setTempSelection(sel =>
+    sel.includes(id)
+      ? sel.filter(x => x !== id)
+      : [...sel, id]
+  );
+};
+
+
+useEffect(() => {
+  if (showCatModal) {
+    setTempSelection(selectedCategoryIds);
+  }
+}, [showCatModal, selectedCategoryIds]);
+
+
+const gatherAncestors = (id: string, list: Category[], chain: string[] = []): string[] => {
+  for (const cat of list) {
+    if (cat.id === id) return chain;
+    const res = gatherAncestors(id, cat.subcategories, [...chain, cat.id]);
+    if (res.length) return res;
+  }
+  return [];
+};
 
 
   return (
@@ -153,17 +185,20 @@ const handleFieldChange = (
       <div className="d-inline-flex borderBottomGray pb-2">
          <Button onClick={openCatModal}>Gestisci Categorie</Button>
          <div className="mb-2">
-            {categories
-              .filter(c => selectedCategoryIds.includes(c.id))
-              .map(c => (
-                <span key={c.id} className="badge bg-secondary me-1">
-                  {c.name}
-                </span>
-              ))
-            }
+            {categories.map(cat => (
+              <>
+                {selectedCategoryIds.includes(cat.id) && (
+                  <span key={cat.id} className="badge bg-secondary me-1">{cat.name}</span>
+                )}
+                {cat.subcategories.map(sub => (
+                  selectedCategoryIds.includes(sub.id) && (
+                    <span key={sub.id} className="badge bg-info me-1">{sub.name}</span>
+                  )
+                ))}
+              </>
+            ))}
           </div>
       </div>
-
     </div>
 
     {/* Product options section---------------------------- */}
@@ -183,29 +218,54 @@ const handleFieldChange = (
       <Modal.Header closeButton><Modal.Title>Seleziona Categorie</Modal.Title></Modal.Header>
       <Modal.Body>
         {categories.map(cat => (
-          <Form.Check
-            key={cat.id}
-            type="checkbox"
-            id={`cat-${cat.id}`}
-            label={cat.name}
-            checked={tempSelection.includes(cat.id)}
-            onChange={() => {
-              setTempSelection(sel =>
-                sel.includes(cat.id)
-                  ? sel.filter(x => x !== cat.id)
-                  : [...sel, cat.id]
-              );
-            }}
-          />
+          <div key={cat.id} style={{ marginBottom: '0.5rem' }}>
+            <Form.Check
+              type="checkbox"
+              id={`cat-${cat.id}`}
+              label={cat.name}
+              checked={tempSelection.includes(cat.id)}
+              onChange={() => toggleItem(cat.id)}
+            />
+
+            <div style={{ paddingLeft: 20, marginTop: 2 }}>
+              {cat.subcategories.map(sub => (
+                <Form.Check
+                  key={sub.id}
+                  type="checkbox"
+                  id={`sub-${sub.id}`}
+                  label={sub.name}
+                  checked={tempSelection.includes(sub.id)}
+                  onChange={() => toggleItem(sub.id)}
+                />
+              ))}
+            </div>
+          </div>
         ))}
       </Modal.Body>
+
       <Modal.Footer>
         <Button variant="secondary" onClick={() => setShowCatModal(false)}>Annulla</Button>
+
         <Button variant="primary" onClick={() => {
-          const selected = categories.filter(c => tempSelection.includes(c.id));
-          onCategoriesChange(selected);
+          // Costruisci la struttura categoria → sottocategorie selezionate
+          const selectedCats: Category[] = categories
+            .map(cat => {
+              // Sottocategorie selezionate
+              const selectedSubs = cat.subcategories.filter(sub => tempSelection.includes(sub.id));
+              // Se la categoria è selezionata o almeno una sottocategoria lo è
+              if (tempSelection.includes(cat.id) || selectedSubs.length > 0) {
+                return {
+                  ...cat,
+                  subcategories: selectedSubs
+                };
+              }
+              return null;
+            })
+            .filter(Boolean) as Category[];
+          onCategoriesChange(selectedCats);
           setShowCatModal(false);
         }}>Salva</Button>
+
       </Modal.Footer>
     </Modal>
 

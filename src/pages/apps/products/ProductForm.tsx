@@ -73,6 +73,7 @@ const ProductForm = () => {
   const [options, setOptions] = useState<ProductOption[]>([]);
   const [variations, setVariations] = useState<Variation[]>([]);
   const [relatedIds, setRelatedIds] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<Category[]>([]);
   const [modelParts, setModelParts] = useState<ModelPart[]>([]);
   const { mode, slug } = useParams();
   const isEditMode = mode === "edit" && Boolean(slug);
@@ -89,17 +90,20 @@ const ProductForm = () => {
     label: "Generale",
     component: (
       <GeneralTab
-       data={general}
-       images={images}
-       onImagesChange={(imgs) => { setImages(imgs); setIsDirty(true); }}
-       onChange={(g) => { setGeneral(g); setIsDirty(true); }}
-       categories={allCategories}
-       selectedCategoryIds={selectedCategoryIds}
-       onCategoriesChange={(cats: Category[]) => {
-         setSelectedCatIds(cats.map(c => c.id));
-         setIsDirty(true);
-       }}
-     />
+        data={general}
+        images={images}
+        onImagesChange={(imgs) => { setImages(imgs); setIsDirty(true); }}
+        onChange={(g) => { setGeneral(g); setIsDirty(true); }}
+        categories={allCategories}
+        selectedCategoryIds={selectedCategories.flatMap(cat => [
+          cat.id,
+          ...cat.subcategories.map(sub => sub.id)
+        ])}
+        onCategoriesChange={(cats: Category[]) => {
+          setSelectedCategories(cats);
+          setIsDirty(true);
+        }}
+      />
     ),
   },
   {
@@ -179,14 +183,35 @@ const ProductForm = () => {
   }
 }, [mode, currentId]);
 
+function mapSavedCategoriesToFull(
+  saved: { id: string; name: string; subcategories?: { id: string; name: string }[] }[],
+  all: Category[]
+): Category[] {
+  return saved.map(cat => {
+    const fullCat = all.find(c => c.id === cat.id);
+    if (!fullCat) return null;
+    let subcategories: Category[] = [];
+    if (cat.subcategories && cat.subcategories.length > 0) {
+      subcategories = cat.subcategories
+        .map(sub => fullCat.subcategories.find(s => s.id === sub.id))
+        .filter(Boolean) as Category[];
+    }
+    return {
+      ...fullCat,
+      subcategories
+    };
+  }).filter(Boolean) as Category[];
+}
+
 
 useEffect(() => {
-  if (isEditMode && slug) {
+  if (isEditMode && slug && allCategories.length > 0) {
     const all = loadProducts();
     const found = all.find(p => p.id === slug);
     if (found) {
       setGeneral(found.general);
       setAttributes(found.attributes);
+      setSelectedCategories(mapSavedCategoriesToFull(found.categories || [], allCategories));
       setShipping(found.shipping);
       setImages(found.images);
       setOptions(found.options);
@@ -197,19 +222,13 @@ useEffect(() => {
       navigate("/apps/products");
     }
   }
-}, [isEditMode, slug]);
+}, [isEditMode, slug, allCategories, navigate]);
 
 
   useEffect(() => {
     const raw = localStorage.getItem(STORAGE_CATEGORIES);
     if (raw) setAllCategories(JSON.parse(raw));
   }, []);
-
-
-  const saveCategories = (cats: Category[]) => {
-    setAllCategories(cats);
-    localStorage.setItem(STORAGE_CATEGORIES, JSON.stringify(cats));
-  };
 
 
     function loadProducts(): SavedProduct[] {
@@ -226,20 +245,25 @@ useEffect(() => {
 const handleSave = useCallback(() => {
   if (!currentId) return; 
 
-  const prod: SavedProduct = {
-    id: currentId,
-    general,
-    attributes,
-    shipping,
-    images,
-    options,
-    variations,
-    modelParts,
-    relatedIds, 
-    categories: allCategories
-   .filter(c => selectedCategoryIds.includes(c.id))
-   .map(c => ({ id: c.id, name: c.name })),
-  };
+const prod: SavedProduct = {
+  id: currentId,
+  general,
+  attributes,
+  shipping,
+  images,
+  options,
+  variations,
+  modelParts,
+  relatedIds,
+  categories: selectedCategories.map(cat => ({
+  id: cat.id,
+  name: cat.name,
+  subcategories: cat.subcategories.map(sub => ({
+    id: sub.id,
+    name: sub.name
+  }))
+}))
+};
 
   const all = loadProducts();
   const updated = isEditMode
@@ -261,6 +285,8 @@ const handleSave = useCallback(() => {
   images,
   options,
   variations,
+  selectedCategoryIds,
+  allCategories,
   modelParts,
   relatedIds,
   navigate
