@@ -65,7 +65,7 @@ const OrdersForm: React.FC = () => {
         const confirmProductSelection = () => {
         const nextItems = Array.from(tempSelection).map(pid => {
             const p = allProducts.find(x => x.id === pid)!;
-            return { productId: pid, title: p.general.title, quantity: 1, unitPrice: p.general.price };
+            return { productId: pid, title: p.general.title, quantity: 1, unitPrice: p.general.price, image: p.images?.[0] || "/fallback.png" } as OrderItem;
         });
         setItems(nextItems);
         setShowProductModal(false);

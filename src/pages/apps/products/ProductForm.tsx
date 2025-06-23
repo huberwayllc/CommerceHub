@@ -211,24 +211,34 @@ function mapSavedCategoriesToFull(
 
 
 useEffect(() => {
-  if (isEditMode && slug && allCategories.length > 0) {
-    const all = loadProducts();
-    const found = all.find(p => p.id === slug);
-    if (found) {
-      setGeneral(found.general);
-      setAttributes(found.attributes);
-      setSelectedCategories(mapSavedCategoriesToFull(found.categories || [], allCategories));
-      setShipping(found.shipping);
-      setImages(found.images);
-      setOptions(found.options);
-      setVariations(found.variations);
-      setModelParts(found.modelParts);
-      setRelatedIds(found.relatedIds || []); 
-    } else {
-      navigate("/apps/products");
-    }
+  if (!isEditMode || !slug) return;
+  const all = loadProducts();          
+  const found = all.find(p => p.id === slug);
+  if (found) {
+    setGeneral(found.general);
+    setAttributes(found.attributes);
+    setShipping(found.shipping);
+    setImages(found.images);
+    setOptions(found.options);
+    setVariations(found.variations);
+    setModelParts(found.modelParts);
+    setRelatedIds(found.relatedIds || []);
+  } else {
+    navigate("/apps/products");
   }
-}, [isEditMode, slug, allCategories, navigate]);
+}, [isEditMode, slug, navigate]);
+
+
+useEffect(() => {
+  if (!isEditMode || !slug || allCategories.length === 0) return;
+  const savedCats = loadProducts()
+    .find(p => p.id === slug)
+    ?.categories || [];
+  const fullCats = mapSavedCategoriesToFull(savedCats, allCategories);
+  setSelectedCategories(fullCats);
+}, [isEditMode, slug, allCategories]);
+
+
 
 
   useEffect(() => {

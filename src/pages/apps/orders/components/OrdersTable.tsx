@@ -117,18 +117,23 @@ const getOrderTotal = (order: Order): number => {
                   </div>
                   {order.customer.phone &&<p style={{fontSize: "12px"}} className='fw-semibold m-0'>Telefono: {order.customer.phone}</p>}
                 </div>
-                <div className='mt-3 d-flex align-items-start gap-2'>
-                  <div>
-                    <img style={{width: "36px"}} src='https://d2j6dbq0eux0bg.cloudfront.net/default-store/rimini_romper_400px.jpg'/>
-                  </div>
-                  <div style={{bottom: "4px"}} className='position-relative'>
-                    <p style={{fontSize: "12px"}} className='m-0 fw-bold'>SAMPLE. Rimini Romper</p>
-                    <p style={{fontSize: "12px"}} className='m-0'>Size: <strong>S</strong></p>
-                    <p style={{fontSize: "12px"}} className='m-0'>1 x €150</p>
-                  </div>
-
+               <div className="mt-3 d-flex flex-column gap-2">
+                  {order.items.map((item, idx) => (
+                    <div key={idx} className="d-flex align-items-start gap-2">
+                      <div>
+                        <img
+                          style={{ width: '36px' }}
+                          src={item.image}
+                          alt={item.title}
+                        />
+                      </div>
+                      <div style={{ bottom: '4px' }} className="position-relative">
+                        <p style={{ fontSize: '12px' }} className="m-0 fw-bold">{item.title}</p>
+                        <p style={{ fontSize: '12px' }} className="m-0">{item.quantity} x €{item.unitPrice}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                
               </td>
 
               {/* Prezzo */}
