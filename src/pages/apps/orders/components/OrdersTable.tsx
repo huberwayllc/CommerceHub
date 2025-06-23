@@ -1,24 +1,22 @@
 import React, { useState } from 'react';
-import { Table, Button, Form, Image, Dropdown } from 'react-bootstrap';
-import { FaChevronRight, FaEdit, FaChevronDown } from 'react-icons/fa';
+import { Table, Button, Form, Dropdown } from 'react-bootstrap';
+import { FaChevronRight, FaChevronDown } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { IoDocumentsOutline } from "react-icons/io5";
-import { MdOutlineLocalShipping } from "react-icons/md";
-import { Product } from '../../products/components/options/types';
+import { Order } from './types';
+import { IoIosArrowDown } from "react-icons/io";
 
-
-interface ProductTableProps {
-  products: Product[];
+interface OrdersTableProps {
+  orders: Order[];
 }
 
 
-const OrderTable: React.FC<ProductTableProps> = ({ products }) => {
+const OrderTable: React.FC<OrdersTableProps> = ({ orders }) => {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [selectAll, setSelectAll] = useState(false);
   const navigate = useNavigate();
 
 const toggleSelectAll = () => {
-  setSelected(selectAll ? new Set() : new Set(products.map(p => p.id)));
+  setSelected(selectAll ? new Set() : new Set(orders.map(p => p.id)));
   setSelectAll(!selectAll);
 };
 
@@ -27,6 +25,23 @@ const toggleSelect = (id: string) => {
   newSet.has(id) ? newSet.delete(id) : newSet.add(id);
   setSelected(newSet);
 };
+
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Mese parte da 0
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
+const getOrderTotal = (order: Order): number => {
+  const itemsTotal = order.items.reduce((sum, item) => {
+    return sum + item.unitPrice * item.quantity;
+  }, 0);
+  const shippingCost = order.shipping?.price || 0;
+  return itemsTotal + shippingCost;
+};
+
 
   return (
     <div>
@@ -67,61 +82,59 @@ const toggleSelect = (id: string) => {
 
        <Table hover className="custom-table">
         <tbody>
-          {products.map(product => (
-            <tr key={product.id}>
+          {orders.map((order, index) => (
+            <tr key={order.id}>
               {/* Checkbox */}
               <td style={{ width: 40 }}>
                 <Form.Check
                   type="checkbox"
-                  checked={selected.has(product.id)}
-                  onChange={() => toggleSelect(product.id)}
+                  checked={selected.has(order.id)}
+                  onChange={() => toggleSelect(order.id)}
                   className="big-checkbox"
                 />
               </td>
 
-              {/* Immagine */}
-              <td style={{ width: 90 }}>
-                <Image
-                  src={product.general.objUrl || product.images?.[0] || "/fallback.png"}
-                  rounded
-                  style={{ width: 90, height: 90, objectFit: "cover" }}
-                />
-              </td>
-
-              {/* Titolo, switch disponibilità, tag e spedizione */}
               <td>
-                <strong style={{ fontSize: 16, cursor: "pointer" }}
-                 onClick={() => navigate(`/apps/products/edit/${product.id}`)} >{product.general.title}</strong>
-                <div className="d-flex align-items-center gap-2 mt-1">
-                  <Form.Check
-                    type="switch"
-                    id={`switch-${product.id}`}
-                    label="Disponibile"
-                    checked={product.general.isAvailable}
-                    readOnly
-                  />
+                <div className='d-flex align-items-center gap-3'>
+                  <h4 style={{fontSize: "18px"}} className='m-0'>#{index +1}</h4>
+                  <h4 style={{color: "#607385", fontSize: "18px"}} className='m-0 fw-normal'>{formatDate(order.createdAt)}</h4>
                 </div>
-                <div className="mt-2 d-flex align-items-center gap-3">
-                  <div className="d-flex align-items-center gap-1">
-                    <IoDocumentsOutline style={{ fontSize: 18 }} />
-                    <span>{product.variations.length} varianti</span>
+                <div className='mt-2 d-flex align-items-center gap-3'>
+                  <div className='d-flex align-items-center gap-1'>
+                    <p className='fw-bold m-0' style={{color: "#f9a650"}}>In attesa del pagamento</p>
+                    <IoIosArrowDown style={{color: "#f9a650", fontSize: "14px"}}/>
                   </div>
-                  <div className="d-flex align-items-center gap-1">
-                    <MdOutlineLocalShipping style={{ fontSize: 18 }} />
-                    <span>
-                      {product.shipping.requiresShipping
-                        ? "Spese di spedizione previste"
-                        : "Spedizione gratuita"}
-                    </span>
-                  </div>
+                   <div className='d-flex align-items-center gap-1'>
+                    <p className='colorPrimary fw-bold m-0'>In attesa di elaborazione</p>
+                    <IoIosArrowDown style={{fontSize: "14px"}} className='colorPrimary'/>
+                   </div>
+                  
                 </div>
-                <div className="mt-1">Codice: {product.general.itemCode}</div>
+                <div className="mt-2  gap-3">
+                  <div className='d-flex align-items-center gap-2'>
+                    <p className='fw-semibold m-0' style={{fontSize: "12px"}}>{order.customer.name}</p>
+                    <p style={{fontSize: "12px"}} className='colorPrimary fw-semibold m-0'>{order.customer.email}</p>
+                  </div>
+                  {order.customer.phone &&<p style={{fontSize: "12px"}} className='fw-semibold m-0'>Telefono: {order.customer.phone}</p>}
+                </div>
+                <div className='mt-3 d-flex align-items-start gap-2'>
+                  <div>
+                    <img style={{width: "36px"}} src='https://d2j6dbq0eux0bg.cloudfront.net/default-store/rimini_romper_400px.jpg'/>
+                  </div>
+                  <div style={{bottom: "4px"}} className='position-relative'>
+                    <p style={{fontSize: "12px"}} className='m-0 fw-bold'>SAMPLE. Rimini Romper</p>
+                    <p style={{fontSize: "12px"}} className='m-0'>Size: <strong>S</strong></p>
+                    <p style={{fontSize: "12px"}} className='m-0'>1 x €150</p>
+                  </div>
+
+                </div>
+                
               </td>
 
               {/* Prezzo */}
               <td style={{ width: 100 }} className="text-end">
                 <p className="mb-0 fw-bold fs-5">
-                  € {product.general.price.toFixed(2)}
+                  € {getOrderTotal(order).toFixed(2)}
                 </p>
               </td>
 
@@ -129,9 +142,9 @@ const toggleSelect = (id: string) => {
               <td style={{ width: 130 }} className="text-end">
                 <Button
                   variant="outline-primary"
-                  onClick={() => navigate(`/apps/products/edit/${product.id}`)}
+                  onClick={() => navigate(`/apps/orders/edit/${order.id}`)}
                 >
-                  <FaEdit /> Modifica
+                Aggiorna
                 </Button>
               </td>
 
@@ -139,7 +152,7 @@ const toggleSelect = (id: string) => {
               <td style={{ width: 60 }} className="text-end">
                 <Button
                   variant="link"
-                  onClick={() => navigate(`/apps/products/edit/${product.id}`)}
+                  onClick={() => navigate(`/apps/orders/edit/${order.id}`)}
                 >
                   <FaChevronRight />
                 </Button>
@@ -150,7 +163,7 @@ const toggleSelect = (id: string) => {
       </Table>
 
       <div className="text-end">
-        <small className='fw-semibold text-black'>{products.length} elementi</small>
+        Elementi
       </div>
     </div>
   );

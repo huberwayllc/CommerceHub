@@ -5,21 +5,21 @@ import { IoFilter } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import FloatingInput from '@/components/FloatingInput';
-import { Product } from '../../products/components/options/types';
 import OrderTable from './OrdersTable';
 import FeatureBoxGrid from './FeatureBoxGrid';
+import { Order } from './types';
 
 
-const STORAGE_PRODUCTS = "products_list_v1";
+const STORAGE_ORDERS = "orders_list_v1";
 
 const OrdersList = () => {
     const navigate = useNavigate();
 
     const [search, setSearch] = useState('');
-    const [products, setProducts] = useState<Product[]>([]);
+    const [orders, setOrders] = useState<Order[]>([]);
     useEffect(() => {
-      const saved: Product[] = JSON.parse(localStorage.getItem(STORAGE_PRODUCTS) || "[]");
-      setProducts(saved);
+      const saved: Order[] = JSON.parse(localStorage.getItem(STORAGE_ORDERS) || "[]");
+      setOrders(saved);
     }, []);
 
   return (
@@ -51,7 +51,7 @@ const OrdersList = () => {
           />
       </div>
 
-      <OrderTable products={products}/>
+      <OrderTable orders={orders}/>
       <FeatureBoxGrid />
 
       <div style={{marginTop: "200px"}}></div>
