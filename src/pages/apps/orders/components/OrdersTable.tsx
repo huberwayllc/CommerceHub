@@ -117,18 +117,23 @@ const getOrderTotal = (order: Order): number => {
                   </div>
                   {order.customer.phone &&<p style={{fontSize: "12px"}} className='fw-semibold m-0'>Telefono: {order.customer.phone}</p>}
                 </div>
-               <div className="mt-3 d-flex flex-column gap-2">
+               <div className="mt-3 d-flex align-items-start flex-wrap gap-4">
                   {order.items.map((item, idx) => (
                     <div key={idx} className="d-flex align-items-start gap-2">
                       <div>
                         <img
-                          style={{ width: '36px' }}
+                          style={{ width: '36px', height: '36px', objectFit: 'cover' }}
                           src={item.image}
                           alt={item.title}
                         />
                       </div>
                       <div style={{ bottom: '4px' }} className="position-relative">
                         <p style={{ fontSize: '12px' }} className="m-0 fw-bold">{item.title}</p>
+                            {item.options?.map((opt, i) => (
+                              <p key={i} style={{ fontSize: '12px' }} className="m-0">
+                                {opt.name}: <strong>{opt.value}</strong>
+                              </p>
+                            ))}
                         <p style={{ fontSize: '12px' }} className="m-0">{item.quantity} x €{item.unitPrice}</p>
                       </div>
                     </div>

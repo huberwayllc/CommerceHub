@@ -1,9 +1,12 @@
+
+
 export interface OrderItem {
   productId: string;
   title: string;
   quantity: number;
   image: string;
   unitPrice: number;
+  options?: { name: string; value: string }[];
 }
 
 export interface ShippingInfo {
