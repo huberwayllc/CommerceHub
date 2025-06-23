@@ -295,6 +295,7 @@ const prod: SavedProduct = {
   allCategories,
   modelParts,
   relatedIds,
+  selectedCategories, 
   navigate
 ]);
 
