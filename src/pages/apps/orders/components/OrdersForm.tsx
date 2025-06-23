@@ -46,15 +46,6 @@ const OrdersForm: React.FC = () => {
     localStorage.setItem(STORAGE_ORDERS, JSON.stringify(list));
   };
 
-  const addDummyItem = () => {
-    const next: OrderItem = {
-      productId: `prod-${Date.now()}`,
-      title: 'Articolo di esempio',
-      quantity: 1,
-      unitPrice: 10,
-    };
-    setItems([...items, next]);
-  };
 
     useEffect(() => {
     const raw = localStorage.getItem(STORAGE_PRODUCTS) || "[]";
