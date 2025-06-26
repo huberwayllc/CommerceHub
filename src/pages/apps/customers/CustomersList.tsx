@@ -5,14 +5,16 @@ import { IoFilter } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import FloatingInput from '@/components/FloatingInput';
-import OrderTable from './OrdersTable';
-import FeatureBoxGrid from './FeatureBoxGrid';
-import { Order } from './types';
+import { Order } from '../orders/components/types';
+import OrderTable from '../orders/components/OrdersTable';
+import FeatureBoxGrid from '../orders/components/FeatureBoxGrid';
+import CustomersTable from './components/CustomersTable';
+
 
 
 const STORAGE_ORDERS = "orders_list_v1";
 
-const OrdersList = () => {
+const CustomersList = () => {
     const navigate = useNavigate();
 
     const [search, setSearch] = useState('');
@@ -26,9 +28,9 @@ const OrdersList = () => {
     <>
      {/*<PageBreadcrumb subName="Apps" title="Prodotti" />*/}
       <div className="mt-4 pt-1 d-inline-flex align-items-center gap-2 mb-4">
-        <Button className='boxShadow' style={{ height: '45px', border: "0px" }} onClick={() => navigate('/apps/orders/new')}>
+        <Button className='boxShadow' style={{ height: '45px', border: "0px" }} onClick={() => navigate('/apps/customers/new')}>
           <div className='d-flex align-items-center gap-1'>
-            <FaPlus /> Crea Ordine
+            <FaPlus /> Aggiungi un nuovo cliente
           </div>
         </Button>
 
@@ -51,7 +53,7 @@ const OrdersList = () => {
           />
       </div>
 
-      <OrderTable orders={orders}/>
+      <CustomersTable orders={orders}/>
       <FeatureBoxGrid />
 
       <div style={{marginTop: "200px"}}></div>
@@ -59,4 +61,4 @@ const OrdersList = () => {
   );
 };
 
-export default OrdersList;
+export default CustomersList;

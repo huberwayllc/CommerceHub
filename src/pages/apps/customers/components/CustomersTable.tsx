@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import { Table, Button, Form, Dropdown } from 'react-bootstrap';
 import { FaChevronRight, FaChevronDown } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { Order } from './types';
 import { IoIosArrowDown } from "react-icons/io";
+import { Order } from '../../orders/components/types';
 
 interface OrdersTableProps {
   orders: Order[];
 }
 
 
-const OrderTable: React.FC<OrdersTableProps> = ({ orders }) => {
+const CustomersTable: React.FC<OrdersTableProps> = ({ orders }) => {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [selectAll, setSelectAll] = useState(false);
   const navigate = useNavigate();
@@ -178,4 +178,4 @@ const getOrderTotal = (order: Order): number => {
   );
 };
 
-export default OrderTable;
+export default CustomersTable;

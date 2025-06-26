@@ -61,11 +61,8 @@ const toggleSelect = (id: string) => {
                         <Dropdown.Item className='fw-semibold' style={{height: "40px"}} href="#esporta">Tasse</Dropdown.Item>
 					</Dropdown.Menu>
 				</Dropdown>
-        <div>
-            <p style={{fontSize: "12px"}} className='mb-0 fw-semibold'>VISUALIZZANDO TUTTI I PRODOTTI<span style={{color: "#275ce0", fontWeight: "600", cursor: "pointer"}}> RICARICA</span></p>
-        </div>
       </div>
-
+      <div style={{ overflowX: "auto" }}>
        <Table hover className="custom-table">
         <tbody>
           {products.map(product => (
@@ -149,6 +146,7 @@ const toggleSelect = (id: string) => {
           ))}
         </tbody>
       </Table>
+      </div>
 
       <div className="text-end">
         <small className='fw-semibold text-black'>{products.length} elementi</small>

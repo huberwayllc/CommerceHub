@@ -24,27 +24,43 @@ const ProductList = () => {
   return (
     <>
      {/*<PageBreadcrumb subName="Apps" title="Prodotti" />*/}
-      <div className="mt-4 pt-1 d-inline-flex align-items-center gap-2 mb-4">
-        <Button className='boxShadow' style={{ height: '45px', border: "0px" }} onClick={() => navigate('/apps/products/new')}>
-          <div className='d-flex align-items-center gap-1'>
-            <FaPlus /> Nuovo prodotto
-          </div>
-        </Button>
+      <div className="mt-4 pt-1 mb-4">
+        <div className="d-inline-flex flex-column flex-md-row gap-2 mb-2 align-items-start align-items-md-center">
+          <Button
+            className="boxShadow"
+            style={{ height: '45px', border: '0px' }}
+            onClick={() => navigate('/apps/products/new')}
+          >
+            <div className="d-flex align-items-center gap-1">
+              <FaPlus /> Nuovo prodotto
+            </div>
+          </Button>
 
-        <Button style={{ height: '45px', border: "0px" }} className='bg-white text-black boxShadow'>
-          Modifica tutto in blocco
-        </Button>
+          <Button
+            style={{ height: '45px', border: '0px' }}
+            className="bg-white text-black boxShadow"
+          >
+            Modifica tutto in blocco
+          </Button>
 
-        <Dropdown>
-          <Dropdown.Toggle style={{ height: '45px', border: "0px" }} className="bg-white text-black d-flex align-items-center gap-1 boxShadow">
-            importa o esporta i prodotti <FaChevronDown />
-          </Dropdown.Toggle>
+          <Dropdown>
+            <Dropdown.Toggle
+              style={{ height: '45px', border: '0px', minWidth: '200px' }}
+              className="bg-white text-black d-flex align-items-center gap-1 boxShadow"
+            >
+              importa o esporta i prodotti <FaChevronDown />
+            </Dropdown.Toggle>
 
-          <Dropdown.Menu>
-            <Dropdown.Item style={{ height: "40px" }} href="#importa">Importa i prodotti</Dropdown.Item>
-            <Dropdown.Item style={{ height: "40px" }} href="#esporta">Esporta tutto</Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
+            <Dropdown.Menu>
+              <Dropdown.Item style={{ height: '40px' }} href="#importa">
+                Importa i prodotti
+              </Dropdown.Item>
+              <Dropdown.Item style={{ height: '40px' }} href="#esporta">
+                Esporta tutto
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        </div>
       </div>
 
       <div className='d-flex align-items-center gap-2 mb-4'>
@@ -63,8 +79,9 @@ const ProductList = () => {
           />
       </div>
 
-      <ProductTable products={products}/>
-      <FeatureBoxGrid />
+        <ProductTable products={products}/>
+      
+        <FeatureBoxGrid />
 
       <div style={{marginTop: "200px"}}></div>
     </>

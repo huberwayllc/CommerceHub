@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import Categories from '@/pages/apps/categories'
+import Customers from '@/pages/apps/customers'
 import Orders from '@/pages/apps/orders'
 import { lazy } from 'react'
 import { Navigate, RouteProps } from 'react-router-dom'
@@ -306,6 +307,11 @@ const appsRoutes: RoutesProps[] = [
 		path: '/apps/orders/:mode?/:slug?',
 		name: 'Orders',
 		element: <Orders />,
+	},
+	{
+		path: '/apps/customers/:mode?/:slug?',
+		name: 'Customers',
+		element: <Customers />,
 	},
 	{
 		path: '/apps/analytics/reports',
