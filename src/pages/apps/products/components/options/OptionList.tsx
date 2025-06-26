@@ -3,6 +3,7 @@ import { TfiRulerAlt } from "react-icons/tfi";
 import { MdInvertColors } from "react-icons/md";
 import { ProductOption, Variation } from "./types";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
+import { AiFillEdit } from "react-icons/ai";
 
 type TabKey = "OPTIONS" | "VARIATIONS";
 
@@ -34,9 +35,9 @@ const OptionList = ({ options, variations, onAdd, onEdit, onDelete, activeTab, s
           className="d-flex align-items-center gap-2"
           onClick={() => onEdit(i)}
         >
-          {opt.type === 'Taglia'
-            ? <TfiRulerAlt style={{ fontSize: '20px' }} />
-            : <MdInvertColors style={{ fontSize: '20px' }} />}
+          {opt.type === 'Taglia' && <TfiRulerAlt style={{ fontSize: '20px' }} />}
+          {opt.type === 'Colore' && <MdInvertColors style={{ fontSize: '20px' }} />}
+          {opt.type === 'Personalizzata' && <AiFillEdit style={{ fontSize: '20px' }} />}
           <p className="fw-bold mb-0">{opt.name}</p>
         </div>
         <div style={{ width: '65%', cursor: 'pointer' }} className="d-flex align-items-center gap-2" onClick={() => onEdit(i)}>

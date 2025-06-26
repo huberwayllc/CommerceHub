@@ -5,13 +5,17 @@ import FloatingInput2 from "@/components/FloatingInput2";
 import { Button, Form, Image, Modal } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
 import { Order, CustomerInfo, OrderItem, ShippingInfo } from './types';
+import { FaRegTrashCan } from "react-icons/fa6";
 import { OptionValue, Product } from '../../products/components/options/types';
 import { useParams } from 'react-router-dom';
 
 const STORAGE_ORDERS = 'orders_list_v1';
 const STORAGE_PRODUCTS = 'products_list_v1';
 
-interface TempItem {
+
+interface TempSelection {
+  key: string;               
+  productId: string;
   quantity: number;
   selectedOptions: Record<string, OptionValue>;
 }
@@ -27,9 +31,9 @@ const OrdersForm: React.FC = () => {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const { mode, slug } = useParams<{ mode: string; slug: string }>();
   const isEditMode = mode === "edit" && Boolean(slug);
-  const [tempItems, setTempItems] = useState<Record<string, TempItem>>({});
   const [showProductModal, setShowProductModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentSelection, setCurrentSelection] = useState<TempSelection | null>(null);
   const [shipping, setShipping] = useState<ShippingInfo>({
     method: '',
     name: '',
@@ -78,85 +82,56 @@ const OrdersForm: React.FC = () => {
 
 
     const openProductModal = () => {
-        const fromExisting = items.reduce<Record<string, TempItem>>((acc, i) => {
-          acc[i.productId] = {
-            quantity: i.quantity,
-            selectedOptions: (i.options || []).reduce((oAcc, opt) => {
-              oAcc[opt.name] = { id: 0, name: opt.value }; 
-              // qui potresti dover ricostruire OptionValue completo
-              return oAcc;
-            }, {} as Record<string, OptionValue>)
-          };
-          return acc;
-        }, {});
-        setTempItems(fromExisting);
-        setShowProductModal(true);
-      };
+      setCurrentSelection(null);
+      setShowProductModal(true);
+    };
 
 
-        const toggleTemp = (p: Product) => {
-          setTempItems(prev => {
-            const copy = { ...prev };
-            if (copy[p.id]) {
-              delete copy[p.id];
-            } else {
-              const initialOptions: Record<string, OptionValue> = {};
-              p.options.forEach(opt => {
-                initialOptions[opt.name] = opt.values[0];
-              });
-              copy[p.id] = { quantity: 1, selectedOptions: initialOptions };
-            }
-            return copy;
-          });
-        };
+  
 
         const confirmProductSelection = () => {
-          const nextItems: OrderItem[] = Object.entries(tempItems).map(
-            ([productId, cfg]) => {
-              const p = allProducts.find(x => x.id === productId)!;
-              // trasformo selectedOptions in array di {name, value}
-              const optionsArray = Object.entries(cfg.selectedOptions).map(
-                ([name, optVal]) => ({ name, value: optVal.name! })
-              );
-              return {
-                productId,
-                title: p.general.title,
-                quantity: cfg.quantity,
-                unitPrice: p.general.price,
-                image: p.images?.[0] || "/fallback.png",
-                options: optionsArray
-              };
-            }
-          );
-          setItems(nextItems);
+          if (!currentSelection) return;
+          const p = allProducts.find(x => x.id === currentSelection.productId)!;
+          const newItem: OrderItem = {
+            productId: currentSelection.productId,
+            title: p.general.title,
+            quantity: currentSelection.quantity,
+            unitPrice: p.general.price,
+            image: p.images?.[0] || "/fallback.png",
+            options: Object.entries(currentSelection.selectedOptions).map(
+              ([name, optVal]) => ({ name, value: optVal.name! })
+            )
+          };
+          setItems(prev => [...prev, newItem]);
           setShowProductModal(false);
         };
+
 
 
 
   const subtotal = items.reduce((sum, i) => sum + i.quantity * i.unitPrice, 0);
   const total = subtotal + shipping.price - discount;
 
-const saveOrder = () => {
-  const newOrder: Order = {
-    id: isEditMode && slug ? slug : Date.now().toString(),
-    createdAt: isEditMode && slug
-      ? loadOrders().find(o => o.id === slug)!.createdAt
-      : new Date().toISOString(),
-    customer,
-    items,
-    shipping,
-    ...(discount > 0 ? { discount: { amount: discount } } : {}),
-  };
-  const all = loadOrders();
-  const updated = isEditMode
-    ? all.map(o => (o.id === newOrder.id ? newOrder : o))
-    : [newOrder, ...all];
+  const saveOrder = () => {
+    const newOrder: Order = {
+      id: isEditMode && slug ? slug : Date.now().toString(),
+      createdAt: isEditMode && slug
+        ? loadOrders().find(o => o.id === slug)!.createdAt
+        : new Date().toISOString(),
+      customer,
+      items,
+      shipping,
+      ...(discount > 0 ? { discount: { amount: discount } } : {}),
+    };
+    const all = loadOrders();
+    const updated = isEditMode
+      ? all.map(o => (o.id === newOrder.id ? newOrder : o))
+      : [newOrder, ...all];
 
-  saveOrders(updated);
-  alert(isEditMode ? "Ordine modificato!" : "Ordine creato!");
-  navigate("/apps/orders");
-};
+    saveOrders(updated);
+    alert(isEditMode ? "Ordine modificato!" : "Ordine creato!");
+    navigate("/apps/orders");
+  };
 
 
   return (
@@ -210,39 +185,73 @@ const saveOrder = () => {
 
           {/* Articoli ordine */}
           <div className="card p-3 mt-3">
-            <h4 className="m-0 mb-4 fw-bold text-black" style={{ fontSize: "18px" }}>Articoli ordine</h4>
-              <div className="mt-0 d-flex flex-wrap align-items-start gap-4">
-                  {items.map((item, idx) => (
-                    <div key={idx} className="d-flex align-items-start gap-2">
-                      <div>
-                        <img
-                          style={{ width: '50px', height: '50px', objectFit: 'cover' }}
-                          src={item.image}
-                          alt={item.title}
-                        />
-                      </div>
-                      <div style={{ bottom: '4px' }} className="position-relative">
-                        <p style={{ fontSize: '12px' }} className="m-0 fw-bold">{item.title}</p>
-                            {item.options?.map((opt, i) => (
-                              <p key={i} style={{ fontSize: '12px' }} className="m-0">
-                                {opt.name}: <strong>{opt.value}</strong>
-                              </p>
-                            ))}
-                        <p style={{ fontSize: '12px' }} className="m-0">{item.quantity} x €{item.unitPrice}</p>
+              <h4 className="m-0 mb-4 fw-bold text-black" style={{ fontSize: "18px" }}>
+                Articoli ordine
+              </h4>
+
+              {items.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="d-flex align-items-start justify-content-between mb-3"
+                  style={{
+                    borderBottom: "1px solid #e0e0e0",
+                    paddingBottom: "12px",
+                  }}
+                >
+                  {/* SX: immagine e dettagli */}
+                  <div className="w-100 d-inline-flex justify-content-between align-items-start gap-2">
+                    <div className='d-flex gap-2 align-items-start'>
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        style={{
+                          width: 80,
+                          height: 80,
+                          objectFit: "cover",
+                          borderRadius: 4,
+                        }}
+                      />
+                      <div style={{bottom: "6px"}} className='position-relative'>
+                        <p style={{fontSize: "20px"}} className="m-0 fw-semibold">{item.title}</p>
+                        {item.options?.map((opt, i) => (
+                          <p key={i} className="m-0" style={{ fontSize: 12 }}>
+                            {opt.name}: <strong>{opt.value}</strong>
+                          </p>
+                        ))}
                       </div>
                     </div>
-                  ))}
+
+                    <div className='d-flex gap-4 position-relative' style={{ bottom: "6px" }}>
+                      <p className="m-0 " style={{ fontSize: "16px"}}>
+                        qt: <strong>{item.quantity}</strong>
+                      </p>
+                      <p className='m-0' style={{ fontSize: "16px"}}>
+                       Prezzo: <strong>€{(item.quantity * item.unitPrice).toFixed(2)}</strong>
+                      </p>
+                      <Button
+                        variant="link"
+                        className="p-0 text-danger"
+                        onClick={() => {
+                          setItems(prev => prev.filter((_, i) => i !== idx));
+                        }}
+                      >
+                        <FaRegTrashCan size={18} />
+                      </Button>
+                    </div>
+                   </div>
                 </div>
-            <div className="d-inline-flex gap-3 mt-3">
-              <Button
-                style={{ border: "1px solid black" }}
-                className="bg-transparent text-black"
-                onClick={openProductModal}
+              ))}
+
+              <div className="d-inline-flex gap-3 mt-3">
+                <Button
+                  style={{ border: "1px solid black" }}
+                  className="bg-transparent text-black"
+                  onClick={openProductModal}
                 >
-                Seleziona prodotti
+                  Aggiungi prodotto
                 </Button>
+              </div>
             </div>
-          </div>
 
           {/* Spedizione */}
           <div className="card p-3 mt-3">
@@ -401,87 +410,98 @@ const saveOrder = () => {
       <Modal show={showProductModal} onHide={() => setShowProductModal(false)}>
         <Modal.Header closeButton><Modal.Title>Seleziona prodotti</Modal.Title></Modal.Header>
         <Modal.Body style={{ maxHeight: '60vh', overflowY: 'auto' }}>
-            <Form.Control
-            type="text"
-            placeholder="Cerca per nome"
-            className="mb-3"
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            />
-            {allProducts
-              .filter(p => p.general.title.toLowerCase().includes(searchTerm.toLowerCase()))
-              .map(p => {
-                const sel = tempItems[p.id];
-                return (
-                  <div key={p.id} className="mb-4 border-bottom pb-2">
-                    <div className="d-flex align-items-center">
-                      <Form.Check
-                        className="me-2"
-                        checked={Boolean(tempItems[p.id])}
-                        onChange={() => toggleTemp(p)}
-                      />
-                      <Image src={p.images?.[0] || "/fallback.png"} rounded style={{ width: 40, height: 40 }} className="me-2"/>
-                      <div style={{ flexGrow: 1 }}>
-                        <div>{p.general.title}</div>
-                        <small>€{p.general.price.toFixed(2)}</small>
-                      </div>
+          {!currentSelection ? (
+            <>
+              <Form.Control
+                type="text"
+                placeholder="Cerca per nome"
+                className="mb-3"
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+              />
+              {allProducts
+                .filter(p => p.general.title.toLowerCase().includes(searchTerm.toLowerCase()))
+                .map(p => (
+                  <div key={p.id} className="d-flex align-items-center mb-3">
+                    <Image
+                      src={p.images?.[0] || "/fallback.png"}
+                      rounded
+                      style={{ width: 50, height: 50 }}
+                      className="me-2"
+                    />
+                    <div style={{ flexGrow: 1 }}>
+                      <div>{p.general.title}</div>
+                      <small>€{p.general.price.toFixed(2)}</small>
                     </div>
-
-                    {/* Se è selezionato mostro quantità e opzioni */}
-                    {sel && (
-                      <div className="mt-2 ps-4">
-                        {/* Quantità */}
-                        <Form.Group className="mb-2 mt-3" style={{ maxWidth: 100 }}>
-                          <p className='mb-1 text-black fw-semibold'>Quantità</p>
-                          <Form.Control
-                            type="number"
-                            min={1}
-                            value={sel.quantity}
-                            onChange={e => {
-                              const q = Math.max(1, Number(e.target.value));
-                              setTempItems(prev => ({
-                                ...prev,
-                                [p.id]: { ...prev[p.id], quantity: q }
-                              }));
-                            }}
-                          />
-                        </Form.Group>
-
-                        {/* Opzioni dinamiche */}
-                        {p.options.map(opt => (
-                          <Form.Group key={opt.name} className="mb-2 mt-3" style={{ maxWidth: 200 }}>
-                            <p className='mb-1 text-black fw-semibold'>{opt.name}</p>
-                            <Form.Select
-                              value={sel.selectedOptions[opt.name].id}
-                              onChange={e => {
-                                const chosen = opt.values.find(v => v.id === Number(e.target.value))!;
-                                setTempItems(prev => ({
-                                  ...prev,
-                                  [p.id]: {
-                                    ...prev[p.id],
-                                    selectedOptions: {
-                                      ...prev[p.id].selectedOptions,
-                                      [opt.name]: chosen
-                                    }
-                                  }
-                                }));
-                              }}
-                            >
-                              {opt.values.map(v => (
-                                <option key={v.id} value={v.id}>
-                                  {v.name || v.hex || v.id}
-                                </option>
-                              ))}
-                            </Form.Select>
-                          </Form.Group>
-                        ))}
-                      </div>
-                    )}
+                    <Button size="sm" onClick={() => {
+                      // inizializza la selezione
+                      const initialOptions = p.options.reduce<Record<string, OptionValue>>((acc, opt) => {
+                        acc[opt.name] = opt.values[0];
+                        return acc;
+                      }, {});
+                      setCurrentSelection({
+                        key: `${p.id}_${Date.now()}`,
+                        productId: p.id,
+                        quantity: 1,
+                        selectedOptions: initialOptions
+                      });
+                    }}>
+                      Seleziona
+                    </Button>
                   </div>
-                );
-              })}
-
+              ))}
+            </>
+          ) : (
+            // configurazione del solo prodotto corrente
+            (() => {
+              const p = allProducts.find(x => x.id === currentSelection.productId)!;
+              return (
+                <div>
+                  <h5>{p.general.title}</h5>
+                  {/* Quantità */}
+                  <Form.Group className="mt-3" style={{ maxWidth: 120 }}>
+                    <Form.Label>Quantità</Form.Label>
+                    <Form.Control
+                      type="number"
+                      min={1}
+                      value={currentSelection.quantity}
+                      onChange={e => {
+                        const q = Math.max(1, Number(e.target.value));
+                        setCurrentSelection(sel => sel && { ...sel, quantity: q });
+                      }}
+                    />
+                  </Form.Group>
+                  {/* Opzioni */}
+                  {p.options.map(opt => (
+                    <Form.Group key={opt.name} className="mt-3" style={{ maxWidth: 200 }}>
+                      <Form.Label>{opt.name}</Form.Label>
+                      <Form.Select
+                        value={currentSelection.selectedOptions[opt.name].id}
+                        onChange={e => {
+                          const chosen = opt.values.find(v => v.id === +e.target.value)!;
+                          setCurrentSelection(sel => sel && {
+                            ...sel,
+                            selectedOptions: {
+                              ...sel.selectedOptions,
+                              [opt.name]: chosen
+                            }
+                          });
+                        }}
+                      >
+                        {opt.values.map(v => (
+                          <option key={v.id} value={v.id}>
+                            {v.name || v.hex || v.id}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </Form.Group>
+                  ))}
+                </div>
+              );
+            })()
+          )}
         </Modal.Body>
+
         <Modal.Footer>
             <Button className='bg-transparent text-black' onClick={() => setShowProductModal(false)}>Annulla</Button>
             <Button onClick={confirmProductSelection}>Conferma</Button>

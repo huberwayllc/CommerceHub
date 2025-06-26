@@ -5,7 +5,7 @@ import OptionForm from "./options/OptionForm";
 import EmptyPlaceholder from "./options/EmptyPlaceholder";
 import VariationList from "./options/VariationList";
 import VariationForm from "./options/VariationForm";
-import { Attributes, GeneralInfo, ModelPart, Product, ProductOption, ShippingInfo, Variation } from "./options/types";
+import { Attributes, GeneralInfo, ModelPart, ProductOption, ShippingInfo, Variation } from "./options/types";
 import ModelPartManager from "./options/ModelPartManager";
 
 type TabKey = "OPTIONS" | "VARIATIONS";
@@ -210,6 +210,7 @@ const handleDeleteMultipleVars = (indexes: number[]) => {
         <OptionForm
           initial={editingOptionIdx !== null ? options[editingOptionIdx] : undefined}
           existingNames={options.map((o) => o.name)}
+          existingOptions={options}
           onSave={handleSaveOption}
           onCancel={handleCancelOption}
         />

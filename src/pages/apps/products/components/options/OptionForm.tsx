@@ -4,18 +4,26 @@ import { FaChevronDown } from 'react-icons/fa';
 import { TfiRulerAlt } from "react-icons/tfi";
 import { MdInvertColors } from "react-icons/md";
 import { FaRegTrashCan, FaPlus } from "react-icons/fa6";
+import { AiFillEdit } from "react-icons/ai";
 import { ProductOption, OptionValue } from "./types";
 
 interface Props {
   initial?: ProductOption;
   existingNames: string[];
+  existingOptions: ProductOption[];
   onSave: (opt: ProductOption) => void;
   onCancel: () => void;
 }
 
-const OptionForm = ({ initial, existingNames, onSave, onCancel }: Props) => {
+const OptionForm = ({ initial, existingNames, onSave, onCancel, existingOptions }: Props) => {
   const [name, setName] = useState(initial?.name || '');
-  const [type, setType] = useState(initial?.type || 'Taglia');
+  const tagliaExists = existingOptions.some(
+    opt => opt.type === 'Taglia' && opt.name !== initial?.name
+  );
+  const [type, setType] = useState(() => {
+    if (initial?.type) return initial.type;
+    return tagliaExists ? 'Personalizzata' : 'Taglia';
+  });
   const [values, setValues] = useState<OptionValue[]>(initial?.values || [{ id: Date.now() }]);
   const duplicate = name && existingNames.includes(name) && name !== initial?.name;
 
@@ -52,13 +60,22 @@ const OptionForm = ({ initial, existingNames, onSave, onCancel }: Props) => {
               <div className="d-flex gap-2 align-items-center fw-semibold">
                 {type === 'Taglia' && <TfiRulerAlt /> } 
                 {type === 'Colore' && <MdInvertColors /> } 
+                {type === 'Personalizzata' && <AiFillEdit /> } 
                 {type}
               </div>
               <FaChevronDown />
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item className="py-2" style={{fontSize: "14px"}} eventKey="Taglia"><TfiRulerAlt /> Taglia</Dropdown.Item>
+              <Dropdown.Item
+                className="py-2"
+                style={{ fontSize: "14px" }}
+                eventKey="Taglia"
+                disabled={tagliaExists}
+              >
+                <TfiRulerAlt /> Taglia
+              </Dropdown.Item>
               <Dropdown.Item className="py-2" style={{fontSize: "14px"}} eventKey="Colore"><MdInvertColors /> Colore</Dropdown.Item>
+              <Dropdown.Item className="py-2" style={{fontSize: "14px"}} eventKey="Personalizzata"><AiFillEdit /> Personalizzata</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
         </div>
@@ -85,6 +102,14 @@ const OptionForm = ({ initial, existingNames, onSave, onCancel }: Props) => {
             }
             {type === 'Taglia' &&
               <input placeholder="Es: 'S'" value={v.name || ''} onChange={e => changeField(v.id, 'name', e.target.value)} className="input-product w-50 fw-semibold" />
+            }
+            {type === 'Personalizzata' &&
+              <input
+                placeholder="Valore personalizzato"
+                value={v.name || ''}
+                onChange={e => changeField(v.id, 'name', e.target.value)}
+                className="input-product w-50 fw-semibold"
+              />
             }
             <FaRegTrashCan className="colorPrimary" onClick={() => removeField(v.id)} style={{ cursor: 'pointer', fontSize: "16px" }} />
           </div>
