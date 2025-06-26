@@ -1,33 +1,31 @@
-
-import React, { useState, ChangeEvent, useEffect } from 'react';
+// src/apps/customers/CustomersForm.tsx
+import React, {
+  useState,
+  ChangeEvent,
+  useEffect,
+  useCallback,
+  KeyboardEvent
+} from 'react';
 import { PageBreadcrumb } from "@/components";
 import FloatingInput2 from "@/components/FloatingInput2";
 import { Button, Form } from "react-bootstrap";
-import { useNavigate } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
-import { Order, CustomerInfo, OrderItem, ShippingInfo } from '../orders/components/types';
+import { useNavigate, useParams } from 'react-router-dom';
+import { IoWarningOutline, IoArrowBack } from "react-icons/io5";
+import { CustomerInfo } from './components/types';
 
-const STORAGE_ORDERS = 'orders_list_v1';
-
-
-
+const STORAGE_CUSTOMERS = 'customers_list_v1';
 
 const CustomersForm: React.FC = () => {
+  // -- Stati principali
   const [customer, setCustomer] = useState<CustomerInfo>({
+    id: '',
     name: '',
     email: '',
     phone: '',
     taxExempt: false,
-  });
-  const [items, setItems] = useState<OrderItem[]>([]);
-  const { mode, slug } = useParams<{ mode: string; slug: string }>();
-  const isEditMode = mode === "edit" && Boolean(slug);
-  const [shipping, setShipping] = useState<ShippingInfo>({
-    method: '',
-    name: '',
-    price: 0,
+    newsletter: false,
     address: {
-      firstName: '',
+      address: '',
       phone: '',
       country: '',
       state: '',
@@ -35,166 +33,228 @@ const CustomersForm: React.FC = () => {
       postalCode: '',
     },
   });
-  const [discount, setDiscount] = useState<number>(0);
+  const [isDirty, setIsDirty] = useState(false);
+
+  const { mode, slug } = useParams<{ mode: string; slug: string }>();
+  const isEditMode = mode === "edit" && Boolean(slug);
   const navigate = useNavigate();
 
-  const loadOrders = (): Order[] => {
-    const raw = localStorage.getItem(STORAGE_ORDERS);
+  // -- Funzioni di caricamento/salvataggio da localStorage
+  const loadCustomers = (): CustomerInfo[] => {
+    const raw = localStorage.getItem(STORAGE_CUSTOMERS);
     return raw ? JSON.parse(raw) : [];
   };
-  const saveOrders = (list: Order[]) => {
-    localStorage.setItem(STORAGE_ORDERS, JSON.stringify(list));
+  const saveCustomers = (list: CustomerInfo[]) => {
+    localStorage.setItem(STORAGE_CUSTOMERS, JSON.stringify(list));
   };
 
+  // -- Carica il cliente in edit mode
+  useEffect(() => {
+    if (!isEditMode || !slug) return;
+    const all = loadCustomers();
+    const found = all.find(c => c.id === slug);
+    if (!found) {
+      navigate("/apps/customers");
+      return;
+    }
+    setCustomer(found);
+  }, [isEditMode, slug, navigate]);
 
-     useEffect(() => {
-      if (!isEditMode || !slug) return;
-      const all = loadOrders();
-      const found = all.find(o => o.id === slug);
-      if (!found) {
-        alert("Ordine non trovato");
-        navigate("/apps/orders");
-        return;
+  // -- Marcare il form come "sporco"
+  const markDirty = useCallback(() => {
+    if (!isDirty) setIsDirty(true);
+  }, [isDirty]);
+
+  // -- Cambiamento campo generico
+  const onFieldChange = <K extends keyof CustomerInfo>(key: K, val: CustomerInfo[K]) => {
+    setCustomer(c => ({ ...c, [key]: val }));
+    markDirty();
+  };
+  // -- Cambiamento campo indirizzo
+  const onAddressChange = (field: keyof CustomerInfo["address"], val: string) => {
+    setCustomer(c => ({
+      ...c,
+      address: { ...c.address, [field]: val }
+    }));
+    markDirty();
+  };
+
+  // -- Salva senza uscire
+const handleSave = useCallback(() => {
+  // Genero o riuso l'id
+  const newId = isEditMode ? customer.id : Date.now().toString();
+  const newCust: CustomerInfo = {
+    ...customer,
+    id: newId,
+  };
+
+  // Carico tutti, sostituisco o inserisco
+  const all = loadCustomers();
+  const updated = isEditMode
+    ? all.map(c => (c.id === newId ? newCust : c))
+    : [newCust, ...all];
+  saveCustomers(updated);
+
+  setIsDirty(false);
+
+  if (!isEditMode) {
+    // Passo in modalità edit sul nuovo cliente
+    navigate(`/apps/customers/edit/${newId}`, { replace: true });
+  }
+}, [customer, isEditMode, navigate]);
+
+  // -- Salva e torna indietro
+  const handleSaveAndClose = () => {
+    handleSave();
+    navigate("/apps/customers");
+  };
+
+  // -- Torna indietro (con conferma se isDirty)
+  const handleGoBack = () => {
+    if (isDirty && !window.confirm("Ci sono modifiche non salvate. Vuoi davvero uscire?")) {
+      return;
+    }
+    navigate("/apps/customers");
+  };
+
+  // -- Listener per Ctrl+S
+  useEffect(() => {
+    const listener = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+        e.preventDefault();
+        handleSave();
       }
-      setCustomer(found.customer);
-      setItems(found.items);
-      setShipping(found.shipping);
-      setDiscount(found.discount?.amount || 0);
-    }, [isEditMode, slug, navigate]);
-
-
-
-  const subtotal = items.reduce((sum, i) => sum + i.quantity * i.unitPrice, 0);
-  const total = subtotal + shipping.price - discount;
-
-  const saveOrder = () => {
-    const newOrder: Order = {
-      id: isEditMode && slug ? slug : Date.now().toString(),
-      createdAt: isEditMode && slug
-        ? loadOrders().find(o => o.id === slug)!.createdAt
-        : new Date().toISOString(),
-      customer,
-      items,
-      shipping,
-      ...(discount > 0 ? { discount: { amount: discount } } : {}),
     };
-    const all = loadOrders();
-    const updated = isEditMode
-      ? all.map(o => (o.id === newOrder.id ? newOrder : o))
-      : [newOrder, ...all];
-
-    saveOrders(updated);
-    alert(isEditMode ? "Ordine modificato!" : "Ordine creato!");
-    navigate("/apps/orders");
-  };
-
+    window.addEventListener("keydown", listener as any);
+    return () => window.removeEventListener("keydown", listener as any);
+  }, [handleSave]);
 
   return (
     <>
-      <PageBreadcrumb subName="Apps" title={isEditMode ?"MOdifica cliente" : "Aggiungi nuovo cliente"} />
+      {/* Banner sticky se ci sono modifiche non salvate */}
+      {isDirty && (
+        <div
+          style={{
+            position: "sticky",
+            top: 0,
+            left: 0,
+            height: "65px",
+            marginRight: "-16px",
+            marginLeft: "-16px",
+            backgroundColor: "#D4DEF9",
+            zIndex: 2000,
+            padding: "10px 20px",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <div>
+            <button
+              onClick={handleGoBack}
+              className="btn btn-link text-decoration-none p-0 me-3"
+            >
+              <div className='d-flex align-items-center gap-1'>
+                <IoArrowBack size={20} style={{ color: "#2563EB" }} />
+                <span style={{ color: "#2563EB" }} className='fw-semibold'>Indietro</span>
+              </div>
+            </button>
+            <span style={{ fontWeight: 500, color: "#333" }}>
+              In questa pagina ci sono modifiche non salvate.
+            </span>
+          </div>
+          <div>
+            <button
+              style={{ fontSize: "13px" }}
+              onClick={handleSaveAndClose}
+              className="btn btn-sm bg-transparent me-2 fw-semibold colorPrimary"
+            >
+              Salva e Chiudi
+            </button>
+            <button
+              onClick={handleSave}
+              className="btn btn-sm btn-primary px-3 fw-semibold"
+              title="Ctrl+S"
+              style={{ height: "40px", fontSize: "14px" }}
+            >
+              Salva (Ctrl+S)
+            </button>
+          </div>
+        </div>
+      )}
+
+      <PageBreadcrumb
+        subName="Apps"
+        title={isEditMode ? "Modifica cliente" : "Aggiungi nuovo cliente"}
+      />
 
       <div className="w-100 d-flex align-items-start gap-3">
-        {/* Left side */}
+        {/* Left side: GDPR notice, form fields */}
         <div style={{ width: "70%" }}>
-          {/* Cliente */}
-          <div className="card p-3">
-            <h4 className="m-0 mb-2 fw-bold text-black" style={{ fontSize: "18px" }}>Cliente</h4>
+          {/* GDPR notice */}
+          <div style={{ border: "2px solid black" }} className='card p-3 mb-3'>
+            <div className='d-inline-flex align-items-start gap-2'>
+              <IoWarningOutline style={{ fontSize: "80px" }} />
+              <div>
+                <h6 style={{ fontSize: "18px" }} className='m-0 mb-2 fw-bold'>
+                  Chiedi al cliente il consenso al trattamento dei dati personali
+                </h6>
+                <p className='mb-0'>
+                  In conformità al GDPR, è necessario ottenere il consenso
+                  esplicito del cliente al trattamento dei suoi dati personali
+                  prima di raccoglierli e elaborarli.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Customer info */}
+          <div className="card p-3 mb-3">
+            <h4 className="m-0 mb-2 fw-bold text-black" style={{ fontSize: "18px" }}>
+              Informazioni sul cliente
+            </h4>
             <FloatingInput2
-              placeholder="Nome"
+              placeholder="Nome e cognome"
               value={customer.name}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setCustomer({ ...customer, name: e.target.value })
-              }
+              onChange={e => onFieldChange('name', e.target.value)}
             />
             <div className="w.100 d-flex mt-2 gap-2">
               <div className="w-50">
                 <FloatingInput2
                   placeholder="Indirizzo e-mail"
                   value={customer.email}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setCustomer({ ...customer, email: e.target.value })
-                  }
+                  onChange={e => onFieldChange('email', e.target.value)}
                 />
               </div>
               <div className="w-50">
                 <FloatingInput2
                   placeholder="Numero di telefono"
                   value={customer.phone}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setCustomer({ ...customer, phone: e.target.value })
-                  }
+                  onChange={e => onFieldChange('phone', e.target.value)}
                 />
               </div>
             </div>
-            <p className="mt-3 fw-bold mb-0">
-              <Form.Check
-                type="checkbox"
-                label="Contrassegna l'ordine del cliente come esente da tasse"
-                checked={customer.taxExempt}
-                onChange={() =>
-                  setCustomer({ ...customer, taxExempt: !customer.taxExempt })
-                }
-              />
-            </p>
           </div>
 
-
-          {/* Spedizione */}
-          <div className="card p-3 mt-3">
-            <h4 className="m-0 mb-2 fw-bold text-black" style={{ fontSize: "18px" }}>Spedizione e consegna</h4>
+          {/* Shipping address */}
+          <div className="card p-3">
+            <h4 className="m-0 mb-2 fw-bold text-black" style={{ fontSize: "18px" }}>
+              Indirizzo di spedizione
+            </h4>
             <div className="w.100 d-flex mt-0 gap-2">
               <div className="w-50">
                 <FloatingInput2
-                  placeholder="Metodo"
-                  value={shipping.method}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setShipping({ ...shipping, method: e.target.value })
-                  }
-                />
-                <div className="mt-2">
-                  <FloatingInput2
-                    placeholder="Nome spedizione"
-                    value={shipping.name}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      setShipping({ ...shipping, name: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-              <div className="w-50">
-                <FloatingInput2
-                  placeholder="Price"
-                  value={shipping.price.toString()}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setShipping({ ...shipping, price: Number(e.target.value) })
-                  }
-                />
-              </div>
-            </div>
-            <p className="mb-1 mt-4 fw-bold">Indirizzo</p>
-            <div className="w.100 d-flex mt-0 gap-2">
-              <div className="w-50">
-                <FloatingInput2
-                  placeholder="Nome"
-                  value={shipping.address.firstName}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setShipping({
-                      ...shipping,
-                      address: { ...shipping.address, firstName: e.target.value },
-                    })
-                  }
+                  placeholder="Indirizzo"
+                  value={customer.address.address}
+                  onChange={e => onAddressChange('address', e.target.value)}
                 />
               </div>
               <div className="w-50">
                 <FloatingInput2
                   placeholder="Numero telefonico"
-                  value={shipping.address.phone}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setShipping({
-                      ...shipping,
-                      address: { ...shipping.address, phone: e.target.value },
-                    })
-                  }
+                  value={customer.address.phone}
+                  onChange={e => onAddressChange('phone', e.target.value)}
                 />
               </div>
             </div>
@@ -202,25 +262,15 @@ const CustomersForm: React.FC = () => {
               <div className="w-50">
                 <FloatingInput2
                   placeholder="Paese"
-                  value={shipping.address.country}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setShipping({
-                      ...shipping,
-                      address: { ...shipping.address, country: e.target.value },
-                    })
-                  }
+                  value={customer.address.country}
+                  onChange={e => onAddressChange('country', e.target.value)}
                 />
               </div>
               <div className="w-50">
                 <FloatingInput2
                   placeholder="Stato"
-                  value={shipping.address.state}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setShipping({
-                      ...shipping,
-                      address: { ...shipping.address, state: e.target.value },
-                    })
-                  }
+                  value={customer.address.state}
+                  onChange={e => onAddressChange('state', e.target.value)}
                 />
               </div>
             </div>
@@ -228,71 +278,48 @@ const CustomersForm: React.FC = () => {
               <div className="w-50">
                 <FloatingInput2
                   placeholder="Città"
-                  value={shipping.address.city}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setShipping({
-                      ...shipping,
-                      address: { ...shipping.address, city: e.target.value },
-                    })
-                  }
+                  value={customer.address.city}
+                  onChange={e => onAddressChange('city', e.target.value)}
                 />
               </div>
               <div className="w-50">
                 <FloatingInput2
                   placeholder="Codice postale"
-                  value={shipping.address.postalCode}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setShipping({
-                      ...shipping,
-                      address: { ...shipping.address, postalCode: e.target.value },
-                    })
-                  }
+                  value={customer.address.postalCode}
+                  onChange={e => onAddressChange('postalCode', e.target.value)}
                 />
               </div>
             </div>
           </div>
-
-          {/* Sconti e supplementi */}
-          <div className="card p-3 mt-3">
-            <h4 className="m-0 mb-4 fw-bold text-black" style={{ fontSize: "18px" }}>Sconti e supplementi</h4>
-            <div style={{ width: "300px" }}>
-              <FloatingInput2
-                placeholder="Sconto, €"
-                value={discount.toString()}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  setDiscount(Number(e.target.value))
-                }
-              />
-            </div>
-          </div>
         </div>
 
-        {/* Right side: Riepilogo */}
+        {/* Right side: Settings & Save button */}
         <div style={{ width: "30%" }}>
-          <div style={{ position: "sticky", top: "0px" }} className="card p-3">
-            <h4 className="m-0 fw-bold text-black" style={{ fontSize: "18px" }}>Riepilogo</h4>
-
-            <div className="borderBottomGray pb-2 mt-4">
-              <div className="d-flex justify-content-between">
-                <p className="fw-semibold m-0">Subtotale</p>
-                <p className="fw-semibold m-0">€{subtotal.toFixed(2)}</p>
-              </div>
-              <p style={{ color: "#607385" }}>{items.length} articoli</p>
+          <div style={{ position: "sticky", top: 0 }} className="card p-3">
+            <h4 className="m-0 fw-bold text-black" style={{ fontSize: "18px" }}>
+              Impostazioni
+            </h4>
+            <div className="d-inline-flex align-items-center gap-2 mt-2">
+              <Form.Check
+                type="checkbox"
+                style={{ transform: "scale(1.3)", marginTop: "2px" }}
+                checked={customer.newsletter}
+                onChange={() => onFieldChange('newsletter', !customer.newsletter)}
+              />
+              <p className='fw-bold mb-0'>Iscriviti alle email di marketing</p>
             </div>
-
-            <div className="mt-3 d-flex justify-content-between">
-              <h5 className="fw-bold">Totale</h5>
-              <p className="fw-semibold">€{total.toFixed(2)}</p>
+            <div className="d-inline-flex align-items-center gap-2 mt-2">
+              <Form.Check
+                type="checkbox"
+                style={{ transform: "scale(1.3)", marginTop: "2px" }}
+                checked={customer.taxExempt}
+                onChange={() => onFieldChange('taxExempt', !customer.taxExempt)}
+              />
+              <p className='fw-bold mb-0'>Esenzione fiscale</p>
             </div>
-
-            <Button className="mt-2" onClick={saveOrder}>
-              {isEditMode ? "Modifica ordine" : "Crea ordine"}
-            </Button>
           </div>
         </div>
       </div>
-
-
     </>
   );
 };
