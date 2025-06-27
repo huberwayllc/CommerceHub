@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Table, Button, Form, Dropdown } from 'react-bootstrap';
+import { Table, Button, Form, Dropdown, Nav } from 'react-bootstrap';
 import { FaChevronRight, FaChevronDown } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { IoIosArrowDown } from "react-icons/io";
@@ -13,7 +13,23 @@ interface OrdersTableProps {
 const ShippingTable: React.FC<OrdersTableProps> = ({ orders }) => {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [selectAll, setSelectAll] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>('incoming');
   const navigate = useNavigate();
+
+  const filteredOrders = orders.filter(order => {
+  switch (activeTab) {
+    case 'incoming':
+      return true; 
+    case 'labels':
+      return order.labelCreated === true;
+    case 'cancelled':
+      return order.status === 'cancelled';
+    case 'documents':
+      return order.hasDocument === true;
+    default:
+      return true;
+  }
+});
 
 const toggleSelectAll = () => {
   setSelected(selectAll ? new Set() : new Set(orders.map(p => p.id)));
@@ -77,10 +93,26 @@ const getOrderTotal = (order: Order): number => {
                 </Dropdown>
       </div>
 
+
+        <Nav variant="tabs" activeKey={activeTab} onSelect={(k) => setActiveTab(k || 'incoming')} className="fw-bold">
+            <Nav.Item>
+                <Nav.Link eventKey="incoming">Ordini in entrata</Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+                <Nav.Link eventKey="labels">Etichette create</Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+                <Nav.Link eventKey="cancelled">Annullato</Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+                <Nav.Link eventKey="documents">Documenti</Nav.Link>
+            </Nav.Item>
+        </Nav>
+
       <div style={{ overflowX: "auto" }}>
        <Table hover className="custom-table">
         <tbody>
-          {orders.map((order, index) => (
+          {filteredOrders.map((order, index) => (
             <tr key={order.id}>
               {/* Checkbox */}
               <td style={{ width: 40 }}>

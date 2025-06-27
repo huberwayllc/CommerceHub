@@ -382,7 +382,7 @@ const OrdersForm: React.FC = () => {
         </div>
 
         {/* Right side: Riepilogo */}
-        <div style={{ width: "30%" }}>
+        <div style={{ width: "30%", position: "sticky", top: "80px", alignSelf: "flex-start" }}>
           <div style={{ position: "sticky", top: "0px" }} className="card p-3">
             <h4 className="m-0 fw-bold text-black" style={{ fontSize: "18px" }}>Riepilogo</h4>
 

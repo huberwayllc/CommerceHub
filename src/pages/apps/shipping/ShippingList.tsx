@@ -1,4 +1,4 @@
-import { Button } from 'react-bootstrap';
+import { Button, Nav } from 'react-bootstrap';
 import { FaPlus, FaSearch } from 'react-icons/fa';
 import { IoFilter } from 'react-icons/io5';
 //import { PageBreadcrumb } from '@/components';
@@ -25,7 +25,7 @@ const ShippingList = () => {
     <>
      {/*<PageBreadcrumb subName="Apps" title="Prodotti" />*/}
       <div className="mt-4 pt-1 d-inline-flex align-items-center gap-2 mb-4">
-        <Button className='boxShadow' style={{ height: '45px', border: "0px" }} onClick={() => navigate('/apps/orders/new')}>
+        <Button className='boxShadow' style={{ height: '45px', border: "0px" }} onClick={() => navigate('/apps/shipments/new')}>
           <div className='d-flex align-items-center gap-1'>
             <FaPlus /> Nuova spedizione
           </div>
@@ -43,7 +43,7 @@ const ShippingList = () => {
         </Button>
 
           <FloatingInput
-            placeholder="Numero ordine, dettagli cliente...."
+            placeholder="Ricerca..."
             icon={<FaSearch />}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
