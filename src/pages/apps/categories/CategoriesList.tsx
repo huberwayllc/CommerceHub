@@ -402,14 +402,15 @@ const renderCategoryItems = (cats: Category[], level = 0) =>
                     </Form.Group>
 
                     <Form.Group className="mb-3">
-                    <p className='fw-bold mb-1'>Descrizione</p>
-                    <ReactQuill
-                    theme="snow"
-                    value={formData.description}
-                     onChange={value => {
-                        setFormData(prev => ({ ...prev, description: value }));
+                   <p className='fw-bold mb-1'>Descrizione</p>
+                    <textarea
+                      className="form-control mb-3 input-product"
+                      rows={5}
+                      value={formData.description}
+                      onChange={e => {
+                        setFormData(prev => ({ ...prev, description: e.target.value }));
                         setIsDirty(true);
-                    }}
+                      }}
                     />
                     </Form.Group>
                 </Form>
