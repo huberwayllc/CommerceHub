@@ -310,11 +310,6 @@ const appsRoutes: RoutesProps[] = [
 		element: <Orders />,
 	},
 	{
-		path: '/apps/shipments/:mode?/:slug?',
-		name: 'Orders',
-		element: <Shipping />,
-	},
-	{
 		path: '/apps/customers/:mode?/:slug?',
 		name: 'Customers',
 		element: <Customers />,
@@ -613,6 +608,44 @@ const appsRoutes: RoutesProps[] = [
 		path: '/apps/invoice',
 		name: 'Invoice',
 		element: <Invoice />,
+	},
+]
+
+const shipmentsRoutes: RoutesProps[] = [
+	{
+		path: '/shipments/overview/:mode?/:slug?',
+		name: 'Dashboard',
+		element: <Shipping />,
+	},
+	{
+		path: '/dashboards/crypto',
+		name: 'Crypto',
+		element: <CryptoDashboard />,
+	},
+	{
+		path: '/dashboards/crm',
+		name: 'CRM',
+		element: <CRMDashboard />,
+	},
+	{
+		path: '/dashboards/project',
+		name: 'Project',
+		element: <ProjectDashboard />,
+	},
+	{
+		path: '/dashboards/ecommerce',
+		name: 'Ecommerce',
+		element: <EcommerceDashboard />,
+	},
+	{
+		path: '/dashboards/helpdesk',
+		name: 'Help Desk',
+		element: <HelpDeskDashboard />,
+	},
+	{
+		path: '/dashboards/hospital',
+		name: 'Hospital',
+		element: <HospitalDashboard />,
 	},
 ]
 
@@ -1024,6 +1057,7 @@ const allUiRoutes = [
 const allAdminRoutes = [
 	...dashboardRoutes,
 	...appsRoutes,
+	...shipmentsRoutes,
 	...allUiRoutes,
 	...pagesRoutes,
 ]
