@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { PageBreadcrumb } from "@/components";
-import FloatingInput2 from "@/components/FloatingInput2";
 import { Button } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';

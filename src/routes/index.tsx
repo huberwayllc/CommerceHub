@@ -3,6 +3,7 @@ import Categories from '@/pages/apps/categories'
 import Customers from '@/pages/apps/customers'
 import Orders from '@/pages/apps/orders'
 import Shipping from '@/pages/apps/shipping'
+import Carriers from '@/pages/apps/shipping/carriers'
 import { lazy } from 'react'
 import { Navigate, RouteProps } from 'react-router-dom'
 
@@ -618,14 +619,9 @@ const shipmentsRoutes: RoutesProps[] = [
 		element: <Shipping />,
 	},
 	{
-		path: '/dashboards/crypto',
-		name: 'Crypto',
-		element: <CryptoDashboard />,
-	},
-	{
-		path: '/dashboards/crm',
-		name: 'CRM',
-		element: <CRMDashboard />,
+		path: '/shipments/carriers',
+		name: 'Carriers',
+		element: <Carriers />,
 	},
 	{
 		path: '/dashboards/project',

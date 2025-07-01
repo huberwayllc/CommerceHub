@@ -1,0 +1,50 @@
+[
+  {
+    "id": "ups",
+    "name": "UPS",
+    "logoUrl": "https://cdn.sendcloud.com/global-media/ups/img/logo.svg",
+    "features": ["Spedizioni internazionali", "Servizio di ritiro", "Servizio Premium"],
+    "upgradeMessage": "Fai l'upgrade al tuo piano per sbloccare questo operatore",
+    "upgradeButtonText": "Fai l'upgrade al piano"
+  },
+  {
+    "id": "dhl",
+    "name": "DHL",
+    "logoUrl": "https://cdn.sendcloud.com/global-media/dhl_express/img/logo.svg",
+    "features": ["Express worldwide", "Door pickup", "Insurance options"],
+    "upgradeMessage": "Upgrade plan to enable DHL",
+    "upgradeButtonText": "Upgrade plan"
+  },
+  {
+    "id": "gls",
+    "name": "GLS",
+    "logoUrl": "https://cdn.sendcloud.com/global-media/gls_it/img/logo.svg",
+    "features": ["Shipping Europe", "Standard pickup"],
+    "upgradeMessage": "Upgrade plan to enable GLS",
+    "upgradeButtonText": "Upgrade plan"
+  },
+  {
+    "id": "brt",
+    "name": "BRT",
+    "logoUrl": "https://cdn.sendcloud.com/global-media/brt/img/logo.svg",
+    "features": ["Spedizioni nazionali", "Ritiro rapido"],
+    "upgradeMessage": "Fai l'upgrade per abilitare BRT",
+    "upgradeButtonText": "Fai l'upgrade"
+  },
+  {
+    "id": "poste",
+    "name": "Poste Italiane",
+    "logoUrl": "https://cdn.sendcloud.com/global-media/poste_it_delivery/img/logo.svg",
+    "features": ["Poste Delivery", "Ritiro in ufficio"],
+    "upgradeMessage": "Upgrade per Poste Italiane",
+    "upgradeButtonText": "Fai l'upgrade"
+  },
+  {
+    "id": "inpost",
+    "name": "InPost",
+    "logoUrl": "https://cdn.sendcloud.com/global-media/inpost_it/img/logo.svg",
+    "features": ["Locker delivery", "Pick-up service"],
+    "upgradeMessage": "Upgrade to enable InPost",
+    "upgradeButtonText": "Upgrade plan"
+  }
+]

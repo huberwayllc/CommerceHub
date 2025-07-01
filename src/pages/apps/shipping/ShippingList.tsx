@@ -25,7 +25,7 @@ const ShippingList = () => {
     <>
      {/*<PageBreadcrumb subName="Apps" title="Prodotti" />*/}
       <div className="mt-4 pt-1 d-inline-flex align-items-center gap-2 mb-4">
-        <Button className='boxShadow' style={{ height: '45px', border: "0px" }} onClick={() => navigate('/apps/shipments/new')}>
+        <Button className='boxShadow' style={{ height: '45px', border: "0px" }} onClick={() => navigate('/shipments/overview/new')}>
           <div className='d-flex align-items-center gap-1'>
             <FaPlus /> Nuova spedizione
           </div>
