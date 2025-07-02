@@ -84,6 +84,7 @@ const ProductForm = () => {
   const [activeTab, setActiveTab] = useState('generale');
   const [isDirty, setIsDirty] = useState<boolean>(false);
 
+  //le tab per cambiare i vari componenti
   const tabs = [
   {
     key: "generale",
@@ -177,12 +178,15 @@ const ProductForm = () => {
     navigate('/apps/products');
   };
 
+  //per la modalità se sta in edit oppure in creazione
   useEffect(() => {
   if (mode === "new" && !currentId) {
     setCurrentId(Date.now().toString());
   }
 }, [mode, currentId]);
 
+
+//riguarda le categorie
 function mapSavedCategoriesToFull(
   saved: { id: string; name: string; subcategories?: { id: string; name: string }[] }[],
   all: Category[]
@@ -204,6 +208,8 @@ function mapSavedCategoriesToFull(
 }
 
 
+//per la funzione edit
+//qui bisogna fare la fetch per ottenere i dati del prodotto tramite id
 useEffect(() => {
   if (!isEditMode || !slug) return;
   const all = loadProducts();          
@@ -223,6 +229,7 @@ useEffect(() => {
 }, [isEditMode, slug, navigate]);
 
 
+//questo riguarda per l'inserimento delle categorie
 useEffect(() => {
   if (!isEditMode || !slug || allCategories.length === 0) return;
   const savedCats = loadProducts()
@@ -234,13 +241,13 @@ useEffect(() => {
 
 
 
-
+  //questo serve per ottenere le categorie
   useEffect(() => {
     const raw = localStorage.getItem(STORAGE_CATEGORIES);
     if (raw) setAllCategories(JSON.parse(raw));
   }, []);
 
-
+    //funzione per ottenere i prodotti presenti nel localStorage (tutta la lista dei prodotti)  
     function loadProducts(): SavedProduct[] {
     const raw = localStorage.getItem(STORAGE_PRODUCTS);
     return raw ? JSON.parse(raw) : [];
@@ -252,6 +259,9 @@ useEffect(() => {
   }
 
 
+
+  //salvataggio prodotto. Sia creazione sia per quanto riguarda la modifica
+  //qui dentro si deve integrare le due fetch per quanto riguarda la creazione e la modifica del prodotto
 const handleSave = useCallback(() => {
   if (!currentId) return; 
 
@@ -277,10 +287,10 @@ const prod: SavedProduct = {
 
   const all = loadProducts();
   const updated = isEditMode
-    ? all.map(p => (p.id === currentId ? prod : p)) 
-    : [...all, prod];                                
+    ? all.map(p => (p.id === currentId ? prod : p))  //caso modifica
+    : [...all, prod];                           //caso aggiornamento      
 
-  saveProducts(updated);
+  saveProducts(updated);  //Salvataggio nel localStorage
   setIsDirty(false);
 
   if (!isEditMode) {
