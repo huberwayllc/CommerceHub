@@ -120,7 +120,7 @@ const TWO_COl_MENU_ITEMS: MenuItemTypes[] = [
 		},
 		{
 			key: 'impostazioni-predefinite',
-			label: 'Impostazioni di spedizione predefinite',
+			label: 'Impostazioni predefinite',
 			url: '/shipments/default-settings',
 			icon: 'settings',
 			parentKey: 'shipping',

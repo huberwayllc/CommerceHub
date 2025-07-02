@@ -36,7 +36,7 @@ export const CarrierCard = ({ carrier }: { carrier: Carrier }) => {
             {carrier.upgradeMessage}
           </small>
           <div className="mt-2">
-            <Button size="sm">{carrier.upgradeButtonText}</Button>
+            <Button >{carrier.upgradeButtonText}</Button>
           </div>
         </div>
       </Card.Body>

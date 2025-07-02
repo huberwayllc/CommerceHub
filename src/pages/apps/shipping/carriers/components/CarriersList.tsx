@@ -1,7 +1,6 @@
 import { Tabs, Tab, Row, Col } from 'react-bootstrap';
 import { CarrierCard } from './CarrierCard';
 import carriersData from './carriersData.json';
-import contractsData from './carriersData.json';
 
 export interface Carrier {
   id: string;

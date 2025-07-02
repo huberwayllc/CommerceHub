@@ -4,6 +4,8 @@ import Customers from '@/pages/apps/customers'
 import Orders from '@/pages/apps/orders'
 import Shipping from '@/pages/apps/shipping'
 import Carriers from '@/pages/apps/shipping/carriers'
+import ShippingDefaults from '@/pages/apps/shipping/shippingDefaults.tsx'
+import ShippingPrices from '@/pages/apps/shipping/shippingPrices'
 import { lazy } from 'react'
 import { Navigate, RouteProps } from 'react-router-dom'
 
@@ -622,6 +624,16 @@ const shipmentsRoutes: RoutesProps[] = [
 		path: '/shipments/carriers',
 		name: 'Carriers',
 		element: <Carriers />,
+	},
+	{
+		path: '/shipments/default-settings',
+		name: 'Shipping Defaluts',
+		element: <ShippingDefaults />,
+	},
+	{
+		path: '/shipments/rates',
+		name: 'Shipping Prices',
+		element: <ShippingPrices />,
 	},
 	{
 		path: '/dashboards/project',

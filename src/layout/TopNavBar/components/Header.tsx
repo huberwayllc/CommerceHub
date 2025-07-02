@@ -80,6 +80,8 @@ const Header: React.FC<HeaderProps> = ({ onActionClick }) => {
 			"/apps/orders": { title: "Ordini" },
 			"/shipments/overview": { title: "Panoramica" },
 			"/shipments/carriers": { title: "Corrieri" },
+			"/shipments/default-settings": { title: "Spedizioni" },
+			"/shipments/rates": { title: "Tariffe Spedizione" },
 			"/account/profile": { title: "Profilo" },
 			"/account/pricing": { title: "Abbonamenti" },
 		};
