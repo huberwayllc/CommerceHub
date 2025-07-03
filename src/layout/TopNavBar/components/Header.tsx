@@ -73,7 +73,7 @@ const Header: React.FC<HeaderProps> = ({ onActionClick }) => {
 		const pageMap: { [key: string]: { title: string; button?: string; buttonLink?: string } } = {
 			"/dashboard": { title: "Dashboard" },
 			"/websites": { title: "Websites", button: "+ Add Website", buttonLink: "/account/websites" },
-			"/apps/categories": { title: "Categorie", button: "+ Aggiungi Categoria", buttonLink: "/apps/categories/new" },
+			"/apps/categories": { title: "Categorie"},
 			"/apps/products": { title: "Prodotti", button: "+ Aggiungi Prodotto", buttonLink: "/apps/products/new" },
 			"/apps/customers": { title: "Clienti" },
 			"/apps/settings": { title: "Impostazioni" },
@@ -82,6 +82,7 @@ const Header: React.FC<HeaderProps> = ({ onActionClick }) => {
 			"/shipments/carriers": { title: "Corrieri" },
 			"/shipments/default-settings": { title: "Spedizioni" },
 			"/shipments/rates": { title: "Tariffe Spedizione" },
+			"/shipments/boxes": { title: "Scatole" },
 			"/account/profile": { title: "Profilo" },
 			"/account/pricing": { title: "Abbonamenti" },
 		};

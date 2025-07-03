@@ -3,6 +3,7 @@ import Categories from '@/pages/apps/categories'
 import Customers from '@/pages/apps/customers'
 import Orders from '@/pages/apps/orders'
 import Shipping from '@/pages/apps/shipping'
+import Boxes from '@/pages/apps/shipping/boxes'
 import Carriers from '@/pages/apps/shipping/carriers'
 import ShippingDefaults from '@/pages/apps/shipping/shippingDefaults.tsx'
 import ShippingPrices from '@/pages/apps/shipping/shippingPrices'
@@ -634,6 +635,11 @@ const shipmentsRoutes: RoutesProps[] = [
 		path: '/shipments/rates',
 		name: 'Shipping Prices',
 		element: <ShippingPrices />,
+	},
+	{
+		path: '/shipments/boxes',
+		name: 'BOxes',
+		element: <Boxes />,
 	},
 	{
 		path: '/dashboards/project',
