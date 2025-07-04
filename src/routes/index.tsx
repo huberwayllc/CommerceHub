@@ -5,6 +5,8 @@ import Orders from '@/pages/apps/orders'
 import Shipping from '@/pages/apps/shipping'
 import Boxes from '@/pages/apps/shipping/boxes'
 import Carriers from '@/pages/apps/shipping/carriers'
+import InsuranceList from '@/pages/apps/shipping/insurance/components/InsuranceList'
+import PrintOptions from '@/pages/apps/shipping/printOptions'
 import ShippingDefaults from '@/pages/apps/shipping/shippingDefaults.tsx'
 import ShippingPrices from '@/pages/apps/shipping/shippingPrices'
 import { lazy } from 'react'
@@ -635,6 +637,16 @@ const shipmentsRoutes: RoutesProps[] = [
 		path: '/shipments/rates',
 		name: 'Shipping Prices',
 		element: <ShippingPrices />,
+	},
+	{
+		path: '/shipments/insurance',
+		name: 'Shipping Insurance',
+		element: <InsuranceList />,
+	},
+	{
+		path: '/shipments/print-options',
+		name: 'Print Options',
+		element: <PrintOptions />,
 	},
 	{
 		path: '/shipments/boxes',

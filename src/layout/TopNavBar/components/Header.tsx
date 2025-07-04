@@ -82,7 +82,9 @@ const Header: React.FC<HeaderProps> = ({ onActionClick }) => {
 			"/shipments/carriers": { title: "Corrieri" },
 			"/shipments/default-settings": { title: "Spedizioni" },
 			"/shipments/rates": { title: "Tariffe Spedizione" },
+			"/shipments/print-options": { title: "Opzioni di stampa" },
 			"/shipments/boxes": { title: "Scatole" },
+			"/shipments/insurance": { title: "Assicurazione" },
 			"/account/profile": { title: "Profilo" },
 			"/account/pricing": { title: "Abbonamenti" },
 		};
