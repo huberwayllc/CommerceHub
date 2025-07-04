@@ -77,7 +77,7 @@ const InsuranceList: React.FC = () => {
 
         </div>
 
-    <Modal show={showModal} onHide={handleClose} size="lg">
+    <Modal show={showModal} size="lg">
         <Modal.Body>
           <h3 className="text-black fw-semibold mb-3">Proteggi le mie spedizioni</h3>
           <p className="m-0 text-black fw-semibold">Sarai protetto contro:</p>

@@ -84,8 +84,10 @@ const PrintOptionsForm: React.FC = () => {
                 <option key={opt}>{opt}</option>
               ))}
             </Form.Select>
-            <div className="d-flex align-items-center gap-2 mt-2">
-              <FaCircleInfo />
+            <div className="d-flex align-items-start gap-2 mt-2">
+                <div>
+                    <FaCircleInfo />
+                </div>
               <p className="m-0">I file verranno scaricati invece che stampati</p>
             </div>
           </div>

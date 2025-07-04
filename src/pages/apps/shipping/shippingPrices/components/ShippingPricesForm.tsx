@@ -30,8 +30,8 @@ const ShippingPricesForm = () => {
           </div>
 
           {/* Form dinamico in base alla modalità */}
-          <div className="mt-3 d-flex gap-3">
-            <div className="w-50">
+          <div className="mt-3 d-flex gap-3 flex-wrap flex-md-nowrap">
+            <div className="w-100 w-md-50">
               <h6 className="m-0 mb-1 fw-bold">
                 {selectedMode === "inUscita" ? "Paese di partenza" : "Reso al Paese"}
               </h6>
@@ -80,7 +80,7 @@ const ShippingPricesForm = () => {
               )}
             </div>
 
-            <div className="w-50">
+            <div className="w-100 w-md-50">
               <h6 className="m-0 mb-1 fw-bold">
                 {selectedMode === "inUscita" ? "Paese di destinazione" : "Reso dal Paese"}
               </h6>

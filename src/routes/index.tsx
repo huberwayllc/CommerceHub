@@ -6,6 +6,7 @@ import Shipping from '@/pages/apps/shipping'
 import Boxes from '@/pages/apps/shipping/boxes'
 import Carriers from '@/pages/apps/shipping/carriers'
 import InsuranceList from '@/pages/apps/shipping/insurance/components/InsuranceList'
+import PackAndGo from '@/pages/apps/shipping/packAndGo'
 import PrintOptions from '@/pages/apps/shipping/printOptions'
 import ShippingDefaults from '@/pages/apps/shipping/shippingDefaults.tsx'
 import ShippingPrices from '@/pages/apps/shipping/shippingPrices'
@@ -627,6 +628,11 @@ const shipmentsRoutes: RoutesProps[] = [
 		path: '/shipments/carriers',
 		name: 'Carriers',
 		element: <Carriers />,
+	},
+	{
+		path: '/shipments/pack-and-go',
+		name: 'Pack and Go',
+		element: <PackAndGo />,
 	},
 	{
 		path: '/shipments/default-settings',
