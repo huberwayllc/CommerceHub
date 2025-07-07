@@ -1,32 +1,47 @@
-// src/apps/customers/CustomersList.tsx
+// src/apps/shipments/RulesList.tsx
 import React, { useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
-import { FaPlus, FaSearch } from 'react-icons/fa';
+import { FaPlus, FaSearch, FaUpload  } from 'react-icons/fa';
 import { IoFilter } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 import FloatingInput from '@/components/FloatingInput';
-import { CustomerInfo } from '@/pages/apps/customers/components/types';
-import CustomersTable from '@/pages/apps/customers/components/CustomersTable';
+import RulesTable, { ShippingRule } from './RulesTable';
 
 
-const STORAGE_CUSTOMERS = "customers_list_v1";
+const STORAGE_RULES = "shipping_rules_v1";
 
 const RulesList: React.FC = () => {
   const navigate = useNavigate();
 
   const [search, setSearch] = useState('');
-  const [customers, setCustomers] = useState<CustomerInfo[]>([]);
+  const [rules, setRules] = useState<ShippingRule[]>([]);
 
+  // Carica all'avvio
   useEffect(() => {
-    const raw = localStorage.getItem(STORAGE_CUSTOMERS) || "[]";
-    setCustomers(JSON.parse(raw));
+    const raw = localStorage.getItem(STORAGE_RULES) || "[]";
+    setRules(JSON.parse(raw));
   }, []);
 
-  // Filtra per nome o email
-  const filtered = customers.filter(c =>
-    c.name.toLowerCase().includes(search.toLowerCase()) ||
-    c.email.toLowerCase().includes(search.toLowerCase())
+  // Filtra per nome della regola
+  const filtered = rules.filter(r =>
+    r.name.toLowerCase().includes(search.toLowerCase())
   );
+
+  // Elimina una regola
+  const handleDelete = (id: string) => {
+    const updated = rules.filter(r => r.id !== id);
+    setRules(updated);
+    localStorage.setItem(STORAGE_RULES, JSON.stringify(updated));
+  };
+
+  // Attiva/disattiva
+  const handleToggle = (id: string, enabled: boolean) => {
+    const updated = rules.map(r =>
+      r.id === id ? { ...r, enabled } : r
+    );
+    setRules(updated);
+    localStorage.setItem(STORAGE_RULES, JSON.stringify(updated));
+  };
 
   return (
     <>
@@ -38,6 +53,15 @@ const RulesList: React.FC = () => {
         >
           <div className='d-flex align-items-center gap-1'>
             <FaPlus /> Crea una nuova regola
+          </div>
+        </Button>
+        <Button
+          className='boxShadow bg-transparent text-black'
+          style={{ height: '45px', border: "1px solid black" }}
+          
+        >
+          <div className='d-flex align-items-center gap-1'>
+            <FaUpload /> Carica file
           </div>
         </Button>
       </div>
@@ -53,16 +77,23 @@ const RulesList: React.FC = () => {
         </Button>
 
         <FloatingInput
-          placeholder="Cerca per nome o email"
+          placeholder="Cerca per nome regola"
           icon={<FaSearch />}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
 
-      {/* Tabella clienti */}
-      <CustomersTable customers={filtered} />
+      <div className='card p-3'>
+        <p className='m-0 fw-semibold'>Le regole vengono applicate dall'alto verso il basso. Se le regole si sovrappongono, l'ultima regola ha la priorità</p>
+      </div>
 
+      {/* Tabella regole */}
+      <RulesTable
+        rules={filtered}
+        onDelete={handleDelete}
+        onToggle={handleToggle}
+      />
 
       <div style={{ marginTop: "200px" }}></div>
     </>

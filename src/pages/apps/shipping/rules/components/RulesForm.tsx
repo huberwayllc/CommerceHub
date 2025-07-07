@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Form, Card, Row, Col, Container, Badge } from 'react-bootstrap';
 import { FaPlus, FaSave } from 'react-icons/fa';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   PropMeta,
   PROPERTY_META,
-  ActionMeta,
   PROPERTIES,
   ACTIONS,
 } from './types';
@@ -19,14 +18,32 @@ type ShippingRule = { id: string; name: string; conditions: Condition[]; actions
 const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
 const RulesForm: React.FC = () => {
-  const { mode: urlMode } = useParams<{ mode?: string; slug?: string }>();
+  const  navigate = useNavigate()
+  const { mode: urlMode, slug } = useParams<{ mode?: string; slug?: string }>();
   const [mode, setMode] = useState<'start' | 'builder'>('start');
   const [rule, setRule] = useState<ShippingRule>({ id: generateId(), name: '', conditions: [], actions: [] });
   const [conj, setConj] = useState<'e' | 'o'>('e');
 
+
   useEffect(() => {
-    if (urlMode === 'new') setMode('builder');
-  }, [urlMode]);
+  if (urlMode === 'edit' && slug) {
+    const raw = localStorage.getItem(STORAGE_RULES) || '[]';
+    const all: ShippingRule[] = JSON.parse(raw);
+    const existing = all.find(r => r.id === slug);
+    if (existing) {
+      setRule(existing);
+      setMode('builder');
+    } else {
+      // se non la trovi, puoi gestire un 404 o un alert
+      alert('Regola non trovata');
+      navigate('/shipments/rules');
+    }
+  } else if (urlMode === 'new') {
+    // la tua logica esistente
+    setMode('builder');
+  }
+}, [urlMode, slug, navigate]);
+
 
   // Condition handlers
   const addCondition = () => setRule(prev => ({
@@ -62,6 +79,7 @@ const RulesForm: React.FC = () => {
     const list: ShippingRule[] = raw ? JSON.parse(raw) : [];
     const updated = [rule, ...list.filter(r => r.id !== rule.id)];
     localStorage.setItem(STORAGE_RULES, JSON.stringify(updated));
+    navigate("/shipments/rules")
     alert('Regola salvata!');
   };
 
