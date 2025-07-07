@@ -221,7 +221,8 @@ useEffect(() => {
 const renderCategoryItems = (cats: Category[], level = 0) =>
   cats.map(cat => (
     <React.Fragment key={cat.id}>
-      <div className="d-inline-flex align-items-center pt-2" style={{ paddingLeft: `${level * 20}px` }}>
+      <div  onClick={() => handleSelect(cat)}
+      className="d-inline-flex align-items-center py-1 rounded-3" style={{ paddingLeft: `${level * 20}px`, backgroundColor: selected?.id === cat.id ? '#EEF2FF' : 'transparent', }}>
         <div style={{ width: '20px' }}>
           {cat.subcategories.length > 0 ? (
             <Button
@@ -239,8 +240,11 @@ const renderCategoryItems = (cats: Category[], level = 0) =>
           )}
         </div>
         <div
-          onClick={() => handleSelect(cat)}
-          style={{ cursor: 'pointer' }}
+          
+          style={{
+            cursor: 'pointer',
+            userSelect: 'none'
+          }}
         >
           <span  className={
             selected?.id === cat.id
@@ -338,14 +342,14 @@ const renderCategoryItems = (cats: Category[], level = 0) =>
         >
           <FaPlus /> Nuova sottocategoria
         </Button>
-        <Button
-          className="boxShadow bg-white text-black"
+        <button
+          className="boxShadow bg-white redColor fw-semibold rounded-1 px-3"
           style={{ height: '45px', border: '0px' }}
           disabled={!selected}
           onClick={handleDelete}
         >
           <FaRegTrashAlt /> Elimina
-        </Button>
+        </button>
       </div>
 
       <div className="w-100 d-flex gap-3">

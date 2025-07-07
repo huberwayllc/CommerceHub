@@ -93,6 +93,7 @@ File: App Css
   --border-table-color: #7f90aa;
   --back-gray: #ECEEF0;
   --blue-color: #6366f1;
+  --red-color: #DC2626;
 }
 
 .boxShadow {
@@ -117,6 +118,10 @@ h1, h2, h3, h4, h5, h6 {
 
 .colorPrimary {
   color: var(--blue-color);
+}
+
+.redColor {
+  color: var(--red-color);
 }
 
 .noHover:hover {
