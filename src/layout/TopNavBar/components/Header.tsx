@@ -77,6 +77,7 @@ const Header: React.FC<HeaderProps> = ({ onActionClick }) => {
 			"/apps/products": { title: "Prodotti", button: "+ Aggiungi Prodotto", buttonLink: "/apps/products/new" },
 			"/apps/customers": { title: "Clienti" },
 			"/apps/settings": { title: "Impostazioni" },
+			"/shipments/rules": { title: "Regole" },
 			"/apps/orders": { title: "Ordini" },
 			"/shipments/overview": { title: "Panoramica" },
 			"/shipments/carriers": { title: "Corrieri" },

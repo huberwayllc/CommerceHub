@@ -8,6 +8,7 @@ import Carriers from '@/pages/apps/shipping/carriers'
 import InsuranceList from '@/pages/apps/shipping/insurance/components/InsuranceList'
 import PackAndGo from '@/pages/apps/shipping/packAndGo'
 import PrintOptions from '@/pages/apps/shipping/printOptions'
+import Rules from '@/pages/apps/shipping/rules'
 import ShippingDefaults from '@/pages/apps/shipping/shippingDefaults.tsx'
 import ShippingPrices from '@/pages/apps/shipping/shippingPrices'
 import { lazy } from 'react'
@@ -648,6 +649,11 @@ const shipmentsRoutes: RoutesProps[] = [
 		path: '/shipments/insurance',
 		name: 'Shipping Insurance',
 		element: <InsuranceList />,
+	},
+	{
+		path: '/shipments/rules/:mode?/:slug?',
+		name: 'Shipping Rules',
+		element: <Rules />,
 	},
 	{
 		path: '/shipments/print-options',
