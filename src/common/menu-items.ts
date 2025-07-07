@@ -69,12 +69,6 @@ const TWO_COl_MENU_ITEMS: MenuItemTypes[] = [
 				url: '/apps/invoices',
 				parentKey: 'apps',
 			},
-			{
-				key: 'apps-shipments',
-				label: 'Spedizioni',
-				url: '/apps/shipments',
-				parentKey: 'apps',
-			}
 		],
 	},
 	{
